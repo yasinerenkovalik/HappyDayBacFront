@@ -4,47 +4,48 @@ import React from "react";
 import { Typography } from "@material-tailwind/react";
 import FeatureCard from "@/components/feature-card";
 import {
-  TruckIcon,
-  BanknotesIcon,
-  LifebuoyIcon,
+  GiftIcon,
+  UsersIcon,
+  CalendarDaysIcon,
 } from "@heroicons/react/24/solid";
 
 const FEATURES = [
   {
-    icon: BanknotesIcon,
-    title: "We Support Educators",
+    icon: CalendarDaysIcon,
+    title: "Etkinlik Planlaması",
     description:
-      "Explore our educator resources, bulk ordering options, and special teacher discounts.",
+      "Düğün, nişan, kına, doğum günü ve daha fazlası için kolayca organizasyon planlayın. Size özel çözümlerle hizmetinizdeyiz.",
   },
   {
-    icon: LifebuoyIcon,
-    title: "Support 24/7",
+    icon: UsersIcon,
+    title: "Uzman Ekiplerle Çalışın",
     description:
-      "Our dedicated customer support team is available to assist you 24 hours a day, 7 days a week.",
+      "Deneyimli firma ve profesyoneller ile hayalinizdeki günü güvenle organize edin. Her detayı sizin için düşünüyoruz.",
   },
   {
-    icon: TruckIcon,
-    title: "Easy Shopping, Quick Delivery",
+    icon: GiftIcon,
+    title: "Kampanyaları Kaçırmayın",
     description:
-      "We offer fast and reliable shipping, so you can focus on what matters most - your education",
+      "MutluGünüm’e özel indirimler, hediye çekleri ve sürpriz fırsatlarla özel günlerinizi daha da özel hale getirin.",
   },
 ];
 
-export function GetYourBookFromUs() {
+export function GetYourServiceFromUs() {
   return (
-    <section className="px-8">
+    <section className="px-8 py-20 bg-gray-50">
       <div className="container mx-auto mb-16 text-center">
-        <Typography variant="h2" color="blue-gray" className="mb-4">
-          Get your book from us!
+        <Typography variant="h2" color="blue-gray" className="mb-4 font-bold">
+          Sizin İçin En Güzel Günü Planlıyoruz
         </Typography>
         <Typography
           variant="lead"
-          className="mx-auto w-full px-4 !text-gray-500 lg:w-5/12"
+          className="mx-auto w-full px-4 !text-gray-600 lg:w-6/12"
         >
-          Start your literary adventure today by exploring these captivating
-          worlds of words.
+          MutluGünüm ile en özel anlarınız emin ellerde. Türkiye’nin dört bir
+          yanındaki güvenilir organizasyon firmaları ile tanışın.
         </Typography>
       </div>
+
       <div className="container mx-auto grid grid-cols-1 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map(({ icon, title, description }) => (
           <FeatureCard key={title} icon={icon} title={title}>
@@ -56,4 +57,4 @@ export function GetYourBookFromUs() {
   );
 }
 
-export default GetYourBookFromUs;
+export default GetYourServiceFromUs;
