@@ -7,33 +7,41 @@ import {
   Button,
   IconButton,
   Typography,
+  Avatar,
 } from "@material-tailwind/react";
 import {
-  RectangleStackIcon,
-  UserCircleIcon,
-  CommandLineIcon,
+  HomeIcon,
+  CalendarDaysIcon,
+  ChatBubbleLeftRightIcon,
   XMarkIcon,
   Bars3Icon,
   PhoneIcon,
-} from "@heroicons/react/24/solid";
+  HeartIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
+import { SparklesIcon } from "@heroicons/react/24/solid";
 
 const NAV_MENU = [
   {
     name: "Ana Sayfa",
-    icon: RectangleStackIcon,
+    icon: HomeIcon,
     href: "/",
   },
   {
     name: "Organizasyonlar",
-    icon: UserCircleIcon,
+    icon: CalendarDaysIcon,
     href: "/organization-list",
+  },
+  {
+    name: "Blog",
+    icon: ChatBubbleLeftRightIcon,
+    href: "/blog",
   },
   {
     name: "İletişim",
     icon: PhoneIcon,
     href: "/contact",
   },
-
 ];
 
 interface NavItemProps {
@@ -48,8 +56,7 @@ function NavItem({ children, href }: NavItemProps) {
         <Typography
           as="div"
           variant="paragraph"
-          color="gray"
-          className="flex items-center gap-2 font-medium text-pink-500 hover:text-pink-700 transition-colors cursor-pointer"
+          className="flex items-center gap-2 font-medium text-gray-700 hover:text-pink-600 transition-all duration-300 cursor-pointer px-3 py-2 rounded-lg hover:bg-pink-50"
         >
           {children}
         </Typography>
@@ -72,23 +79,50 @@ export function Navbar() {
   }, []);
 
   return (
-    <MTNavbar shadow={false} fullWidth className="border-0 sticky top-0 z-50 bg-white">
-      <div className="container mx-auto flex items-center justify-between py-2">
-        <Typography color="blue-gray" className="text-lg font-bold">
-          <Link href="/">Mutlu Günüm</Link>
-        </Typography>
+    <MTNavbar shadow={true} fullWidth className="border-0 sticky top-0 z-50 bg-white/95 backdrop-blur-md">
+      <div className="container mx-auto flex items-center justify-between py-3">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <SparklesIcon className="h-6 w-6 text-white" />
+          </div>
+          <Typography className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            MutluGünüm
+          </Typography>
+        </Link>
 
         {/* Menü - büyük ekran */}
-        <ul className="ml-10 hidden items-center gap-8 lg:flex">
+        <ul className="hidden items-center gap-2 lg:flex">
           {NAV_MENU.map(({ name, icon: Icon, href }) => (
             <NavItem key={name} href={href}>
-              <Icon className="h-5 w-5" />
+              <Icon className="h-4 w-4" />
               {name}
             </NavItem>
           ))}
         </ul>
 
- 
+        {/* Sağ taraf butonları */}
+        <div className="hidden lg:flex items-center gap-3">
+          <IconButton variant="text" className="text-gray-600 hover:text-pink-600">
+            <HeartIcon className="h-5 w-5" />
+          </IconButton>
+          
+          <Button
+            variant="outlined"
+            size="sm"
+            className="border-pink-500 text-pink-500 hover:bg-pink-50 flex items-center gap-2"
+          >
+            <UserIcon className="h-4 w-4" />
+            Giriş Yap
+          </Button>
+          
+          <Button
+            size="sm"
+            className="bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            Ücretsiz Kayıt
+          </Button>
+        </div>
 
         {/* Menü ikonu - mobil */}
         <IconButton
@@ -107,16 +141,33 @@ export function Navbar() {
 
       {/* Mobil menü */}
       <Collapse open={open}>
-        <div className="container mx-auto mt-3 border-t border-gray-200 px-2 pt-4">
-          <ul className="flex flex-col gap-4">
+        <div className="container mx-auto mt-3 border-t border-gray-200 px-2 pt-4 pb-4">
+          <ul className="flex flex-col gap-2 mb-4">
             {NAV_MENU.map(({ name, icon: Icon, href }) => (
               <NavItem key={name} href={href}>
-                <Icon className="h-5 w-5" />
+                <Icon className="h-4 w-4" />
                 {name}
               </NavItem>
             ))}
           </ul>
-       
+          
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outlined"
+              size="sm"
+              className="border-pink-500 text-pink-500 hover:bg-pink-50 flex items-center gap-2 justify-center"
+            >
+              <UserIcon className="h-4 w-4" />
+              Giriş Yap
+            </Button>
+            
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-pink-500 to-purple-600"
+            >
+              Ücretsiz Kayıt
+            </Button>
+          </div>
         </div>
       </Collapse>
     </MTNavbar>
