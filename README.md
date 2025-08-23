@@ -1,25 +1,26 @@
-# [NextJS Tailwind Campaign Page](http://demos.creative-tim.com/nextjs-tailwind-campaign-page?ref=readme-ntpp) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https://www.creative-tim.com/product/nextjs-tailwind-campaign-page&text=Check%20Material%20Tailwind%202%20Template%20made%20by%20@CreativeTim%20#webdesign%20#template%20#materialdesign%20#react%20https://www.creative-tim.com/product/nextjs-tailwind-campaign-page)
+# MutluGünüm - Organizasyon Yönetim Platformu
 
-![version](https://img.shields.io/badge/version-1.0.0-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/nextjs-tailwind-campaign-page.svg)](https://github.com/creativetimofficial/nextjs-tailwind-campaign-page/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/nextjs-tailwind-campaign-page.svg)](https://github.com/creativetimofficial/nextjs-tailwind-campaign-page/issues?q=is%3Aissue+is%3Aclosed)
+![version](https://img.shields.io/badge/version-1.0.0-blue.svg) ![Next.js](https://img.shields.io/badge/Next.js-13.4.0-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-3.0-38B2AC)
 
-![Image](https://s3.amazonaws.com/creativetim_bucket/products/743/original/material-tailwind-react-campaign-template-thumbnail.jpg?1697631625)
+Modern ve güvenli organizasyon yönetim platformu. Şirketler ve organizatörler için kapsamlı etkinlik yönetimi çözümü.
 
-Introducing Tailwind Campaign Page, an all-inclusive and visually captivating campaign landing page template built on the foundation of Tailwind CSS and Material Tailwind.
+## 🚀 Özellikler
 
-Are you searching for a meticulously designed and highly customizable campaign landing page template tailored for marketers, businesses, and organizations to create compelling and effective online campaign pages? Look no further! We are excited to present to you our Free Campaign Page Template, thoughtfully crafted to meet the needs of web developers like you.
+- **Güvenli Kimlik Doğrulama**: JWT tabanlı güvenli giriş sistemi
+- **Çoklu Kullanıcı Desteği**: Admin ve şirket kullanıcı rolleri
+- **Organizasyon Yönetimi**: Etkinlik oluşturma, düzenleme ve yönetimi
+- **Görsel Galeri**: Çoklu resim yükleme ve yönetimi
+- **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
+- **Production Ready**: Güvenlik ve performans optimizasyonları
 
-This template, built with Tailwind CSS and Material Tailwind, offers seamless customization to perfectly match your campaign's branding. The free campaign template comes equipped with essential features such as header, product listing, categories, and testimonial section.
+## 🛡️ Güvenlik Özellikleri
 
-**Documentation built by Developers**
-
-Each element is well presented in very complex documentation.
-
-You can read more about the [documentation here](https://www.material-tailwind.com/docs/react/installation).
-
-**HELPFUL LINKS**
-
-- View [Github Repository](https://github.com/creativetimofficial/nextjs-tailwind-campaign-page)
-- Check [FAQ Page](https://www.creative-tim.com/faq)
+- CSP (Content Security Policy) koruması
+- XSS ve CSRF koruması
+- Rate limiting
+- Güvenli header'lar
+- Input validation
+- Error boundary'ler
 
 ## [Demo](https://creative-tim.com/product/nextjs-tailwind-campaign-page)
 
@@ -93,3 +94,199 @@ Google+: <https://plus.google.com/+CreativetimPage>
 
 Instagram: <https://instagram.com/creativetimofficial>
 # happydayfront2
+
+## 📋 Kurulum
+
+### Gereksinimler
+- Node.js 18+ 
+- npm veya yarn
+- Git
+
+### Geliştirme Ortamı
+
+1. **Repository'yi klonlayın**
+```bash
+git clone <repository-url>
+cd nextjs-tailwind-campaign-page
+```
+
+2. **Bağımlılıkları yükleyin**
+```bash
+npm install
+```
+
+3. **Environment variables'ları ayarlayın**
+```bash
+cp .env.example .env.local
+# .env.local dosyasını düzenleyin
+```
+
+4. **Geliştirme sunucusunu başlatın**
+```bash
+npm run dev
+```
+
+### Production Deployment
+
+#### Docker ile Deployment
+
+1. **Docker image'ını build edin**
+```bash
+docker build -t mutlugunum-app .
+```
+
+2. **Container'ı çalıştırın**
+```bash
+docker run -p 3000:3000 --env-file .env.production mutlugunum-app
+```
+
+#### Docker Compose ile
+
+```bash
+# Environment variables'ları ayarlayın
+cp .env.example .env.production
+
+# Servisleri başlatın
+docker-compose up -d
+```
+
+#### Manuel Deployment
+
+```bash
+# Production build
+npm run build:production
+
+# Sunucuyu başlatın
+npm start
+```
+
+## 🔧 Konfigürasyon
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_API_BASE_URL` | Backend API URL'i | `http://localhost:5268/api` |
+| `NEXT_PUBLIC_APP_URL` | Frontend URL'i | `http://localhost:3000` |
+| `NEXTAUTH_SECRET` | JWT secret key | - |
+
+### Nginx Konfigürasyonu
+
+Production ortamında Nginx reverse proxy kullanılması önerilir. `nginx.conf` dosyasını referans alın.
+
+## 🧪 Testing
+
+```bash
+# Type check
+npm run type-check
+
+# Linting
+npm run lint
+
+# Security audit
+npm audit
+```
+
+## 📁 Proje Yapısı
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── admin/             # Admin panel sayfaları
+│   ├── api/               # API routes
+│   └── organization-*/    # Public sayfalar
+├── components/            # Reusable components
+├── lib/                   # Utility functions
+│   ├── auth.ts           # Authentication logic
+│   ├── constants.ts      # App constants
+│   ├── error-handler.ts  # Error handling
+│   └── image-utils.ts    # Image utilities
+└── middleware.ts          # Next.js middleware
+```
+
+## 🔒 Güvenlik
+
+### Implemented Security Measures
+
+- ✅ HTTPS enforcement
+- ✅ Security headers (CSP, HSTS, etc.)
+- ✅ Input validation
+- ✅ XSS protection
+- ✅ CSRF protection
+- ✅ Rate limiting
+- ✅ Error boundary
+- ✅ Secure authentication
+
+### Security Checklist
+
+- [ ] SSL sertifikası kurulumu
+- [ ] Environment variables güvenliği
+- [ ] Database güvenliği
+- [ ] Backup stratejisi
+- [ ] Monitoring ve logging
+- [ ] Security audit
+
+## 🚀 Performance
+
+### Optimizations
+
+- Image optimization
+- Code splitting
+- Static generation
+- Caching strategies
+- Bundle optimization
+
+## 📊 Monitoring
+
+### Health Check
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+### Logs
+
+Production ortamında log monitoring için:
+- Application logs
+- Error tracking (Sentry önerilir)
+- Performance monitoring
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📝 License
+
+Bu proje MIT lisansı altında lisanslanmıştır.
+
+## 🆘 Support
+
+Sorunlar için:
+- GitHub Issues
+- Documentation
+- Community support
+
+---
+
+**Production Ready Checklist:**
+
+- ✅ Environment variables configured
+- ✅ Security headers implemented
+- ✅ Error handling added
+- ✅ Docker configuration ready
+- ✅ Nginx configuration provided
+- ✅ Health check endpoint
+- ✅ TypeScript strict mode
+- ✅ ESLint configuration
+- ✅ Production build optimization
+
+**Next Steps:**
+1. SSL sertifikası kurulumu
+2. Domain konfigürasyonu  
+3. Database backup stratejisi
+4. Monitoring setup
+5. CI/CD pipeline

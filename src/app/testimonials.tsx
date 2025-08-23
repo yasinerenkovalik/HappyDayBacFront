@@ -220,7 +220,7 @@ export function Testimonials() {
                                         onPointerEnterCapture={undefined}
                                         onPointerLeaveCapture={undefined}
                                     >
-                                        "{testimonial.comment}"
+                                        "                                        {testimonial.comment}"
                                     </Typography>
                                 </CardBody>
                             </Card>

@@ -22,7 +22,7 @@ function Hero() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg">
               <SparklesIcon className="h-4 w-4" />
-              Türkiye'nin #1 Organizasyon Platformu
+              Türkiye&apos;nin #1 Organizasyon Platformu
             </div>
 
             <Typography

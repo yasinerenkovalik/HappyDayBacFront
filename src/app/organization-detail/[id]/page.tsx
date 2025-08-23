@@ -123,7 +123,7 @@ export default function OrganizationDetailPage() {
   return (
     <>
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="relative">
         <div className="relative h-96 overflow-hidden">
@@ -133,7 +133,7 @@ export default function OrganizationDetailPage() {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />
-          
+
           {/* Action Buttons */}
           <div className="absolute top-4 right-4 flex gap-2">
             <IconButton
@@ -154,7 +154,7 @@ export default function OrganizationDetailPage() {
               <ShareIcon className="h-5 w-5" />
             </IconButton>
           </div>
-          
+
           {/* Title Overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
             <div className="container mx-auto">
@@ -195,7 +195,7 @@ export default function OrganizationDetailPage() {
                       Başlangıç Fiyatı
                     </Typography>
                   </div>
-                  
+
                   <div className="text-center">
                     <div className="bg-blue-50 rounded-full p-3 w-16 h-16 mx-auto mb-2 flex items-center justify-center">
                       <ClockIcon className="h-8 w-8 text-blue-500" />
@@ -207,7 +207,7 @@ export default function OrganizationDetailPage() {
                       Süre
                     </Typography>
                   </div>
-                  
+
                   <div className="text-center">
                     <div className="bg-green-50 rounded-full p-3 w-16 h-16 mx-auto mb-2 flex items-center justify-center">
                       <UserGroupIcon className="h-8 w-8 text-green-500" />
@@ -219,7 +219,7 @@ export default function OrganizationDetailPage() {
                       Max Kişi
                     </Typography>
                   </div>
-                  
+
                   <div className="text-center">
                     <div className="bg-purple-50 rounded-full p-3 w-16 h-16 mx-auto mb-2 flex items-center justify-center">
                       <MapPinIcon className="h-8 w-8 text-purple-500" />
@@ -331,7 +331,7 @@ export default function OrganizationDetailPage() {
                   <Typography variant="h5" color="blue-gray" className="mb-6">
                     Hızlı İletişim
                   </Typography>
-                  
+
                   <form onSubmit={handleFormSubmit} className="space-y-4">
                     <div>
                       <Input
@@ -341,7 +341,7 @@ export default function OrganizationDetailPage() {
                         required
                       />
                     </div>
-                    
+
                     <div>
                       <Input
                         label="Telefon"
@@ -351,7 +351,7 @@ export default function OrganizationDetailPage() {
                         required
                       />
                     </div>
-                    
+
                     <div>
                       <Input
                         label="E-posta"
@@ -361,7 +361,7 @@ export default function OrganizationDetailPage() {
                         required
                       />
                     </div>
-                    
+
                     <div>
                       <Textarea
                         label="Mesajınız"
@@ -370,12 +370,12 @@ export default function OrganizationDetailPage() {
                         rows={4}
                       />
                     </div>
-                    
+
                     <Button type="submit" color="pink" size="lg" fullWidth>
                       Mesaj Gönder
                     </Button>
                   </form>
-                  
+
                   <div className="mt-6 pt-6 border-t border-gray-200">
                     <div className="flex items-center gap-4">
                       <Button
@@ -457,7 +457,7 @@ export default function OrganizationDetailPage() {
               alt="Gallery"
               className="w-full h-96 object-contain"
             />
-            
+
             {gallery.length > 1 && (
               <>
                 <IconButton
@@ -469,7 +469,7 @@ export default function OrganizationDetailPage() {
                 >
                   <ChevronLeftIcon className="h-8 w-8" />
                 </IconButton>
-                
+
                 <IconButton
                   variant="text"
                   color="white"
@@ -482,7 +482,7 @@ export default function OrganizationDetailPage() {
               </>
             )}
           </div>
-          
+
           <div className="text-center text-white p-4">
             <Typography>
               {currentImageIndex + 1} / {gallery.length}
@@ -494,5 +494,5 @@ export default function OrganizationDetailPage() {
       <Footer />
     </>
   );
-  
+
 }
