@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   Card,
   CardBody,
@@ -63,7 +63,7 @@ const ORGANIZATIONS = [
   }
 ];
 
-export default function AdminDashboard() {
+function DashboardContent() {
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get('tab') || 'overview';
 
@@ -605,5 +605,17 @@ export default function AdminDashboard() {
         </div>
       </AdminLayout>
     </ProtectedRoute>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }
