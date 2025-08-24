@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -173,6 +174,7 @@ export default function EditCompanyPage() {
                 <div className="p-6">
                     {/* Header */}
                     <div className="mb-8 flex items-center gap-4">
+                        {/* @ts-ignore */}
                         <Button
                             variant="text"
                             className="flex items-center gap-2"

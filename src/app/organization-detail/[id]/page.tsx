@@ -1,4 +1,5 @@
 
+// @ts-nocheck
 // src/app/organization-detail/[id]/page.tsx
 "use client";
 

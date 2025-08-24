@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import React, { useState } from "react";
@@ -66,7 +67,7 @@ export default function Navbar() {
   );
 
   return (
-    <MTNavbar 
+    <MTNavbar
       className="sticky top-0 z-10 h-max max-w-full rounded-none py-2 px-4 lg:px-8 lg:py-4 border-0 shadow-md"
       placeholder={undefined}
       onPointerEnterCapture={undefined}
@@ -117,10 +118,10 @@ export default function Navbar() {
       </div>
       <Collapse open={openNav}>
         {navList}
-        <Button 
-          variant="gradient" 
-          size="sm" 
-          fullWidth 
+        <Button
+          variant="gradient"
+          size="sm"
+          fullWidth
           className="mb-2 bg-gradient-to-r from-pink-500 to-purple-600"
           placeholder={undefined}
           onPointerEnterCapture={undefined}

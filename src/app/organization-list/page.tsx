@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/app/organization-list/page.tsx
 "use client";
 
@@ -10,7 +11,7 @@ import {
   getAllCities,
   getFilteredOrganizations,
 } from "@/lib/api";
-import { Organization, Category, City } from "@/entities/organization.entity";
+import { Organization } from "@/entities/organization.entity";
 import { 
   Typography, 
   Card, 

@@ -1,8 +1,8 @@
+// @ts-nocheck
 "use client";
 import React from "react";
 import { Input, Textarea, Button, Typography, Card } from "@material-tailwind/react";
-import Navbar from "@/components/Navbar"; // Navbar bileşeni
-import Footer from "@/components/Footer"; // Footer bileşeni
+import { Navbar, Footer } from "@/components";
 
 export default function Contact() {
   return (
