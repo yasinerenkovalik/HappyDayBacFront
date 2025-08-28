@@ -129,7 +129,7 @@ export default function OrganizationDetailPage() {
       <section className="relative">
         <div className="relative h-96 overflow-hidden">
           <img
-            src={`http://localhost:5268${selectedImage ?? org.coverPhotoPath ?? ""}`}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${selectedImage ?? org.coverPhotoPath ?? ""}`}
             alt={org.title}
             className="w-full h-full object-cover"
           />
@@ -264,7 +264,7 @@ export default function OrganizationDetailPage() {
                       }}
                     >
                       <img
-                        src={`http://localhost:5268${imgPath}`}
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${imgPath}`}
                         alt="Galeri"
                         className="w-full h-32 object-cover rounded-lg transition-transform group-hover:scale-105"
                       />
@@ -454,7 +454,7 @@ export default function OrganizationDetailPage() {
         <DialogBody className="p-0 relative">
           <div className="relative">
             <img
-              src={`http://localhost:5268${gallery[currentImageIndex]}`}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${gallery[currentImageIndex]}`}
               alt="Gallery"
               className="w-full h-96 object-contain"
             />

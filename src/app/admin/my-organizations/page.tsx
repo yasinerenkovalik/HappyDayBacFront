@@ -221,7 +221,7 @@ export default function MyOrganizations() {
                             <div className="flex items-center gap-3">
                               {org.coverPhotoPath ? (
                                 <img
-                                  src={`http://localhost:5268${org.coverPhotoPath}`}
+                                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
                                   alt={org.title}
                                   className="w-12 h-12 object-cover rounded-lg"
                                 />

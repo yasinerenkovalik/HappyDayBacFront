@@ -38,7 +38,7 @@ function OrganizationCard({ org }: { org: Organization }) {
       <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer">
         <div className="relative overflow-hidden">
           <img
-            src={`http://localhost:5268${org.coverPhotoPath}`}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
             alt={org.title}
             className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
           />

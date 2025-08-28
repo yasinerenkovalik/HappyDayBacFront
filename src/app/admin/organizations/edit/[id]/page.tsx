@@ -597,7 +597,7 @@ export default function EditOrganizationPage() {
                     {organization?.coverPhotoPath && (
                       <div className="mb-4">
                         <img
-                          src={`http://localhost:5268${organization.coverPhotoPath}`}
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${organization.coverPhotoPath}`}
                           alt="Mevcut kapak fotoğrafı"
                           className="w-full h-32 object-cover rounded-lg"
                         />
@@ -785,7 +785,7 @@ export default function EditOrganizationPage() {
                         {organization.images.map((image) => (
                           <div key={image.id} className="relative group">
                             <img
-                              src={`http://localhost:5268${image.imageUrl}`}
+                              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${image.imageUrl}`}
                               alt={`Galeri resmi ${image.id}`}
                               className="w-full h-24 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
                             />
@@ -795,7 +795,7 @@ export default function EditOrganizationPage() {
                                   size="sm"
                                   color="blue"
                                   className="p-2"
-                                  onClick={() => window.open(`http://localhost:5268${image.imageUrl}`, '_blank')}
+                                  onClick={() => window.open(`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${image.imageUrl}`, '_blank')}
                                   placeholder={undefined}
                                   onPointerEnterCapture={undefined}
                                   onPointerLeaveCapture={undefined}

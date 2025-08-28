@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Organization } from "@/entities/organization.entity";
 
-const BASE_URL = "http://localhost:5268/api";
+const BASE_URL = "http://193.111.77.142/api";
 
 // Tüm organizasyonları getir
 export async function getAllOrganizations(): Promise<Organization[]> {
@@ -36,7 +36,7 @@ export async function getFilteredOrganizations(filters: {
 }
 
 export async function getOrganizationDetail(id: string) {
-    const res = await axios.get(`http://localhost:5268/api/Organization/GetOrganizationWithImages?Id=${id}`);
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '')}/api/Organization/GetOrganizationWithImages?Id=${id}`);
     return res.data.data;
   }
   

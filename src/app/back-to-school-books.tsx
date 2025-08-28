@@ -121,7 +121,7 @@ export function BackToSchoolBooks() {
             <OrganizationCard
               key={key}
               id={org.id}
-              img={`http://localhost:5268${org.coverPhotoPath}`}
+              img={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
               title={org.title}
               desc={(org.description || "").slice(0, 100) + "..."}
             />

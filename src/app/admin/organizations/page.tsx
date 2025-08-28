@@ -2,17 +2,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Card, 
-  CardBody, 
-  Typography, 
-  Button, 
+import {
+  Card,
+  CardBody,
+  Typography,
+  Button,
   IconButton,
   Chip,
   Alert,
   Avatar
 } from "@material-tailwind/react";
-import { 
+import {
   PlusIcon,
   PencilIcon,
   TrashIcon,
@@ -42,7 +42,7 @@ export default function OrganizationsPage() {
           getAllOrganizations(),
           getAllCompanies()
         ]);
-        
+
         if (orgResponse.isSuccess) {
           setOrganizations(orgResponse.data);
         } else {
@@ -77,31 +77,43 @@ export default function OrganizationsPage() {
       <AdminLayout userType="admin">
         <div className="p-6">
           {/* Header */}
-          <div className="mb-8">
-            <Typography 
-              variant="h3" 
-              color="blue-gray" 
-              className="mb-2"
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <Typography
+                variant="h3"
+                color="blue-gray"
+                className="mb-2"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                Organizasyon Yönetimi
+              </Typography>
+              <Typography
+                color="gray"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                Tüm organizasyonları görüntüleyin ve yönetin
+              </Typography>
+            </div>
+            <Button
+              className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600"
+              onClick={() => window.location.href = '/admin/organizations/create'}
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              Organizasyon Yönetimi
-            </Typography>
-            <Typography 
-              color="gray"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              Tüm organizasyonları görüntüleyin ve yönetin
-            </Typography>
+              <PlusIcon className="h-4 w-4" />
+              Organizasyon Ekle
+            </Button>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <Alert 
-              color="red" 
+            <Alert
+              color="red"
               className="mb-6"
               icon={<ExclamationTriangleIcon className="h-6 w-6" />}
               onClose={() => setError("")}
@@ -111,21 +123,21 @@ export default function OrganizationsPage() {
           )}
 
           {/* Organizations Table */}
-          <Card 
+          <Card
             className="shadow-lg"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
           >
-            <CardBody 
+            <CardBody
               className="p-6"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
               <div className="flex items-center justify-between mb-6">
-                <Typography 
-                  variant="h5" 
+                <Typography
+                  variant="h5"
                   color="blue-gray"
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
@@ -133,7 +145,7 @@ export default function OrganizationsPage() {
                 >
                   Organizasyonlar ({organizations.length})
                 </Typography>
-                <Button 
+                <Button
                   className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600"
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
@@ -170,17 +182,16 @@ export default function OrganizationsPage() {
                     </thead>
                     <tbody>
                       {organizations.map((org, index) => (
-                        <tr 
-                          key={org.id} 
-                          className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                            index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
-                          }`}
+                        <tr
+                          key={org.id}
+                          className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                            }`}
                         >
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-3">
                               {org.coverPhotoPath ? (
                                 <Avatar
-                                  src={`http://localhost:5268${org.coverPhotoPath}`}
+                                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
                                   alt={org.title}
                                   size="md"
                                   className="rounded-lg"
@@ -194,8 +205,8 @@ export default function OrganizationsPage() {
                                 </div>
                               )}
                               <div>
-                                <Typography 
-                                  variant="small" 
+                                <Typography
+                                  variant="small"
                                   className="font-semibold text-gray-900"
                                   placeholder={undefined}
                                   onPointerEnterCapture={undefined}
@@ -203,8 +214,8 @@ export default function OrganizationsPage() {
                                 >
                                   {org.title}
                                 </Typography>
-                                <Typography 
-                                  variant="small" 
+                                <Typography
+                                  variant="small"
                                   className="text-gray-500 text-xs max-w-xs truncate"
                                   placeholder={undefined}
                                   onPointerEnterCapture={undefined}
@@ -216,8 +227,8 @@ export default function OrganizationsPage() {
                             </div>
                           </td>
                           <td className="py-4 px-4">
-                            <Typography 
-                              variant="small" 
+                            <Typography
+                              variant="small"
                               className="text-gray-700 font-medium"
                               placeholder={undefined}
                               onPointerEnterCapture={undefined}
@@ -227,8 +238,8 @@ export default function OrganizationsPage() {
                             </Typography>
                           </td>
                           <td className="py-4 px-4">
-                            <Typography 
-                              variant="small" 
+                            <Typography
+                              variant="small"
                               className="font-semibold text-green-600"
                               placeholder={undefined}
                               onPointerEnterCapture={undefined}
@@ -265,9 +276,9 @@ export default function OrganizationsPage() {
                           </td>
                           <td className="py-4 px-4">
                             <div className="flex gap-2">
-                              <IconButton 
-                                size="sm" 
-                                variant="text" 
+                              <IconButton
+                                size="sm"
+                                variant="text"
                                 color="blue"
                                 className="hover:bg-blue-50"
                                 placeholder={undefined}
@@ -276,9 +287,9 @@ export default function OrganizationsPage() {
                               >
                                 <EyeIcon className="h-4 w-4" />
                               </IconButton>
-                              <IconButton 
-                                size="sm" 
-                                variant="text" 
+                              <IconButton
+                                size="sm"
+                                variant="text"
                                 color="green"
                                 className="hover:bg-green-50"
                                 onClick={() => window.location.href = `/admin/organizations/edit/${org.id}`}
@@ -288,9 +299,9 @@ export default function OrganizationsPage() {
                               >
                                 <PencilIcon className="h-4 w-4" />
                               </IconButton>
-                              <IconButton 
-                                size="sm" 
-                                variant="text" 
+                              <IconButton
+                                size="sm"
+                                variant="text"
                                 color="red"
                                 className="hover:bg-red-50"
                                 onClick={() => handleDelete(org.id)}
@@ -309,7 +320,7 @@ export default function OrganizationsPage() {
 
                   {organizations.length === 0 && !loading && (
                     <div className="text-center py-12">
-                      <Typography 
+                      <Typography
                         color="gray"
                         className="text-lg"
                         placeholder={undefined}
@@ -318,9 +329,9 @@ export default function OrganizationsPage() {
                       >
                         Henüz organizasyon bulunamadı.
                       </Typography>
-                      <Typography 
-                        variant="small" 
-                        color="gray" 
+                      <Typography
+                        variant="small"
+                        color="gray"
                         className="mt-2"
                         placeholder={undefined}
                         onPointerEnterCapture={undefined}
@@ -337,21 +348,21 @@ export default function OrganizationsPage() {
 
           {/* Services Section */}
           {organizations.length > 0 && (
-            <Card 
+            <Card
               className="shadow-lg mt-6"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              <CardBody 
+              <CardBody
                 className="p-6"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               >
-                <Typography 
-                  variant="h5" 
-                  color="blue-gray" 
+                <Typography
+                  variant="h5"
+                  color="blue-gray"
                   className="mb-4"
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
@@ -361,9 +372,9 @@ export default function OrganizationsPage() {
                 </Typography>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <Typography 
-                      variant="h4" 
-                      color="blue" 
+                    <Typography
+                      variant="h4"
+                      color="blue"
                       className="font-bold"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
@@ -371,8 +382,8 @@ export default function OrganizationsPage() {
                     >
                       {organizations.length}
                     </Typography>
-                    <Typography 
-                      variant="small" 
+                    <Typography
+                      variant="small"
                       color="blue-gray"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
@@ -382,9 +393,9 @@ export default function OrganizationsPage() {
                     </Typography>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <Typography 
-                      variant="h4" 
-                      color="green" 
+                    <Typography
+                      variant="h4"
+                      color="green"
                       className="font-bold"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
@@ -392,8 +403,8 @@ export default function OrganizationsPage() {
                     >
                       {organizations.filter(org => org.isOutdoor).length}
                     </Typography>
-                    <Typography 
-                      variant="small" 
+                    <Typography
+                      variant="small"
                       color="blue-gray"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
@@ -403,9 +414,9 @@ export default function OrganizationsPage() {
                     </Typography>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <Typography 
-                      variant="h4" 
-                      color="purple" 
+                    <Typography
+                      variant="h4"
+                      color="purple"
                       className="font-bold"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
@@ -413,8 +424,8 @@ export default function OrganizationsPage() {
                     >
                       ₺{Math.round(organizations.reduce((sum, org) => sum + org.price, 0) / organizations.length).toLocaleString()}
                     </Typography>
-                    <Typography 
-                      variant="small" 
+                    <Typography
+                      variant="small"
                       color="blue-gray"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
@@ -424,9 +435,9 @@ export default function OrganizationsPage() {
                     </Typography>
                   </div>
                   <div className="text-center p-4 bg-pink-50 rounded-lg">
-                    <Typography 
-                      variant="h4" 
-                      color="pink" 
+                    <Typography
+                      variant="h4"
+                      color="pink"
                       className="font-bold"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
@@ -434,8 +445,8 @@ export default function OrganizationsPage() {
                     >
                       {Math.round(organizations.reduce((sum, org) => sum + org.maxGuestCount, 0) / organizations.length)}
                     </Typography>
-                    <Typography 
-                      variant="small" 
+                    <Typography
+                      variant="small"
                       color="blue-gray"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
