@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Organization } from "@/entities/organization.entity";
 
-const BASE_URL = "http://193.111.77.142/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy";
 
 // Tüm organizasyonları getir
 export async function getAllOrganizations(): Promise<Organization[]> {
@@ -36,7 +36,7 @@ export async function getFilteredOrganizations(filters: {
 }
 
 export async function getOrganizationDetail(id: string) {
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '')}/api/Organization/GetOrganizationWithImages?Id=${id}`);
+    const res = await axios.get(`${BASE_URL}/Organization/GetOrganizationWithImages?Id=${id}`);
     return res.data.data;
   }
   
@@ -45,4 +45,27 @@ export async function getOrganizationDetail(id: string) {
       id: categoryId,
     });
     return res.data.data; // ✅ sadece data array'ini döndür
+  }
+
+  // İletişim mesajı gönder
+  export async function sendContactMessage(data: {
+    fullName: string;
+    phone: string;
+    email: string;
+    message: string;
+    organizationId: string;
+  }) {
+    const formData = new FormData();
+    formData.append('FullName', data.fullName);
+    formData.append('Phone', data.phone);
+    formData.append('Email', data.email);
+    formData.append('Message', data.message);
+    formData.append('OrganizationId', data.organizationId);
+
+    const res = await axios.post(`${BASE_URL}/ContactMessage/add`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
   }

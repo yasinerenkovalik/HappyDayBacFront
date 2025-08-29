@@ -1,7 +1,7 @@
 // Application constants
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://193.111.77.142/api",
-  IMAGE_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || "http://193.111.77.142",
+  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy",
+  IMAGE_BASE_URL: process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "/api/images",
 } as const;
 
 export const APP_CONFIG = {

@@ -169,7 +169,7 @@ export const companyLogin = async (email: string, password: string): Promise<Log
 // Helper function to clear auth data
 export const clearAuthData = () => {
   if (typeof window === 'undefined') return;
-  
+
   Object.values(STORAGE_KEYS).forEach(key => {
     localStorage.removeItem(key);
   });

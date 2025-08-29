@@ -49,7 +49,7 @@ function Hero() {
             </Typography>
 
             {/* Search Bar */}
-            <div className="bg-white rounded-2xl shadow-2xl p-6 mb-8 max-w-2xl mx-auto lg:mx-0">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 mb-8 max-w-2xl mx-auto lg:mx-0 mr-5http://0.0.0.0/api/ContactMessage/add">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative">
                   <Input
@@ -123,39 +123,6 @@ function Hero() {
                 className="rounded-3xl shadow-2xl relative z-10 w-full h-auto"
                 alt="Düğün organizasyonu"
               />
-              
-              {/* Floating Cards */}
-              <div className="absolute -top-6 -left-6 bg-white rounded-2xl shadow-xl p-4 z-20 animate-bounce">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <SparklesIcon className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <Typography variant="small" className="font-bold text-gray-900">
-                      Premium Hizmet
-                    </Typography>
-                    <Typography variant="small" className="text-gray-600">
-                      7/24 Destek
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl shadow-xl p-4 z-20 animate-pulse">
-                <div className="text-center">
-                  <Typography variant="h6" className="font-bold text-pink-600 mb-1">
-                    4.9/5
-                  </Typography>
-                  <div className="flex gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    ))}
-                  </div>
-                  <Typography variant="small" className="text-gray-600">
-                    2,500+ Değerlendirme
-                  </Typography>
-                </div>
-              </div>
             </div>
 
             {/* Küçük Görseller */}

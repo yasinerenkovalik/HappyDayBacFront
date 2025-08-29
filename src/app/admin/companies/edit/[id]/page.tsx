@@ -16,8 +16,27 @@ import {
     ArrowLeftIcon,
     ExclamationTriangleIcon,
     CheckCircleIcon,
-    BuildingOfficeIcon
+    BuildingOfficeIcon,
+    MapPinIcon
 } from "@heroicons/react/24/outline";
+
+// Leaflet imports
+import "leaflet/dist/leaflet.css";
+import "leaflet-defaulticon-compatibility";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { useState as useLeafletState } from "react";
+
+// Map click handler component
+function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
+    useMapEvents({
+        click: (e) => {
+            const { lat, lng } = e.latlng;
+            onLocationSelect(lat, lng);
+        },
+    });
+    return null;
+}
 import AdminLayout from "../../../components/AdminLayout";
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import { getCompanyDetails, updateCompany, CompanyUpdateData } from "@/lib/auth";
@@ -48,8 +67,12 @@ export default function EditCompanyPage() {
         email: "",
         adress: "",
         phoneNumber: "",
-        description: ""
+        description: "",
+        latitude: 41.0082, // İstanbul default
+        longitude: 28.9784
     });
+
+    const [mapPosition, setMapPosition] = useState<[number, number]>([41.0082, 28.9784]);
 
     // Fetch company data
     useEffect(() => {
@@ -75,8 +98,15 @@ export default function EditCompanyPage() {
                             email: companyData.email || "",
                             adress: companyData.adress || "",
                             phoneNumber: companyData.phoneNumber || "",
-                            description: companyData.description || ""
+                            description: companyData.description || "",
+                            latitude: companyData.latitude || 41.0082,
+                            longitude: companyData.longitude || 28.9784
                         });
+
+                        // Harita pozisyonunu güncelle
+                        if (companyData.latitude && companyData.longitude) {
+                            setMapPosition([companyData.latitude, companyData.longitude]);
+                        }
                     } else {
                         setError("Şirket bilgileri bulunamadı.");
                     }
@@ -94,10 +124,15 @@ export default function EditCompanyPage() {
         fetchCompany();
     }, [companyId]);
 
-    const handleInputChange = (field: string, value: string) => {
+    const handleInputChange = (field: string, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         if (error) setError("");
         if (success) setSuccess("");
+    };
+
+    const handleLocationSelect = (lat: number, lng: number) => {
+        setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+        setMapPosition([lat, lng]);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -119,7 +154,9 @@ export default function EditCompanyPage() {
                 email: formData.email,
                 adress: formData.adress,
                 phoneNumber: formData.phoneNumber,
-                description: formData.description
+                description: formData.description,
+                latitude: formData.latitude,
+                longitude: formData.longitude
             };
 
             const response = await updateCompany(updateData);
@@ -332,6 +369,79 @@ export default function EditCompanyPage() {
                                                 onPointerEnterCapture={undefined}
                                                 onPointerLeaveCapture={undefined}
                                             />
+                                        </div>
+
+                                        {/* Konum Bilgileri */}
+                                        <div className="mb-6">
+                                            <Typography
+                                                variant="h6"
+                                                color="blue-gray"
+                                                className="mb-4 flex items-center gap-2"
+                                                placeholder={undefined}
+                                                onPointerEnterCapture={undefined}
+                                                onPointerLeaveCapture={undefined}
+                                            >
+                                                <MapPinIcon className="h-5 w-5" />
+                                                Konum Bilgileri
+                                            </Typography>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <Input
+                                                        label="Enlem (Latitude)"
+                                                        type="number"
+                                                        step="any"
+                                                        value={formData.latitude}
+                                                        onChange={(e) => handleInputChange("latitude", parseFloat(e.target.value) || 0)}
+                                                        disabled={saving}
+                                                        crossOrigin={undefined}
+                                                        onPointerEnterCapture={undefined}
+                                                        onPointerLeaveCapture={undefined}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Input
+                                                        label="Boylam (Longitude)"
+                                                        type="number"
+                                                        step="any"
+                                                        value={formData.longitude}
+                                                        onChange={(e) => handleInputChange("longitude", parseFloat(e.target.value) || 0)}
+                                                        disabled={saving}
+                                                        crossOrigin={undefined}
+                                                        onPointerEnterCapture={undefined}
+                                                        onPointerLeaveCapture={undefined}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Harita */}
+                                            <div className="mb-4">
+                                                <Typography
+                                                    variant="small"
+                                                    color="gray"
+                                                    className="mb-2"
+                                                    placeholder={undefined}
+                                                    onPointerEnterCapture={undefined}
+                                                    onPointerLeaveCapture={undefined}
+                                                >
+                                                    Harita üzerinde konumu seçmek için tıklayın
+                                                </Typography>
+                                                <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-300">
+                                                    <MapContainer
+                                                        key={`${mapPosition[0]}-${mapPosition[1]}`}
+                                                        center={mapPosition}
+                                                        zoom={13}
+                                                        style={{ height: "100%", width: "100%" }}
+                                                    >
+                                                        <TileLayer
+                                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                                                        />
+                                                        <Marker position={mapPosition} />
+                                                        <MapClickHandler onLocationSelect={handleLocationSelect} />
+                                                    </MapContainer>
+                                                </div>
+                                            </div>
                                         </div>
                                     </CardBody>
                                 </Card>

@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getOrganizationDetail } from "@/lib/api";
+import { getOrganizationDetail, sendContactMessage } from "@/lib/api";
 import { OrganizationDetail } from "@/entities/organization.entity";
 import { Navbar, Footer } from "@/components";
 import {
@@ -63,6 +63,8 @@ export default function OrganizationDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -79,10 +81,39 @@ export default function OrganizationDetailPage() {
     }
   }, [id]);
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form gönderme işlemi
-    console.log("Form gönderildi:", formData);
+
+    if (!org?.id) {
+      setSubmitMessage("Organizasyon bilgisi bulunamadı.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    try {
+      await sendContactMessage({
+        fullName: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        message: formData.message,
+        organizationId: org.id,
+      });
+
+      setSubmitMessage("Mesajınız başarıyla gönderildi!");
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Mesaj gönderme hatası:", error);
+      setSubmitMessage("Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -372,8 +403,23 @@ export default function OrganizationDetailPage() {
                       />
                     </div>
 
-                    <Button type="submit" color="pink" size="lg" fullWidth>
-                      Mesaj Gönder
+                    {submitMessage && (
+                      <div className={`p-3 rounded-lg text-sm ${submitMessage.includes("başarıyla")
+                        ? "bg-green-50 text-green-700 border border-green-200"
+                        : "bg-red-50 text-red-700 border border-red-200"
+                        }`}>
+                        {submitMessage}
+                      </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      color="pink"
+                      size="lg"
+                      fullWidth
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Gönderiliyor..." : "Mesaj Gönder"}
                     </Button>
                   </form>
 
@@ -452,38 +498,44 @@ export default function OrganizationDetailPage() {
           </IconButton>
         </DialogHeader>
         <DialogBody className="p-0 relative">
-          <div className="relative">
-            <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${gallery[currentImageIndex]}`}
-              alt="Gallery"
-              className="w-full h-96 object-contain"
-            />
-
+          <div className="flex items-center justify-center relative">
+            {/* Sol Ok */}
             {gallery.length > 1 && (
-              <>
-                <IconButton
-                  variant="text"
-                  color="white"
-                  size="lg"
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2"
-                  onClick={prevImage}
-                >
-                  <ChevronLeftIcon className="h-8 w-8" />
-                </IconButton>
+              <IconButton
+                variant="text"
+                color="white"
+                size="lg"
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 rounded-full"
+                onClick={prevImage}
+              >
+                <ChevronLeftIcon className="h-8 w-8" />
+              </IconButton>
+            )}
 
-                <IconButton
-                  variant="text"
-                  color="white"
-                  size="lg"
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2"
-                  onClick={nextImage}
-                >
-                  <ChevronRightIcon className="h-8 w-8" />
-                </IconButton>
-              </>
+            {/* Resim */}
+            <div className="w-full flex justify-center">
+              <img
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${gallery[currentImageIndex]}`}
+                alt="Gallery"
+                className="max-w-full max-h-96 object-contain"
+              />
+            </div>
+
+            {/* Sağ Ok */}
+            {gallery.length > 1 && (
+              <IconButton
+                variant="text"
+                color="white"
+                size="lg"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 rounded-full"
+                onClick={nextImage}
+              >
+                <ChevronRightIcon className="h-8 w-8" />
+              </IconButton>
             )}
           </div>
 
+          {/* Sayfa Numarası */}
           <div className="text-center text-white p-4">
             <Typography>
               {currentImageIndex + 1} / {gallery.length}

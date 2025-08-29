@@ -24,6 +24,7 @@ import {
 import AdminLayout from "../../components/AdminLayout";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useRouter } from "next/navigation";
+import { getAuthToken, parseJWT } from "@/lib/auth";
 
 interface Category {
   id: number;
@@ -43,7 +44,7 @@ interface District {
 
 export default function OrganizationCreate() {
   const router = useRouter();
-  
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -69,6 +70,20 @@ export default function OrganizationCreate() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  // JWT'den companyId'yi al
+  useEffect(() => {
+    const token = getAuthToken();
+    if (token) {
+      const tokenPayload = parseJWT(token);
+      if (tokenPayload && tokenPayload.CompanyId) {
+        setFormData(prev => ({
+          ...prev,
+          companyId: tokenPayload.CompanyId
+        }));
+      }
+    }
+  }, []);
 
   // Kategorileri yükle
   useEffect(() => {
@@ -161,7 +176,7 @@ export default function OrganizationCreate() {
 
     try {
       const formDataToSend = new FormData();
-      
+
       // Form verilerini ekle
       formDataToSend.append("Title", formData.title);
       formDataToSend.append("Description", formData.description);
@@ -175,7 +190,13 @@ export default function OrganizationCreate() {
       formDataToSend.append("VideoUrl", formData.videoUrl);
       formDataToSend.append("CityId", formData.cityId);
       formDataToSend.append("DistrictId", formData.districtId);
-      formDataToSend.append("CompanyId", formData.companyId || "00000000-0000-0000-0000-000000000000");
+      // CompanyId kontrolü
+      if (!formData.companyId) {
+        setError("Şirket bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
+        setLoading(false);
+        return;
+      }
+      formDataToSend.append("CompanyId", formData.companyId);
 
       // Servisleri ekle
       formData.services.filter(s => s.trim()).forEach((service, index) => {
@@ -261,7 +282,7 @@ export default function OrganizationCreate() {
                   <Typography variant="h5" color="blue-gray" className="mb-6 pb-2 border-b border-gray-200">
                     Temel Bilgiler
                   </Typography>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Input
                       label="Organizasyon Başlığı"
@@ -270,7 +291,7 @@ export default function OrganizationCreate() {
                       required
                       size="lg"
                     />
-                    
+
                     <Select
                       label="Kategori"
                       value={formData.categoryId}
@@ -343,7 +364,7 @@ export default function OrganizationCreate() {
                   <Typography variant="h5" color="blue-gray" className="mb-6 pb-2 border-b border-gray-200">
                     Lokasyon
                   </Typography>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Select
                       label="Şehir"
@@ -379,7 +400,7 @@ export default function OrganizationCreate() {
                   <Typography variant="h5" color="blue-gray" className="mb-6 pb-2 border-b border-gray-200">
                     Hizmetler
                   </Typography>
-                  
+
                   <div className="space-y-4">
                     {formData.services.map((service, index) => (
                       <div key={index} className="flex gap-3 items-end">
@@ -405,7 +426,7 @@ export default function OrganizationCreate() {
                         )}
                       </div>
                     ))}
-                    
+
                     <Button
                       type="button"
                       variant="outlined"
@@ -425,7 +446,7 @@ export default function OrganizationCreate() {
                   <Typography variant="h5" color="blue-gray" className="mb-6 pb-2 border-b border-gray-200">
                     Politikalar
                   </Typography>
-                  
+
                   <div className="space-y-6">
                     <Textarea
                       label="Rezervasyon Notu"
@@ -434,7 +455,7 @@ export default function OrganizationCreate() {
                       rows={3}
                       size="lg"
                     />
-                    
+
                     <Textarea
                       label="İptal Politikası"
                       value={formData.cancelPolicy}
@@ -450,13 +471,16 @@ export default function OrganizationCreate() {
                   <Typography variant="h5" color="blue-gray" className="mb-6 pb-2 border-b border-gray-200">
                     Fotoğraflar
                   </Typography>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Typography variant="small" color="gray" className="mb-3 font-medium">
                         Kapak Fotoğrafı *
                       </Typography>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors">
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors cursor-pointer"
+                        onClick={() => document.getElementById('cover-photo')?.click()}
+                      >
                         <PhotoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <input
                           type="file"
@@ -465,11 +489,9 @@ export default function OrganizationCreate() {
                           className="hidden"
                           id="cover-photo"
                         />
-                        <label htmlFor="cover-photo" className="cursor-pointer">
-                          <Button variant="outlined" color="pink" size="sm">
-                            Kapak Fotoğrafı Seç
-                          </Button>
-                        </label>
+                        <Button variant="outlined" color="pink" size="sm" type="button">
+                          Kapak Fotoğrafı Seç
+                        </Button>
                         {coverPhoto && (
                           <Typography variant="small" color="green" className="mt-3 font-medium">
                             ✓ {coverPhoto.name}
@@ -482,7 +504,10 @@ export default function OrganizationCreate() {
                       <Typography variant="small" color="gray" className="mb-3 font-medium">
                         Diğer Fotoğraflar
                       </Typography>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors">
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors cursor-pointer"
+                        onClick={() => document.getElementById('images')?.click()}
+                      >
                         <PhotoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <input
                           type="file"
@@ -492,11 +517,9 @@ export default function OrganizationCreate() {
                           className="hidden"
                           id="images"
                         />
-                        <label htmlFor="images" className="cursor-pointer">
-                          <Button variant="outlined" color="pink" size="sm">
-                            Fotoğrafları Seç
-                          </Button>
-                        </label>
+                        <Button variant="outlined" color="pink" size="sm" type="button">
+                          Fotoğrafları Seç
+                        </Button>
                         {images.length > 0 && (
                           <Typography variant="small" color="green" className="mt-3 font-medium">
                             ✓ {images.length} fotoğraf seçildi
@@ -505,6 +528,59 @@ export default function OrganizationCreate() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Seçilen fotoğrafları göster */}
+                  {(coverPhoto || images.length > 0) && (
+                    <div className="mt-6">
+                      <Typography variant="small" color="gray" className="mb-3 font-medium">
+                        Seçilen Fotoğraflar:
+                      </Typography>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {coverPhoto && (
+                          <div className="relative">
+                            <img
+                              src={URL.createObjectURL(coverPhoto)}
+                              alt="Kapak fotoğrafı"
+                              className="w-full h-24 object-cover rounded-lg"
+                            />
+                            <div className="absolute top-1 left-1 bg-pink-500 text-white text-xs px-2 py-1 rounded">
+                              Kapak
+                            </div>
+                            <Button
+                              size="sm"
+                              color="red"
+                              className="absolute top-1 right-1 p-1"
+                              onClick={() => setCoverPhoto(null)}
+                              type="button"
+                            >
+                              <TrashIcon className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                        {images.map((image, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt={`Fotoğraf ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-lg"
+                            />
+                            <Button
+                              size="sm"
+                              color="red"
+                              className="absolute top-1 right-1 p-1"
+                              onClick={() => {
+                                const newImages = images.filter((_, i) => i !== index);
+                                setImages(newImages);
+                              }}
+                              type="button"
+                            >
+                              <TrashIcon className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Submit Buttons */}
@@ -518,7 +594,7 @@ export default function OrganizationCreate() {
                   >
                     İptal
                   </Button>
-                  
+
                   <Button
                     type="submit"
                     className="bg-gradient-to-r from-pink-500 to-purple-600"
