@@ -213,9 +213,17 @@ export default function OrganizationCreate() {
         formDataToSend.append(`Images`, image);
       });
 
+      // JWT token'ı al ve header'a ekle
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/Organization/AddOrganization`, {
         method: "POST",
-        body: formDataToSend
+        body: formDataToSend,
+        headers
       });
 
       const result = await response.json();

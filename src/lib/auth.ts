@@ -31,11 +31,31 @@ export const parseJWT = (token: string) => {
 };
 
 export const isTokenValid = (token: string) => {
+  // JWT format kontrolü (3 parça olmalı)
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+
+  // Payload parse kontrolü
   const payload = parseJWT(token);
   if (!payload) return false;
 
+  // Expiration time kontrolü
   const currentTime = Date.now() / 1000;
-  return payload.exp > currentTime;
+  if (payload.exp <= currentTime) return false;
+
+  // Temel JWT structure kontrolü
+  try {
+    // Header kontrolü
+    const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+    if (!header.alg || !header.typ) return false;
+
+    // Payload'da gerekli alanlar var mı kontrol et
+    if (!payload.sub && !payload.userId && !payload.nameid) return false;
+
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 export const getAuthToken = () => {

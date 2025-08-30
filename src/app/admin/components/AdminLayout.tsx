@@ -54,6 +54,11 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
       href: "/admin/organizations",
     },
     {
+      label: "Davetiyeler",
+      icon: SparklesIcon,
+      href: "/admin/invitations",
+    },
+    {
       label: "Kullanıcılar",
       icon: UserGroupIcon,
       href: "/admin/users",

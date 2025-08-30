@@ -11,6 +11,8 @@ export async function GET(
         const searchParams = request.nextUrl.searchParams.toString();
         const url = `${API_BASE_URL}/${path}${searchParams ? `?${searchParams}` : ''}`;
 
+        console.log('GET Request URL:', url);
+
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -44,6 +46,8 @@ export async function POST(
     try {
         const path = params.path.join('/');
         const url = `${API_BASE_URL}/${path}`;
+
+        console.log('POST Request URL:', url);
 
         const contentType = request.headers.get('content-type') || '';
         let body;
