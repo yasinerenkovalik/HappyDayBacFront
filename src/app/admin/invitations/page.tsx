@@ -82,6 +82,7 @@ export default function InvitationsPage() {
         expiresAt: expiresAtISO,
       };
 
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       console.log("Sending invitation request:", requestBody);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/invitations/create`, {
