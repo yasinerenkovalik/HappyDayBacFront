@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import { Layout, FixedPlugin } from "@/components";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -10,9 +9,13 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "NextJS Tailwind Campaign Page",
-  description:
-    "Introducing Tailwind Campaign Page, an all-inclusive and visually captivating campaign landing page template built on the foundation of Tailwind CSS and Material Tailwind.",
+  title: "MutluGünüm - Organizasyon Platformu",
+  description: "Hayalinizdeki organizasyonu bulun! Düğün, doğum günü, kurumsal etkinlik ve daha fazlası için en iyi mekanları keşfedin.",
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -31,10 +34,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon.png" type="image/png" />
       </head>
       <body className={roboto.className}>
-        <Layout>
-          {children}
-          <FixedPlugin />
-        </Layout>
+        {children}
       </body>
     </html>
   );

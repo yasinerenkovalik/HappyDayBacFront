@@ -1,0 +1,32 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B9D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FDE68A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main logo circle -->
+  <circle cx="30" cy="30" r="25" fill="url(#gradient1)"/>
+  
+  <!-- Heart icon in the circle -->
+  <path d="M30 40c-1.5-1.5-6-5.5-6-9.5 0-2.5 2-4.5 4.5-4.5 1.5 0 2.5 0.5 3 1.5 0.5-1 1.5-1.5 3-1.5 2.5 0 4.5 2 4.5 4.5 0 4-4.5 8-6 9.5z" fill="white"/>
+  
+  <!-- Sparkle elements -->
+  <circle cx="45" cy="15" r="2" fill="url(#gradient2)"/>
+  <circle cx="15" cy="45" r="1.5" fill="url(#gradient2)"/>
+  <circle cx="45" cy="45" r="1" fill="url(#gradient2)"/>
+  
+  <!-- Text -->
+  <text x="70" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">
+    MutluGünüm
+  </text>
+  <text x="70" y="42" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">
+    Organizasyon Platformu
+  </text>
+</svg>

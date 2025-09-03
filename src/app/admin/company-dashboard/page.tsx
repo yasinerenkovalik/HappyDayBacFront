@@ -48,38 +48,6 @@ const COMPANY_PROFILE = {
   logo: "/image/company-logo.jpg"
 };
 
-const MY_ORGANIZATIONS = [
-  {
-    id: 1,
-    title: "Kır Düğünü Paketi",
-    price: 25000,
-    category: "Düğün",
-    status: "active",
-    bookings: 15,
-    rating: 4.8,
-    images: ["/image/organizations/organizations1.jpg"]
-  },
-  {
-    id: 2,
-    title: "Lüks Nişan Organizasyonu",
-    price: 18000,
-    category: "Nişan",
-    status: "active",
-    bookings: 8,
-    rating: 4.9,
-    images: ["/image/organizations/organizations2.jpg"]
-  },
-  {
-    id: 3,
-    title: "Kına Gecesi Paketi",
-    price: 12000,
-    category: "Kına",
-    status: "pending",
-    bookings: 3,
-    rating: 4.7,
-    images: ["/image/organizations/organizations3.jpg"]
-  }
-];
 
 export default function CompanyDashboard() {
   const [activeTab, setActiveTab] = useState("overview");

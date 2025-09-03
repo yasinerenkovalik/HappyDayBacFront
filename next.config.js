@@ -1,22 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'standalone', // Vercel için kapatıyoruz
+  reactStrictMode: true,
+  swcMinify: true,
   images: {
+    domains: ['193.111.77.142'],
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "**",
+        protocol: 'https',
+        hostname: '193.111.77.142',
       },
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "5268",
+        protocol: 'http',
+        hostname: '193.111.77.142',
       },
     ],
-  },
-  transpilePackages: ['react-leaflet', 'leaflet'],
-  env: {
-    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
   },
   // Security headers
   async headers() {
@@ -38,7 +35,7 @@ const nextConfig = {
           },
         ],
       },
-    ]
+    ];
   },
 };
 

@@ -27,6 +27,7 @@ export const STORAGE_KEYS = {
   USER_ROLE: "userRole",
   COMPANY_ID: "companyId",
   USER_ID: "userId",
+  COMPANY_NAME: "companyName",
 } as const;
 
 export const ERROR_MESSAGES = {

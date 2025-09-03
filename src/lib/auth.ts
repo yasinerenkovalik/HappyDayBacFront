@@ -75,20 +75,30 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   const token = getAuthToken();
 
   if (token && !isTokenValid(token)) {
+    console.error('❌ Token is invalid or expired');
     localStorage.clear();
     window.location.href = "/admin/login";
     throw new Error("Token expired");
   }
 
+  const headers = {
+    ...getAuthHeaders(),
+    ...(options.headers || {}),
+  };
+
+  console.log('📡 API Call:', `${API_BASE_URL}${endpoint}`);
+  console.log('📡 Headers:', headers);
+  console.log('📡 Method:', options.method || 'GET');
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers: {
-      ...getAuthHeaders(),
-      ...(options.headers || {}),
-    },
+    headers,
   });
 
+  console.log('📡 Response Status:', response.status);
+
   if (response.status === 401) {
+    console.error('❌ Unauthorized - clearing localStorage');
     localStorage.clear();
     window.location.href = "/admin/login";
     throw new Error("Unauthorized");
@@ -180,6 +190,21 @@ export const companyLogin = async (email: string, password: string): Promise<Log
       localStorage.setItem("userType", "company");
       localStorage.setItem("companyId", tokenPayload.CompanyId || "");
       localStorage.setItem("userId", tokenPayload.nameid || "");
+
+      // Şirket adını da kaydet (token'dan veya API'den)
+      if (tokenPayload.CompanyName) {
+        localStorage.setItem("companyName", tokenPayload.CompanyName);
+      } else if (tokenPayload.CompanyId) {
+        // Şirket detaylarını çek ve adını kaydet
+        try {
+          const companyResponse = await getCompanyDetails(tokenPayload.CompanyId);
+          if (companyResponse.isSuccess && companyResponse.data.length > 0) {
+            localStorage.setItem("companyName", companyResponse.data[0].name);
+          }
+        } catch (error) {
+          console.log("Company details fetch error:", error);
+        }
+      }
     }
   }
 
@@ -209,6 +234,8 @@ export interface Company {
   phoneNumber: string;
   description: string;
   id: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface CompanyResponse {
@@ -417,10 +444,83 @@ export const getCompanyOrganizations = async (): Promise<OrganizationResponse> =
   const response = await apiCall(`/Organization/GetOrganizationWithICompany?Id=${companyId}`);
   return response.json();
 };
-// Get company details
+// Get company details (public endpoint - no auth required)
+export const getCompanyDetailsPublic = async (companyId: string): Promise<CompanyResponse> => {
+  try {
+    console.log('📡 Calling PUBLIC API (no auth):', `/Company/getbyid?Id=${companyId}`);
+    
+    const response = await fetch(`http://193.111.77.142/api/Company/getbyid?Id=${companyId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('📡 Response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ API Error Response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ API Success Response:', data);
+    return data;
+  } catch (error) {
+    console.error('💥 Error in getCompanyDetailsPublic:', error);
+    throw error;
+  }
+};
+
+// Get company details (with auth)
 export const getCompanyDetails = async (companyId: string): Promise<CompanyResponse> => {
-  const response = await apiCall(`/Company/getbyid?Id=${companyId}`);
-  return response.json();
+  try {
+    const token = getAuthToken();
+    console.log('🔑 JWT Token exists:', !!token);
+    console.log('🔑 JWT Token (first 20 chars):', token ? token.substring(0, 20) + '...' : 'No token');
+    
+    // JWT token'dan user role'ü al
+    const tokenPayload = parseJWT(token || '');
+    const userRole = tokenPayload?.role;
+    const currentCompanyId = tokenPayload?.CompanyId;
+    
+    console.log('👤 User Role:', userRole);
+    console.log('🏢 Current Company ID:', currentCompanyId);
+    console.log('🎯 Requested Company ID:', companyId);
+    
+    console.log('📡 Calling API with auth:', `/Company/getbyid?Id=${companyId}`);
+    
+    // Önce public endpoint'i deneyelim
+    try {
+      return await getCompanyDetailsPublic(companyId);
+    } catch (publicError) {
+      console.log('❌ Public endpoint failed, trying with auth...');
+      
+      const response = await apiCall(`/Company/getbyid?Id=${companyId}`);
+      
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ API Error Response:', errorText);
+        
+        if (response.status === 403) {
+          throw new Error(`Erişim reddedildi. Bu şirketin bilgilerine erişim yetkiniz bulunmamaktadır.`);
+        }
+        
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ API Success Response:', data);
+      return data;
+    }
+  } catch (error) {
+    console.error('💥 Error in getCompanyDetails:', error);
+    throw error;
+  }
 };
 
 // Update company
@@ -431,12 +531,26 @@ export interface CompanyUpdateData {
   adress: string;
   phoneNumber: string;
   description: string;
+  latitude?: number;
+  longitude?: number;
+  cityId?: number;
+  districtId?: number;
 }
 
 export const updateCompany = async (data: CompanyUpdateData): Promise<any> => {
-  const response = await apiCall("/Company/update", {
-    method: "PUT",
-    body: JSON.stringify(data)
-  });
-  return response.json();
+  try {
+    const response = await apiCall("/Company/update", {
+      method: "PUT",
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error in updateCompany:', error);
+    throw error;
+  }
 };

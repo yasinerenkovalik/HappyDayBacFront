@@ -10,10 +10,10 @@ interface LoadingProps {
   fullScreen?: boolean;
 }
 
-export const Loading: React.FC<LoadingProps> = ({ 
-  size = 'md', 
-  text = 'Yükleniyor...', 
-  fullScreen = false 
+export const Loading: React.FC<LoadingProps> = ({
+  size = 'md',
+  text = 'Yükleniyor...',
+  fullScreen = false
 }) => {
   const sizeClasses = {
     sm: 'h-6 w-6',
@@ -21,7 +21,7 @@ export const Loading: React.FC<LoadingProps> = ({
     lg: 'h-12 w-12'
   };
 
-  const containerClasses = fullScreen 
+  const containerClasses = fullScreen
     ? 'fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50'
     : 'flex items-center justify-center py-8';
 
@@ -30,7 +30,7 @@ export const Loading: React.FC<LoadingProps> = ({
       <div className="text-center">
         <div className={`animate-spin rounded-full border-b-2 border-blue-500 mx-auto mb-4 ${sizeClasses[size]}`}></div>
         {text && (
-          <Typography 
+          <Typography
             color="gray"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
@@ -55,3 +55,6 @@ export const LoadingSpinner: React.FC<{ size?: 'sm' | 'md' | 'lg' }> = ({ size =
     <div className={`animate-spin rounded-full border-b-2 border-current ${sizeClasses[size]}`}></div>
   );
 };
+
+// Default export
+export default Loading;

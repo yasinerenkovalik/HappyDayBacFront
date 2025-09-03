@@ -27,6 +27,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Logo } from "@/components";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -35,7 +36,18 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children, userType }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [companyName, setCompanyName] = useState("Şirket Hesabı");
   const router = useRouter();
+
+  // Get company name from localStorage or API
+  useEffect(() => {
+    if (userType === "company") {
+      const storedCompanyName = localStorage.getItem("companyName");
+      if (storedCompanyName) {
+        setCompanyName(storedCompanyName);
+      }
+    }
+  }, [userType]);
 
   const adminMenuItems = [
     {
@@ -122,14 +134,7 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <SparklesIcon className="h-5 w-5 text-white" />
-            </div>
-            <Typography variant="h6" className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent font-bold">
-              MutluGünüm
-            </Typography>
-          </Link>
+          <Logo size="md" showText={true} />
           <IconButton
             variant="text"
             className="lg:hidden"
@@ -150,7 +155,7 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
             />
             <div>
               <Typography variant="small" className="font-medium">
-                {userType === "admin" ? "Admin User" : "Elit Organizasyon"}
+                {userType === "admin" ? "Admin User" : companyName}
               </Typography>
               <Typography variant="small" color="gray">
                 {userType === "admin" ? "Sistem Yöneticisi" : "Şirket Hesabı"}

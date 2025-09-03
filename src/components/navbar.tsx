@@ -11,6 +11,7 @@ import {
 } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { Logo } from "@/components";
 
 export default function Navbar() {
   const [openNav, setOpenNav] = useState(false);
@@ -74,17 +75,7 @@ export default function Navbar() {
       onPointerLeaveCapture={undefined}
     >
       <div className="flex items-center justify-between text-blue-gray-900">
-        <Link href="/">
-          <Typography
-            variant="h6"
-            className="mr-4 cursor-pointer py-1.5 font-bold text-pink-500"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            MutluGünüm
-          </Typography>
-        </Link>
+        <Logo size="md" showText={true} />
         <div className="flex items-center gap-4">
           <div className="mr-4 hidden lg:block">{navList}</div>
           <Button
