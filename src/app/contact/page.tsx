@@ -42,8 +42,8 @@ export default function Contact() {
                 İletişim Bilgilerimiz
               </Typography>
               <ul className="text-gray-700 space-y-3">
-                <li>📍 <strong>Adres:</strong> İstanbul, Türkiye</li>
-                <li>📞 <strong>Telefon:</strong> +90 555 123 4567</li>
+                <li>📍 <strong>Adres:</strong> Kocaeli, Türkiye</li>
+                <li>📞 <strong>Telefon:</strong> +90 552 685 81 41</li>
                 <li>📧 <strong>E-posta:</strong> iletisim@mutlugunum.com</li>
                 <li>🕐 <strong>Çalışma Saatleri:</strong> Hafta içi 09:00 - 18:00</li>
               </ul>

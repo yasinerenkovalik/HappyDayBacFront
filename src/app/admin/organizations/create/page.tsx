@@ -312,6 +312,8 @@ export default function OrganizationCreate() {
       console.log('📸 Selected cover photo:', file.name, file.size);
       setCoverPhoto(file);
     }
+    // Input'u sıfırla ki aynı dosya tekrar seçilebilsin
+    e.target.value = '';
   };
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -321,6 +323,8 @@ export default function OrganizationCreate() {
       console.log('📸 Selected images:', fileArray.map(f => f.name));
       setImages(fileArray);
     }
+    // Input'u sıfırla ki aynı dosyalar tekrar seçilebilsin
+    e.target.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -810,10 +814,7 @@ export default function OrganizationCreate() {
                       <Typography variant="small" color="gray" className="mb-3 font-medium">
                         Kapak Fotoğrafı * <span className="text-red-500">(Zorunlu)</span>
                       </Typography>
-                      <div
-                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors cursor-pointer"
-                        onClick={() => document.getElementById('cover-photo')?.click()}
-                      >
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors">
                         <PhotoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <input
                           type="file"
@@ -827,7 +828,11 @@ export default function OrganizationCreate() {
                           color="pink"
                           size="sm"
                           type="button"
-                          onClick={() => document.getElementById('cover-photo')?.click()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            document.getElementById('cover-photo')?.click();
+                          }}
                         >
                           Kapak Fotoğrafı Seç
                         </Button>
@@ -843,10 +848,7 @@ export default function OrganizationCreate() {
                       <Typography variant="small" color="gray" className="mb-3 font-medium">
                         Diğer Fotoğraflar
                       </Typography>
-                      <div
-                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors cursor-pointer"
-                        onClick={() => document.getElementById('images')?.click()}
-                      >
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-pink-300 transition-colors">
                         <PhotoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <input
                           type="file"
@@ -861,7 +863,11 @@ export default function OrganizationCreate() {
                           color="pink"
                           size="sm"
                           type="button"
-                          onClick={() => document.getElementById('images')?.click()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            document.getElementById('images')?.click();
+                          }}
                         >
                           Fotoğrafları Seç
                         </Button>

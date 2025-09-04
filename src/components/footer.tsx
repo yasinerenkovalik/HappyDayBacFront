@@ -80,8 +80,8 @@ export default function Footer() {
               İletişim
             </Typography>
             <ul className="space-y-2 text-gray-300">
-              <li>📍 İstanbul, Türkiye</li>
-              <li>📞 +90 555 123 4567</li>
+              <li>📍 Kocaeli, Türkiye</li>
+              <li>📞 +90 552 685 81 41</li>
               <li>📧 iletisim@mutlugunum.com</li>
             </ul>
           </div>

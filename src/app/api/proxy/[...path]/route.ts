@@ -224,8 +224,9 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
 export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
     try {
         const path = params.path.join('/');
-        const searchParams = request.nextUrl.searchParams.toString();
-        const url = `${API_BASE_URL}/${path}${searchParams ? `?${searchParams}` : ''}`;
+        const url = `${API_BASE_URL}/${path}`;
+
+        console.log('🗑️ Proxy DELETE Request:', url);
 
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
@@ -235,20 +236,50 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
         const authHeader = request.headers.get('authorization');
         if (authHeader) {
             headers['Authorization'] = authHeader;
+            console.log('🔑 Auth header present for DELETE');
         }
 
+        // Request body'yi al
+        let body;
+        try {
+            const requestBody = await request.json();
+            body = JSON.stringify(requestBody);
+            console.log('📤 DELETE request body:', requestBody);
+        } catch (e) {
+            console.log('ℹ️ No body in DELETE request');
+        }
+
+        console.log('📡 Calling backend DELETE:', url);
         const response = await fetch(url, {
             method: 'DELETE',
             headers,
+            body,
         });
 
+        console.log('📡 Backend DELETE response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Backend DELETE error:', errorText);
+            return NextResponse.json({ 
+                error: 'Backend Error', 
+                message: errorText,
+                status: response.status 
+            }, { 
+                status: response.status,
+                headers: getResponseHeaders()
+            });
+        }
+
         const data = await response.json();
+        console.log('✅ Backend DELETE success');
+        
         return NextResponse.json(data, { 
             status: response.status,
             headers: getResponseHeaders()
         });
     } catch (error) {
-        console.error('Proxy DELETE error:', error);
+        console.error('💥 Proxy DELETE error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         return NextResponse.json({ 
             error: 'Internal Server Error', 

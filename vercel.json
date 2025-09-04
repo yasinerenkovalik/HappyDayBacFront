@@ -1,14 +1,13 @@
 {
-  "functions": {
-    "src/app/api/**/*.ts": {
-      "maxDuration": 30
-    }
-  },
-  "regions": ["fra1"],
-  "rewrites": [
-    {
-      "source": "/api/proxy/(.*)",
-      "destination": "/api/proxy/$1"
-    }
-  ]
+    "functions": {
+        "src/app/api/**/*.ts": {
+            "maxDuration": 30
+        }
+    },
+    "regions": [
+        "fra1"
+    ],
+    "buildCommand": "npm run build",
+    "installCommand": "npm ci",
+    "framework": "nextjs"
 }

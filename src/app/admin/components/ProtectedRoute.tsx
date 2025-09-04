@@ -91,7 +91,7 @@ export default function ProtectedRoute({ children, requiredUserType }: Protected
     }, 60000); // Her dakika kontrol et
 
     return () => clearInterval(interval);
-  }, [router, requiredUserType]);
+  }, [router, requiredUserType, isTokenValid]);
 
   if (isLoading) {
     return (

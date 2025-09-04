@@ -36,11 +36,20 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon, StarIcon } from "@heroicons/react/24/solid";
 
-// Leaflet (stil + ikon uyumluluğu)
-import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import dynamic from 'next/dynamic';
+
+// Dynamically import Map component to avoid SSR issues
+const Map = dynamic(() => import('@/components/Map'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-96 rounded-lg bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto mb-2"></div>
+        <Typography variant="small" color="gray">Harita yükleniyor...</Typography>
+      </div>
+    </div>
+  )
+});
 
 // Büyük gelen koordinatı 90/180 aralığına indir (gerekirse 10'a bölerek)
 function normalizeNumber(val: unknown, maxAbs: number) {
@@ -451,29 +460,22 @@ export default function OrganizationDetailPage() {
           </div>
         </div>
 
-        {/* Harita */}
+        {/* Konum Bilgisi */}
         {hasValidCoords && (
           <Card className="mt-8">
             <CardBody className="p-6">
               <Typography variant="h4" color="blue-gray" className="mb-4">
                 Konum
               </Typography>
-              <div className="w-full h-96 rounded-lg overflow-hidden">
-                <MapContainer
-                  key={`${lat},${lng}`}
-                  center={[lat as number, lng as number]}
-                  zoom={15}
-                  scrollWheelZoom={false}
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  />
-                  <Marker position={[lat as number, lng as number]}>
-                    <Popup>{org.title}</Popup>
-                  </Marker>
-                </MapContainer>
+              <Map 
+                latitude={lat as number} 
+                longitude={lng as number} 
+                title={org.title}
+              />
+              <div className="mt-4 text-center">
+                <Typography variant="small" color="gray">
+                  Enlem: {(lat as number).toFixed(6)} | Boylam: {(lng as number).toFixed(6)}
+                </Typography>
               </div>
             </CardBody>
           </Card>

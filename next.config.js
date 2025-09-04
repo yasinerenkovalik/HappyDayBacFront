@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['193.111.77.142'],
+    domains: ['193.111.77.142', 'images.unsplash.com'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -13,8 +13,29 @@ const nextConfig = {
         protocol: 'http',
         hostname: '193.111.77.142',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
     ],
   },
+  // Webpack configuration
+  webpack: (config, { isServer }) => {
+    // Client-side fallbacks
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+    }
+    
+    return config;
+  },
+  // Transpile packages that need it
+  transpilePackages: ['@material-tailwind/react'],
   // Security headers
   async headers() {
     return [

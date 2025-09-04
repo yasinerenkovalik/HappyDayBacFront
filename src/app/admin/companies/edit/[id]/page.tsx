@@ -22,24 +22,8 @@ import {
     MapPinIcon
 } from "@heroicons/react/24/outline";
 
-// Leaflet imports
-import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { useState as useLeafletState } from "react";
-
-// Map click handler component
-function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
-    useMapEvents({
-        click: (e) => {
-            const { lat, lng } = e.latlng;
-            onLocationSelect(lat, lng);
-        },
-    });
-    return null;
-}
 import AdminLayout from "../../../components/AdminLayout";
+// Map functionality simplified for stability
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import { getCompanyDetails, updateCompany, CompanyUpdateData } from "@/lib/auth";
 
@@ -684,22 +668,20 @@ export default function EditCompanyPage() {
                                                     onPointerEnterCapture={undefined}
                                                     onPointerLeaveCapture={undefined}
                                                 >
-                                                    Harita üzerinde konumu seçmek için tıklayın
+                                                    Konum: {mapPosition[0].toFixed(6)}, {mapPosition[1].toFixed(6)}
                                                 </Typography>
-                                                <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-300">
-                                                    <MapContainer
-                                                        key={`${mapPosition[0]}-${mapPosition[1]}`}
-                                                        center={mapPosition}
-                                                        zoom={13}
-                                                        style={{ height: "100%", width: "100%" }}
-                                                    >
-                                                        <TileLayer
-                                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                                                        />
-                                                        <Marker position={mapPosition} />
-                                                        <MapClickHandler onLocationSelect={handleLocationSelect} />
-                                                    </MapContainer>
+                                                <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-300 bg-gray-100 flex items-center justify-center">
+                                                    <div className="text-center">
+                                                        <Typography variant="h6" color="gray" className="mb-2">
+                                                            Konum Bilgisi
+                                                        </Typography>
+                                                        <Typography variant="small" color="gray">
+                                                            Enlem: {mapPosition[0].toFixed(6)}
+                                                        </Typography>
+                                                        <Typography variant="small" color="gray">
+                                                            Boylam: {mapPosition[1].toFixed(6)}
+                                                        </Typography>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

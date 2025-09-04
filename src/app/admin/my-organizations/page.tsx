@@ -9,7 +9,11 @@ import {
   Button,
   Alert,
   Chip,
-  IconButton
+  IconButton,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter
 } from "@material-tailwind/react";
 import {
   PlusIcon,
@@ -22,12 +26,15 @@ import {
 import { useRouter } from "next/navigation";
 import AdminLayout from "../components/AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
-import { getCompanyOrganizations, Organization } from "@/lib/auth";
+import { getCompanyOrganizations, Organization, getAuthToken } from "@/lib/auth";
 
 export default function MyOrganizations() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [organizationToDelete, setOrganizationToDelete] = useState<Organization | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
 
   // Fetch company's organizations
@@ -67,8 +74,53 @@ export default function MyOrganizations() {
     fetchOrganizations();
   }, []);
 
-  const handleDelete = (id: string) => {
-    setOrganizations(prev => prev.filter(org => org.id !== id));
+  const handleDeleteClick = (organization: Organization) => {
+    setOrganizationToDelete(organization);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!organizationToDelete) return;
+
+    setDeleting(true);
+    try {
+      const token = getAuthToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch('/api/proxy/Organization/DeleteOrganization', {
+        method: 'DELETE',
+        headers,
+        body: JSON.stringify({
+          id: organizationToDelete.id
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.isSuccess) {
+        // Başarılı silme işlemi
+        setOrganizations(prev => prev.filter(org => org.id !== organizationToDelete.id));
+        setDeleteDialogOpen(false);
+        setOrganizationToDelete(null);
+      } else {
+        setError(result.message || 'Organizasyon silinirken hata oluştu');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      setError('Bağlantı hatası. Lütfen tekrar deneyin.');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setOrganizationToDelete(null);
   };
 
   const handleView = (id: string) => {
@@ -314,7 +366,7 @@ export default function MyOrganizations() {
                                   variant="text"
                                   color="red"
                                   size="sm"
-                                  onClick={() => handleDelete(org.id)}
+                                  onClick={() => handleDeleteClick(org)}
                                   placeholder={undefined}
                                   onPointerEnterCapture={undefined}
                                   onPointerLeaveCapture={undefined}
@@ -409,6 +461,18 @@ export default function MyOrganizations() {
                                   >
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
+                                  <IconButton
+                                    variant="text"
+                                    color="red"
+                                    size="sm"
+                                    onClick={() => handleDeleteClick(org)}
+                                    className="p-1"
+                                    placeholder={undefined}
+                                    onPointerEnterCapture={undefined}
+                                    onPointerLeaveCapture={undefined}
+                                  >
+                                    <TrashIcon className="h-4 w-4" />
+                                  </IconButton>
                                 </div>
                               </div>
 
@@ -444,6 +508,71 @@ export default function MyOrganizations() {
 
             </CardBody>
           </Card>
+
+          {/* Delete Confirmation Dialog */}
+          <Dialog
+            open={deleteDialogOpen}
+            handler={handleDeleteCancel}
+            size="sm"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <DialogHeader
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              <div className="flex items-center gap-3">
+                <ExclamationTriangleIcon className="h-6 w-6 text-red-500" />
+                <Typography variant="h5" color="red">
+                  Organizasyonu Sil
+                </Typography>
+              </div>
+            </DialogHeader>
+            <DialogBody
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              <Typography color="gray" className="font-normal">
+                <strong>"{organizationToDelete?.title}"</strong> organizasyonunu silmek istediğinizden emin misiniz?
+              </Typography>
+              <Typography color="gray" className="font-normal mt-2 text-sm">
+                Bu işlem geri alınamaz ve organizasyonla ilgili tüm veriler kalıcı olarak silinecektir.
+              </Typography>
+            </DialogBody>
+            <DialogFooter
+              className="space-x-2"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              <Button
+                variant="text"
+                color="gray"
+                onClick={handleDeleteCancel}
+                disabled={deleting}
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                Hayır, İptal Et
+              </Button>
+              <Button
+                variant="filled"
+                color="red"
+                onClick={handleDeleteConfirm}
+                loading={deleting}
+                disabled={deleting}
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                {deleting ? "Siliniyor..." : "Evet, Sil"}
+              </Button>
+            </DialogFooter>
+          </Dialog>
         </div>
       </AdminLayout>
     </ProtectedRoute>
