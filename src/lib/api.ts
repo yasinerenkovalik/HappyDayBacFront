@@ -9,6 +9,13 @@ export async function getAllOrganizations(): Promise<Organization[]> {
   return data.data;
 }
 
+// Sayfalı organizasyonları getir
+export async function getPaginatedOrganizations(pageNumber: number = 1, pageSize: number = 6) {
+  const res = await fetch(`${BASE_URL}/Organization/OrganizationGetAll?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  const data = await res.json();
+  return data;
+}
+
 // 🔧 Eksik olan fonksiyonları burada tanımlıyoruz:
 
 export async function getAllCities(): Promise<{ id: number; cityName: string }[]> {

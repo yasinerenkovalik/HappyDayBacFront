@@ -230,7 +230,7 @@ export default function OrganizationCreate() {
       });
 
       console.log('📡 Response status:', response.status);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -581,18 +581,30 @@ export default function OrganizationCreate() {
                       size="lg"
                     />
 
-                    <Select
-                      label="Kategori"
-                      value={formData.categoryId}
-                      onChange={(value) => handleInputChange("categoryId", value)}
-                      size="lg"
-                    >
-                      {categories.map((category) => (
-                        <Option key={category.id} value={category.id.toString()}>
-                          {category.name}
-                        </Option>
-                      ))}
-                    </Select>
+                    <div className="relative">
+                      <select
+                        value={formData.categoryId}
+                        onChange={(e) => handleInputChange("categoryId", e.target.value)}
+                        className="peer w-full h-12 px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 bg-transparent border border-blue-gray-200 rounded-md focus:border-2 focus:border-pink-500 focus:outline-0 disabled:border-blue-gray-200 appearance-none cursor-pointer"
+                        required
+                      >
+                        <option value="">Kategori Seçin</option>
+                        {categories.map((category) => (
+                          <option key={category.id} value={category.id.toString()}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                      <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-xs peer-focus:text-xs before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-pink-500 peer-focus:text-pink-500 before:border-pink-500 peer-focus:before:border-pink-500 after:border-pink-500 peer-focus:after:border-pink-500">
+                        Kategori
+                      </label>
+                      {/* Custom dropdown arrow */}
+                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                        <svg className="w-4 h-4 text-blue-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
 
                     <Input
                       label="Fiyat (₺)"
@@ -655,78 +667,103 @@ export default function OrganizationCreate() {
                   </Typography>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Select
-                        label="Şehir"
+                    {/* Şehir Seçimi */}
+                    <div className="relative">
+                      <select
                         value={formData.cityId || ""}
-                        onChange={(value) => handleInputChange("cityId", value)}
-                        size="lg"
+                        onChange={(e) => handleInputChange("cityId", e.target.value)}
+                        className="peer w-full h-12 px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 bg-transparent border border-blue-gray-200 rounded-md focus:border-2 focus:border-pink-500 focus:outline-0 disabled:border-blue-gray-200 disabled:bg-blue-gray-50 appearance-none cursor-pointer"
                         disabled={loadingCities}
-                        key={`city-select-${cities.length}`}
                       >
+                        <option value="">Şehir Seçin</option>
                         {cities.length === 0 && !loadingCities ? (
-                          <Option value="" disabled>
+                          <option value="" disabled>
                             Şehir bulunamadı
-                          </Option>
+                          </option>
                         ) : (
                           cities.map((city) => (
-                            <Option key={city.id} value={city.id.toString()}>
+                            <option key={city.id} value={city.id.toString()}>
                               {city.cityName}
-                            </Option>
+                            </option>
                           ))
                         )}
-                      </Select>
+                      </select>
+                      <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-xs peer-focus:text-xs before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-pink-500 peer-focus:text-pink-500 before:border-pink-500 peer-focus:before:border-pink-500 after:border-pink-500 peer-focus:after:border-pink-500">
+                        Şehir
+                      </label>
+                      {/* Custom dropdown arrow */}
+                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                        <svg className="w-4 h-4 text-blue-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                       {loadingCities && (
-                        <Typography variant="small" color="gray" className="mt-1">
-                          Şehirler yükleniyor...
-                        </Typography>
+                        <div className="text-xs text-blue-600 font-medium mt-1">
+                          🔄 Şehirler yükleniyor...
+                        </div>
                       )}
                       {cities.length === 0 && !loadingCities && (
-                        <Typography variant="small" color="red" className="mt-1">
-                          Şehirler yüklenemedi
-                        </Typography>
+                        <div className="text-xs text-red-600 font-medium mt-1">
+                          ❌ Şehirler yüklenemedi
+                        </div>
                       )}
                     </div>
 
-                    <div>
-                      <Select
-                        label="İlçe"
+                    {/* İlçe Seçimi */}
+                    <div className="relative">
+                      <select
                         value={formData.districtId || ""}
-                        onChange={(value) => handleInputChange("districtId", value)}
-                        size="lg"
+                        onChange={(e) => handleInputChange("districtId", e.target.value)}
+                        className="peer w-full h-12 px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 bg-transparent border border-blue-gray-200 rounded-md focus:border-2 focus:border-pink-500 focus:outline-0 disabled:border-blue-gray-200 disabled:bg-blue-gray-50 appearance-none cursor-pointer"
                         disabled={loadingDistricts || !formData.cityId}
-                        key={`district-select-${formData.cityId}-${districts.length}`}
                       >
                         {!formData.cityId ? (
-                          <Option value="" disabled>
+                          <option value="" disabled>
                             Önce şehir seçin
-                          </Option>
+                          </option>
                         ) : districts.length === 0 && !loadingDistricts ? (
-                          <Option value="" disabled>
+                          <option value="" disabled>
                             Bu şehirde ilçe bulunamadı
-                          </Option>
+                          </option>
                         ) : (
-                          districts.map((district) => (
-                            <Option key={district.id} value={district.id.toString()}>
-                              {district.districtName}
-                            </Option>
-                          ))
+                          <>
+                            <option value="">İlçe Seçin</option>
+                            {districts.map((district) => (
+                              <option key={district.id} value={district.id.toString()}>
+                                {district.districtName}
+                              </option>
+                            ))}
+                          </>
                         )}
-                      </Select>
+                      </select>
+                      <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-xs peer-focus:text-xs before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-pink-500 peer-focus:text-pink-500 before:border-pink-500 peer-focus:before:border-pink-500 after:border-pink-500 peer-focus:after:border-pink-500">
+                        İlçe
+                      </label>
+                      {/* Custom dropdown arrow */}
+                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                        <svg className="w-4 h-4 text-blue-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                       {loadingDistricts && (
-                        <Typography variant="small" color="gray" className="mt-1">
-                          İlçeler yükleniyor...
-                        </Typography>
+                        <div className="text-xs text-blue-600 font-medium mt-1">
+                          🔄 İlçeler yükleniyor...
+                        </div>
                       )}
                       {!formData.cityId && (
-                        <Typography variant="small" color="gray" className="mt-1">
-                          Önce şehir seçin
-                        </Typography>
+                        <div className="text-xs text-gray-500 font-medium mt-1">
+                          ℹ️ Önce şehir seçin
+                        </div>
                       )}
                       {formData.cityId && districts.length === 0 && !loadingDistricts && (
-                        <Typography variant="small" color="red" className="mt-1">
-                          Bu şehir için ilçe bulunamadı
-                        </Typography>
+                        <div className="text-xs text-orange-600 font-medium mt-1">
+                          ⚠️ Bu şehir için ilçe bulunamadı
+                        </div>
+                      )}
+                      {formData.districtId && (
+                        <div className="text-xs text-green-600 font-medium mt-1">
+                          ✓ İlçe seçildi
+                        </div>
                       )}
                     </div>
                   </div>
