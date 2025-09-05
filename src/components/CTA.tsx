@@ -3,7 +3,7 @@
 
 import React from "react";
 import { Typography, Button } from "@material-tailwind/react";
-import { 
+import {
   SparklesIcon,
   PhoneIcon,
   EnvelopeIcon
@@ -48,7 +48,7 @@ export default function CTA() {
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
           >
-            Profesyonel ekibimizle birlikte unutulmaz anlar yaşayın. 
+            Profesyonel ekibimizle birlikte unutulmaz anlar yaşayın.
             Ücretsiz danışmanlık için hemen iletişime geçin!
           </Typography>
 

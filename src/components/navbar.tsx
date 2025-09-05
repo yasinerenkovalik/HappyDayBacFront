@@ -69,13 +69,15 @@ export default function Navbar() {
 
   return (
     <MTNavbar
-      className="sticky top-0 z-50 h-max w-full max-w-full rounded-none py-2 px-4 sm:px-6 lg:px-8 lg:py-4 border-0 shadow-md bg-white/95 backdrop-blur-sm overflow-hidden"
+      className="sticky top-0 z-50 h-max w-full max-w-full rounded-none py-2 px-4 sm:px-6 lg:px-8 lg:py-4 border-0 shadow-md bg-white/95 backdrop-blur-sm overflow-hidden box-border"
       placeholder={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
     >
       <div className="flex items-center justify-between text-blue-gray-900">
-        <Logo size="md" showText={true} />
+        <div className="flex-shrink-0">
+          <Logo size="md" showText={true} />
+        </div>
         <div className="flex items-center gap-4">
           <div className="mr-4 hidden lg:block">{navList}</div>
           <Button

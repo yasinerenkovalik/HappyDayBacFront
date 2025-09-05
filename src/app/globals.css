@@ -4,24 +4,27 @@
 
 /* Prevent horizontal scroll globally */
 html {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
+  overflow-x: hidden;
+  max-width: 100vw;
   scroll-behavior: smooth;
-  width: 100% !important;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100% !important;
+  overflow-x: hidden;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #__next {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-  width: 100% !important;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 * {
@@ -60,29 +63,36 @@ body {
 div, section, main, header, footer, nav, article, aside {
   max-width: 100%;
   overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Fix specific elements that commonly cause scroll issues */
+img, svg, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
+  box-sizing: border-box;
 }
 
 /* Fix Material Tailwind components */
 [class*="material-tailwind"] {
-  max-width: 100% !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .material-tailwind-select,
 .material-tailwind-input,
 [data-material-tailwind] {
-  max-width: 100% !important;
-  overflow: hidden !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Fix grid and flex containers */
 .grid {
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 .flex {
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 /* Ensure tables don't overflow */
@@ -135,4 +145,191 @@ h1, h2, h3, h4, h5, h6, p {
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+}
+
+/* Admin Panel Scroll Fixes */
+.admin-layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.admin-sidebar {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.admin-main-content {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-content-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Fix Material Tailwind Select and Input scroll issues */
+.peer {
+  overflow: visible !important;
+}
+
+select, input, textarea {
+  overflow: visible !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Fix select dropdown positioning and scrolling */
+select {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+select option {
+  padding: 8px 12px !important;
+  background: white !important;
+  color: #374151 !important;
+}
+
+/* Fix dropdown menus */
+[role="listbox"], [role="menu"] {
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+/* Fix Material Tailwind components in admin */
+.material-tailwind-select-wrapper,
+.material-tailwind-input-wrapper {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Fix relative positioning issues */
+.relative {
+  overflow: visible !important;
+}
+
+/* Fix form containers */
+form {
+  overflow: visible !important;
+}
+
+.grid {
+  overflow: visible !important;
+}
+
+/* Fix admin form containers specifically */
+.admin-main-content form,
+.admin-main-content .grid,
+.admin-main-content .relative {
+  overflow: visible !important;
+}
+
+/* Fix Material Tailwind peer labels */
+.peer ~ label {
+  overflow: visible !important;
+  z-index: 2 !important;
+}
+
+/* Fix select containers in admin */
+.admin-main-content select {
+  position: relative !important;
+  z-index: 1 !important;
+  overflow: visible !important;
+}
+
+/* Fix any container that might clip dropdowns */
+.admin-main-content .space-y-8 > div,
+.admin-main-content .space-y-6 > div,
+.admin-main-content .grid > div {
+  overflow: visible !important;
+}
+
+/* Fix Navbar specific issues */
+nav {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Fix container classes */
+.container {
+  max-width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Fix specific width classes that might cause overflow */
+.w-screen {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Fix text elements that might overflow */
+.text-3xl, .text-4xl, .text-5xl, .text-6xl {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Basic box-sizing for all elements */
+* {
+  box-sizing: border-box;
+}
+
+/* Fix for Material Tailwind specific components */
+[class*="peer"] {
+  overflow: visible;
+}
+
+/* Fix for dropdown and select elements */
+select {
+  max-width: 100%;
+}
+
+/* Fix for images and media */
+img, video, svg, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for flex and grid children */
+.flex > *, .grid > * {
+  min-width: 0;
+}
+
+/* Custom scrollbar for admin areas */
+.admin-sidebar-content::-webkit-scrollbar,
+.admin-content-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-sidebar-content::-webkit-scrollbar-track,
+.admin-content-area::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.admin-sidebar-content::-webkit-scrollbar-thumb,
+.admin-content-area::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.admin-sidebar-content::-webkit-scrollbar-thumb:hover,
+.admin-content-area::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }

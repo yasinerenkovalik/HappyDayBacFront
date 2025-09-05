@@ -13,19 +13,19 @@ import {
   getFilteredOrganizations,
 } from "@/lib/api";
 import { Organization } from "@/entities/organization.entity";
-import { 
-  Typography, 
-  Card, 
-  CardBody, 
-  Button, 
-  Select, 
-  Option, 
+import {
+  Typography,
+  Card,
+  CardBody,
+  Button,
+  Select,
+  Option,
   Input,
   Chip
 } from "@material-tailwind/react";
-import { 
-  MapPinIcon, 
-  ClockIcon, 
+import {
+  MapPinIcon,
+  ClockIcon,
   UserGroupIcon,
   CurrencyDollarIcon,
   MagnifyingGlassIcon,
@@ -63,29 +63,29 @@ function OrganizationCard({ org }: { org: Organization }) {
             />
           </div>
         </div>
-        
+
         <CardBody className="p-6">
           <Typography variant="h5" color="blue-gray" className="mb-3 font-bold">
             {org.title}
           </Typography>
-          
+
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2 text-gray-600">
               <ClockIcon className="h-4 w-4" />
               <Typography variant="small">{org.duration}</Typography>
             </div>
-            
+
             <div className="flex items-center gap-2 text-gray-600">
               <UserGroupIcon className="h-4 w-4" />
               <Typography variant="small">Max {org.maxGuestCount} kişi</Typography>
             </div>
-            
+
             <div className="flex items-center gap-2 text-gray-600">
               <MapPinIcon className="h-4 w-4" />
               <Typography variant="small">{org.location || "Konum belirtilmemiş"}</Typography>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
               <CurrencyDollarIcon className="h-5 w-5 text-pink-500" />
@@ -93,7 +93,7 @@ function OrganizationCard({ org }: { org: Organization }) {
                 {org.price.toLocaleString()} TL
               </Typography>
             </div>
-            
+
             <Button size="sm" color="pink" variant="outlined">
               Detayları Gör
             </Button>
@@ -136,17 +136,17 @@ export default function OrganizationListPage() {
   const fetchOrganizations = async (page = 1, resetPage = false) => {
     try {
       setLoading(true);
-      
+
       if (resetPage) {
         setCurrentPage(1);
         page = 1;
       }
-      
+
       // API call with pagination parameters
       const data = await getPaginatedOrganizations(page, pageSize);
-      
+
       console.log("Organizations API response:", data);
-      
+
       if (data.isSuccess && data.data) {
         // Assuming API returns paginated data structure
         if (Array.isArray(data.data)) {
@@ -164,7 +164,7 @@ export default function OrganizationListPage() {
           setTotalCount(0);
           setTotalPages(1);
         }
-        
+
         setCurrentPage(page);
       } else {
         setOrganizations([]);
@@ -185,28 +185,28 @@ export default function OrganizationListPage() {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch categories and cities (these don't need pagination)
         const [categoriesData, citiesData] = await Promise.all([
           getAllCategories(),
           getAllCities()
         ]);
-        
+
         console.log("Categories received:", categoriesData);
         console.log("Cities received:", citiesData);
-        
+
         // Ensure we have arrays
         const safeCategories = Array.isArray(categoriesData) ? categoriesData : [];
         const safeCities = Array.isArray(citiesData) ? citiesData : [];
-        
+
         setCategories(safeCategories);
         setCities(safeCities);
-        
+
         console.log("State updated - Categories:", safeCategories.length, "Cities:", safeCities.length);
-        
+
         // Fetch first page of organizations
         await fetchOrganizations(1);
-        
+
       } catch (error) {
         console.error("API Error:", error);
         setCategories([]);
@@ -214,7 +214,7 @@ export default function OrganizationListPage() {
         setOrganizations([]);
       }
     };
-    
+
     fetchInitialData();
   }, []);
 
@@ -226,7 +226,7 @@ export default function OrganizationListPage() {
       maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
       isOutdoor: isOutdoor === "" ? undefined : isOutdoor === "true",
     };
-    
+
     try {
       const data = await getFilteredOrganizations(filters);
       setOrganizations(Array.isArray(data) ? data : []);
@@ -298,7 +298,7 @@ export default function OrganizationListPage() {
   return (
     <>
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-pink-500 to-purple-600 py-16">
         <div className="container mx-auto px-4 text-center">
@@ -308,7 +308,7 @@ export default function OrganizationListPage() {
           <Typography variant="lead" className="text-pink-100 mb-8 max-w-2xl mx-auto">
             Size en uygun organizasyonu bulun. Hayalinizdeki etkinliği gerçekleştirin.
           </Typography>
-          
+
           {/* Search Bar */}
           <div className="max-w-md mx-auto">
             <div className="relative">
@@ -339,7 +339,7 @@ export default function OrganizationListPage() {
                 Filtreler
               </Typography>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {/* Kategori */}
               <div className="space-y-2">
@@ -612,8 +612,8 @@ export default function OrganizationListPage() {
                   {/* Current page and neighbors */}
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(page => {
-                      return page >= Math.max(1, currentPage - 2) && 
-                             page <= Math.min(totalPages, currentPage + 2);
+                      return page >= Math.max(1, currentPage - 2) &&
+                        page <= Math.min(totalPages, currentPage + 2);
                     })
                     .map(page => (
                       <Button
@@ -671,7 +671,7 @@ export default function OrganizationListPage() {
           </>
         )}
       </div>
-      
+
       <Footer />
     </>
   );

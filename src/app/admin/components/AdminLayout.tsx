@@ -130,10 +130,10 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
   const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden w-full max-w-full">
+    <div className="admin-layout min-h-screen bg-gray-50 flex overflow-hidden w-full">
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white shadow-xl transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:w-64`}>
-        <div className="flex items-center justify-between h-16 px-4 sm:px-6 border-b border-gray-200">
+      <div className={`admin-sidebar fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:w-64 flex flex-col`}>
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex-shrink-0">
             <Logo size="sm" showText={true} />
           </div>
@@ -146,44 +146,46 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
           </IconButton>
         </div>
 
-        <div className="p-4 sm:p-6 overflow-y-auto h-full pb-20">
-          {/* User Info */}
-          <div className="flex items-center gap-2 sm:gap-3 mb-6 p-2 sm:p-3 bg-gray-50 rounded-lg">
-            <Avatar
-              src="/image/avatar/admin-avatar.jpg"
-              alt="User"
-              size="sm"
-              className="ring-2 ring-pink-100 flex-shrink-0"
-            />
-            <div className="min-w-0 flex-1">
-              <Typography variant="small" className="font-medium truncate">
-                {userType === "admin" ? "Admin User" : companyName}
-              </Typography>
-              <Typography variant="small" color="gray" className="truncate">
-                {userType === "admin" ? "Sistem Yöneticisi" : "Şirket Hesabı"}
-              </Typography>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="admin-sidebar-content flex-1 overflow-y-auto p-6">
+            {/* User Info */}
+            <div className="flex items-center gap-3 mb-6 p-3 bg-gray-50 rounded-lg">
+              <Avatar
+                src="/image/avatar/admin-avatar.jpg"
+                alt="User"
+                size="sm"
+                className="ring-2 ring-pink-100 flex-shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <Typography variant="small" className="font-medium truncate">
+                  {userType === "admin" ? "Admin User" : companyName}
+                </Typography>
+                <Typography variant="small" color="gray" className="truncate">
+                  {userType === "admin" ? "Sistem Yöneticisi" : "Şirket Hesabı"}
+                </Typography>
+              </div>
             </div>
+
+            {/* Menu Items */}
+            <List className="p-0 flex-1">
+              {menuItems.map((item, index) => (
+                <Link key={index} href={item.href}>
+                  <ListItem 
+                    className={`mb-1 text-sm ${currentPath === item.href ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <ListItemPrefix>
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                    </ListItemPrefix>
+                    <span className="truncate">{item.label}</span>
+                  </ListItem>
+                </Link>
+              ))}
+            </List>
           </div>
 
-          {/* Menu Items */}
-          <List className="p-0">
-            {menuItems.map((item, index) => (
-              <Link key={index} href={item.href}>
-                <ListItem 
-                  className={`mb-1 text-sm ${currentPath === item.href ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white" : "text-gray-700 hover:bg-gray-100"}`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <ListItemPrefix>
-                    <item.icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  </ListItemPrefix>
-                  <span className="truncate">{item.label}</span>
-                </ListItem>
-              </Link>
-            ))}
-          </List>
-
           {/* Logout Button */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          <div className="p-6 pt-0 border-t border-gray-200 flex-shrink-0">
             <Button
               variant="outlined"
               color="red"
@@ -198,11 +200,11 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 w-full min-w-0 lg:ml-0">
+      <div className="admin-main-content flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+        <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+            <div className="flex items-center gap-4 min-w-0 flex-1">
               <IconButton
                 variant="text"
                 className="lg:hidden flex-shrink-0"
@@ -210,23 +212,23 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
               >
                 <Bars3Icon className="h-5 w-5" />
               </IconButton>
-              <Typography variant="h6" color="blue-gray" className="truncate text-sm sm:text-base">
+              <Typography variant="h6" color="blue-gray" className="truncate">
                 {userType === "admin" ? "Admin Paneli" : "Şirket Paneli"}
               </Typography>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+            <div className="flex items-center gap-4 flex-shrink-0">
               <Button
                 variant="outlined"
                 size="sm"
-                className="hidden md:flex items-center gap-2 text-xs"
+                className="hidden md:flex items-center gap-2"
               >
                 <UserIcon className="h-4 w-4" />
                 Profil
               </Button>
               <Button
                 size="sm"
-                className="bg-gradient-to-r from-pink-500 to-purple-600 text-xs sm:text-sm px-2 sm:px-4"
+                className="bg-gradient-to-r from-pink-500 to-purple-600"
                 onClick={() => router.push("/")}
               >
                 <span className="hidden sm:inline">Siteyi Görüntüle</span>
@@ -237,8 +239,8 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 w-full min-w-0 p-4 sm:p-6 lg:p-8 admin-main-content">
-          <div className="max-w-full overflow-x-hidden">
+        <main className="admin-content-area flex-1 overflow-y-auto p-6">
+          <div className="max-w-full overflow-visible">
             {children}
           </div>
         </main>

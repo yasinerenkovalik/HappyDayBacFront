@@ -532,7 +532,7 @@ export default function CompanyDashboard() {
           )}
 
           {/* Organization Dialog */}
-          <Dialog open={editDialog.open} handler={() => setEditDialog({ open: false, type: "", data: null })}>
+          {/*  <Dialog open={editDialog.open} handler={() => setEditDialog({ open: false, type: "", data: null })}>
             <DialogHeader>
               {editDialog.data ? "Organizasyon Düzenle" : "Yeni Organizasyon Ekle"}
             </DialogHeader>
@@ -608,6 +608,7 @@ export default function CompanyDashboard() {
               </Button>
             </DialogFooter>
           </Dialog>
+          */}
         </div>
       </AdminLayout>
     </ProtectedRoute>

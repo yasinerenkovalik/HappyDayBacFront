@@ -19,7 +19,7 @@ export default function Campaign() {
       <Hero />
       {/*   <Categories /> */}
     {/*  <FeaturedOrganizations /> */}
-      <Stats />
+   {/*    <Stats />*/}
     {/*  <Testimonials /> */}
       <CTA />
       <FAQ />
