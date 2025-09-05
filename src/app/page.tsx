@@ -17,10 +17,10 @@ export default function Campaign() {
     <ErrorBoundary>
       <Navbar />
       <Hero />
-      <Categories />
-      <FeaturedOrganizations />
+      {/*   <Categories /> */}
+    {/*  <FeaturedOrganizations /> */}
       <Stats />
-      <Testimonials />
+    {/*  <Testimonials /> */}
       <CTA />
       <FAQ />
       <Footer />

@@ -142,6 +142,27 @@ export default function OrganizationListPage() {
     });
   };
 
+  // Otomatik filtreleme için useEffect
+  useEffect(() => {
+    if (selectedCategory || selectedCity || maxPrice || isOutdoor) {
+      handleFilter();
+    }
+  }, [selectedCategory, selectedCity, maxPrice, isOutdoor]);
+
+  // Arama için useEffect (debounce ile)
+  useEffect(() => {
+    if (searchTerm) {
+      const timeoutId = setTimeout(() => {
+        const filteredOrgs = organizations.filter(org =>
+          org.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          org.location?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setOrganizations(filteredOrgs);
+      }, 300);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchTerm]);
+
   const clearFilters = () => {
     setSelectedCategory("");
     setSelectedCity("");
@@ -189,7 +210,7 @@ export default function OrganizationListPage() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
         <Card className="mb-8 shadow-lg">
           <CardBody className="p-6">
@@ -206,9 +227,13 @@ export default function OrganizationListPage() {
                   Kategori
                 </Typography>
                 <Select
+                  key={`category-${selectedCategory}`}
                   value={selectedCategory}
-                  onChange={(value) => setSelectedCategory(value || "")}
+                  onChange={(value) => {
+                    setSelectedCategory(value || "");
+                  }}
                   placeholder="Kategori Seçin"
+                  label="Kategori Seçin"
                 >
                   {categories.map((cat) => (
                     <Option key={cat.id} value={cat.id.toString()}>
@@ -223,9 +248,13 @@ export default function OrganizationListPage() {
                   Şehir
                 </Typography>
                 <Select
+                  key={`city-${selectedCity}`}
                   value={selectedCity}
-                  onChange={(value) => setSelectedCity(value || "")}
+                  onChange={(value) => {
+                    setSelectedCity(value || "");
+                  }}
                   placeholder="Şehir Seçin"
+                  label="Şehir Seçin"
                 >
                   {cities.map((city) => (
                     <Option key={city.id} value={city.id.toString()}>
@@ -252,9 +281,13 @@ export default function OrganizationListPage() {
                   Mekan Türü
                 </Typography>
                 <Select
+                  key={`outdoor-${isOutdoor}`}
                   value={isOutdoor}
-                  onChange={(value) => setIsOutdoor(value || "")}
+                  onChange={(value) => {
+                    setIsOutdoor(value || "");
+                  }}
                   placeholder="Mekan Türü"
+                  label="Mekan Türü"
                 >
                   <Option value="true">Dış Mekan</Option>
                   <Option value="false">İç Mekan</Option>
@@ -262,12 +295,9 @@ export default function OrganizationListPage() {
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <Button onClick={handleFilter} color="pink" className="flex-1">
-                Filtrele
-              </Button>
+            <div className="flex justify-end">
               <Button onClick={clearFilters} variant="outlined" color="pink">
-                Temizle
+                Filtreleri Temizle
               </Button>
             </div>
           </CardBody>

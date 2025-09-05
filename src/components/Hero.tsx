@@ -10,13 +10,13 @@ function Hero() {
   return (
     <header className="relative min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+      <div className="absolute inset-0 opacity-5 overflow-hidden">
+        <div className="absolute top-20 left-4 sm:left-20 w-48 h-48 sm:w-72 sm:h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-4 sm:right-20 w-48 h-48 sm:w-72 sm:h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-48 sm:w-72 sm:h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
       </div>
 
-      <div className="container mx-auto px-8 pt-20 pb-16 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 relative z-10">
         <div className="grid h-full min-h-[80vh] w-full grid-cols-1 place-items-center gap-y-16 lg:grid-cols-2">
           {/* SOL ALAN */}
           <div className="text-center lg:text-left">
@@ -39,17 +39,17 @@ function Hero() {
               Yaşayın
             </Typography>
 
-            <Typography
+            {/* <Typography
               variant="lead"
               className="mb-8 text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed"
             >
               Düğün, nişan, kına gecesi, doğum günü ve tüm özel anlarınız için 
               <span className="font-semibold text-pink-600"> binlerce organizasyon seçeneği</span> arasından 
               size en uygun olanı bulun.
-            </Typography>
+            </Typography> */}
 
             {/* Search Bar */}
-            <div className="bg-white rounded-2xl shadow-2xl p-6 mb-8 max-w-2xl mx-auto lg:mx-0">
+            {/*  <div className="bg-white rounded-2xl shadow-2xl p-6 mb-8 max-w-2xl mx-auto lg:mx-0">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative">
                   <Input
@@ -74,13 +74,13 @@ function Hero() {
                   />
                 </div>
               </div>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="w-full mt-4 bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Organizasyon Ara
               </Button>
-            </div>
+            </div> {*/}
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-8 text-center lg:text-left">
@@ -119,8 +119,9 @@ function Hero() {
               <Image
                 width={600}
                 height={700}
-                src="/image/organizations/organizations1.jpg"
-                className="rounded-3xl shadow-2xl relative z-10 w-full h-auto"
+                src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+                className="rounded-3xl shadow-2xl relative z-10 object-cover"
+                style={{ width: "100%", height: "auto" }}
                 alt="Düğün organizasyonu"
               />
             </div>
@@ -130,22 +131,25 @@ function Hero() {
               <Image
                 width={200}
                 height={150}
-                src="/image/organizations/organizations2.jpg"
-                className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+                src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
+                className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 object-cover"
+                style={{ width: "100%", height: "auto" }}
                 alt="Nişan organizasyonu"
               />
               <Image
                 width={200}
                 height={150}
-                src="/image/organizations/organizations3.jpg"
-                className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+                src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
+                className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 object-cover"
+                style={{ width: "100%", height: "auto" }}
                 alt="Kına gecesi"
               />
               <Image
                 width={200}
                 height={150}
-                src="/image/organizations/organizations4.jpg"
-                className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+                src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                className="rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 object-cover"
+                style={{ width: "100%", height: "auto" }}
                 alt="Doğum günü"
               />
             </div>

@@ -1,3 +1,138 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent horizontal scroll globally */
+html {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  scroll-behavior: smooth;
+  width: 100% !important;
+}
+
+body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+#__next {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+/* Fix all containers */
+.container {
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* Prevent any element from causing horizontal scroll */
+div, section, main, header, footer, nav, article, aside {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix Material Tailwind components */
+[class*="material-tailwind"] {
+  max-width: 100% !important;
+}
+
+.material-tailwind-select,
+.material-tailwind-input,
+[data-material-tailwind] {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Fix grid and flex containers */
+.grid {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.flex {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure tables don't overflow */
+table {
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Fix images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix admin layout */
+@media (max-width: 1023px) {
+  .admin-main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* Fix navbar and header components */
+nav, header {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+/* Fix any potential wide elements */
+.w-screen {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix Material Tailwind Dialog and Modal */
+[role="dialog"],
+.fixed {
+  max-width: 100vw !important;
+}
+
+/* Responsive text that might cause overflow */
+h1, h2, h3, h4, h5, h6, p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}

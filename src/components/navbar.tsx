@@ -69,7 +69,7 @@ export default function Navbar() {
 
   return (
     <MTNavbar
-      className="sticky top-0 z-50 h-max max-w-full rounded-none py-2 px-4 lg:px-8 lg:py-4 border-0 shadow-md bg-white/95 backdrop-blur-sm"
+      className="sticky top-0 z-50 h-max w-full max-w-full rounded-none py-2 px-4 sm:px-6 lg:px-8 lg:py-4 border-0 shadow-md bg-white/95 backdrop-blur-sm overflow-hidden"
       placeholder={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
