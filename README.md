@@ -289,4 +289,4 @@ Sorunlar için:
 2. Domain konfigürasyonu  
 3. Database backup stratejisi
 4. Monitoring setup
-5. CI/CD pipeline
+5. CI/CD pipeline# HappyDayBacFront
