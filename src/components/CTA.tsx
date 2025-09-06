@@ -8,6 +8,7 @@ import {
   PhoneIcon,
   EnvelopeIcon
 } from "@heroicons/react/24/outline";
+import { CONTACT_INFO } from "@/constants/contact";
 
 export default function CTA() {
   return (
@@ -81,13 +82,13 @@ export default function CTA() {
             <div className="flex items-center gap-2">
               <PhoneIcon className="h-5 w-5" />
               <Typography variant="small" className="font-medium">
-                0850 123 45 67
+                {CONTACT_INFO.phone}
               </Typography>
             </div>
             <div className="flex items-center gap-2">
               <EnvelopeIcon className="h-5 w-5" />
               <Typography variant="small" className="font-medium">
-                info@mutlugunum.com
+                {CONTACT_INFO.email}
               </Typography>
             </div>
           </div>

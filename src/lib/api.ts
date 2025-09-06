@@ -90,3 +90,70 @@ export async function sendContactMessage(data: {
   const responseData = await res.json();
   return responseData;
 }
+
+// Contact form mesajı gönder
+export async function sendContactForm(data: {
+  name: string;
+  surName: string;
+  email: string;
+  phone: string;
+  mesaage: string;
+}) {
+  // FormData oluştur (multipart/form-data için)
+  const formData = new FormData();
+  formData.append('Name', data.name.trim());
+  formData.append('SurName', data.surName.trim());
+  formData.append('Email', data.email.trim());
+  formData.append('Phone', data.phone.trim());
+  formData.append('Mesaage', data.mesaage.trim());
+
+  console.log('📤 Sending contact form with FormData:');
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
+
+  const res = await fetch(`${BASE_URL}/Concat/add`, {
+    method: 'POST',
+    body: formData, // FormData kullan, Content-Type header'ı otomatik ayarlanır
+  });
+  
+  const responseData = await res.json();
+  console.log('📡 Contact form response:', responseData);
+  
+  return responseData;
+}
+
+// Tüm contact mesajlarını getir
+export async function getAllContacts() {
+  const res = await fetch(`${BASE_URL}/Concat/ContactGetAll`);
+  const data = await res.json();
+  return data;
+}
+
+// Contact detayını getir
+export async function getContactById(id: string) {
+  const res = await fetch(`${BASE_URL}/Concat/getbyid`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      Id: id
+    }),
+  });
+  const data = await res.json();
+  return data;
+}
+
+// Şirket iletişim mesajlarını getir
+export async function getCompanyContactMessages(companyId: string) {
+  const formData = new FormData();
+  formData.append('CompanyId', companyId);
+
+  const res = await fetch(`${BASE_URL}/ContactMessage/CompanyContactMessage`, {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await res.json();
+  return data;
+}

@@ -4,6 +4,7 @@
 import React from "react";
 import { Typography } from "@material-tailwind/react";
 import Link from "next/link";
+import { CONTACT_INFO } from "@/constants/contact";
 
 export default function Footer() {
   return (
@@ -80,9 +81,9 @@ export default function Footer() {
               İletişim
             </Typography>
             <ul className="space-y-2 text-gray-300">
-              <li>📍 Kocaeli, Türkiye</li>
-              <li>📞 +90 552 685 81 41</li>
-              <li>📧 iletisim@mutlugunum.com</li>
+              <li>📍 {CONTACT_INFO.address.full}</li>
+              <li>📞 {CONTACT_INFO.phone}</li>
+              <li>📧 {CONTACT_INFO.email}</li>
             </ul>
           </div>
         </div>

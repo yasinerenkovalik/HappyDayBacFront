@@ -44,11 +44,11 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
         if (!response.ok) {
             const errorText = await response.text();
             console.error('❌ Backend error response:', errorText);
-            return NextResponse.json({ 
-                error: 'Backend Error', 
+            return NextResponse.json({
+                error: 'Backend Error',
                 message: errorText,
-                status: response.status 
-            }, { 
+                status: response.status
+            }, {
                 status: response.status,
                 headers: getResponseHeaders()
             });
@@ -56,30 +56,30 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
 
         const data = await response.json();
         console.log('✅ Backend success response:', data);
-        
-        return NextResponse.json(data, { 
+
+        return NextResponse.json(data, {
             status: response.status,
             headers: getResponseHeaders()
         });
     } catch (error) {
         console.error('💥 Proxy GET error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        
+
         if (error instanceof TypeError && error.message.includes('fetch')) {
-            return NextResponse.json({ 
-                error: 'Connection Error', 
+            return NextResponse.json({
+                error: 'Connection Error',
                 message: 'Backend sunucusuna bağlanılamıyor',
-                details: errorMessage 
-            }, { 
+                details: errorMessage
+            }, {
                 status: 503,
                 headers: getResponseHeaders()
             });
         }
-        
-        return NextResponse.json({ 
-            error: 'Internal Server Error', 
-            details: errorMessage 
-        }, { 
+
+        return NextResponse.json({
+            error: 'Internal Server Error',
+            details: errorMessage
+        }, {
             status: 500,
             headers: getResponseHeaders()
         });
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
         const url = `${API_BASE_URL}/${path}`;
 
         const headers: HeadersInit = {};
-        
+
         // Authorization header'ını kopyala
         const authHeader = request.headers.get('authorization');
         if (authHeader) {
@@ -122,15 +122,15 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
         });
 
         console.log('📡 Backend response status:', response.status);
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error('❌ Backend error:', errorText);
-            return NextResponse.json({ 
-                error: 'Backend Error', 
+            return NextResponse.json({
+                error: 'Backend Error',
                 message: errorText,
-                status: response.status 
-            }, { 
+                status: response.status
+            }, {
                 status: response.status,
                 headers: getResponseHeaders()
             });
@@ -138,31 +138,31 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
 
         const data = await response.json();
         console.log('✅ Backend success response');
-        
-        return NextResponse.json(data, { 
+
+        return NextResponse.json(data, {
             status: response.status,
             headers: getResponseHeaders()
         });
     } catch (error) {
         console.error('💥 Proxy POST error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        
+
         if (error instanceof TypeError && error.message.includes('fetch')) {
-            return NextResponse.json({ 
-                error: 'Connection Error', 
+            return NextResponse.json({
+                error: 'Connection Error',
                 message: 'Backend sunucusuna bağlanılamıyor',
-                details: errorMessage 
-            }, { 
+                details: errorMessage
+            }, {
                 status: 503,
                 headers: getResponseHeaders()
             });
         }
-        
-        return NextResponse.json({ 
-            error: 'Internal Server Error', 
+
+        return NextResponse.json({
+            error: 'Internal Server Error',
             message: 'Proxy sunucusunda hata oluştu',
-            details: errorMessage 
-        }, { 
+            details: errorMessage
+        }, {
             status: 500,
             headers: getResponseHeaders()
         });
@@ -175,7 +175,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
         const url = `${API_BASE_URL}/${path}`;
 
         const headers: HeadersInit = {};
-        
+
         // Authorization header'ını kopyala
         const authHeader = request.headers.get('authorization');
         if (authHeader) {
@@ -204,17 +204,17 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
         });
 
         const data = await response.json();
-        return NextResponse.json(data, { 
+        return NextResponse.json(data, {
             status: response.status,
             headers: getResponseHeaders()
         });
     } catch (error) {
         console.error('Proxy PUT error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        return NextResponse.json({ 
-            error: 'Internal Server Error', 
-            details: errorMessage 
-        }, { 
+        return NextResponse.json({
+            error: 'Internal Server Error',
+            details: errorMessage
+        }, {
             status: 500,
             headers: getResponseHeaders()
         });
@@ -261,11 +261,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
         if (!response.ok) {
             const errorText = await response.text();
             console.error('❌ Backend DELETE error:', errorText);
-            return NextResponse.json({ 
-                error: 'Backend Error', 
+            return NextResponse.json({
+                error: 'Backend Error',
                 message: errorText,
-                status: response.status 
-            }, { 
+                status: response.status
+            }, {
                 status: response.status,
                 headers: getResponseHeaders()
             });
@@ -273,18 +273,18 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
 
         const data = await response.json();
         console.log('✅ Backend DELETE success');
-        
-        return NextResponse.json(data, { 
+
+        return NextResponse.json(data, {
             status: response.status,
             headers: getResponseHeaders()
         });
     } catch (error) {
         console.error('💥 Proxy DELETE error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        return NextResponse.json({ 
-            error: 'Internal Server Error', 
-            details: errorMessage 
-        }, { 
+        return NextResponse.json({
+            error: 'Internal Server Error',
+            details: errorMessage
+        }, {
             status: 500,
             headers: getResponseHeaders()
         });
