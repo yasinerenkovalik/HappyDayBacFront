@@ -80,18 +80,19 @@ export default function Navbar() {
         </div>
         <div className="flex items-center gap-4">
           <div className="mr-4 hidden lg:block">{navList}</div>
-          <Button
-            variant="gradient"
-            size="sm"
-            className="hidden lg:inline-block bg-gradient-to-r from-pink-500 to-purple-600"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <Link href="/admin/login">
+          <Link href="/admin/login" className="hidden lg:inline-block">
+            <Button
+              as="span"
+              variant="gradient"
+              size="sm"
+              className="bg-gradient-to-r from-pink-500 to-purple-600 w-full"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
               Giriş Yap
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <IconButton
             variant="text"
             className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
@@ -111,19 +112,20 @@ export default function Navbar() {
       </div>
       <Collapse open={openNav}>
         {navList}
-        <Button
-          variant="gradient"
-          size="sm"
-          fullWidth
-          className="mb-2 bg-gradient-to-r from-pink-500 to-purple-600"
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <Link href="/admin/login">
+        <Link href="/admin/login">
+          <Button
+            as="span"
+            variant="gradient"
+            size="sm"
+            fullWidth
+            className="mb-2 bg-gradient-to-r from-pink-500 to-purple-600"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
             Giriş Yap
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </Collapse>
     </MTNavbar>
   );

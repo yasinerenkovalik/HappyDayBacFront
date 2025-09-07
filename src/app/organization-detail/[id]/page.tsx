@@ -287,6 +287,27 @@ export default function OrganizationDetailPage() {
               </CardBody>
             </Card>
 
+            {/* Hizmetler */}
+            {org.services && org.services.length > 0 && (
+              <Card>
+                <CardBody className="p-6">
+                  <Typography variant="h4" color="blue-gray" className="mb-4">
+                    Hizmetler
+                  </Typography>
+                  <div className="flex flex-wrap gap-2">
+                    {org.services.map((service, idx) => (
+                      <Chip
+                        key={`${service}-${idx}`}
+                        value={service}
+                        size="sm"
+                        className="bg-pink-50 text-pink-700"
+                      />
+                    ))}
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
             {/* Fotoğraf Galerisi */}
             <Card>
               <CardBody className="p-6">

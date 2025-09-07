@@ -1,6 +1,6 @@
 // İletişim bilgileri - Tek yerden yönetim
 export const CONTACT_INFO = {
-  phone: "0850 123 45 67",
+  phone: "0850 123 45 66",
   email: "info@mutlugunum.com",
   address: {
     street: "Atatürk Mahallesi, Cumhuriyet Caddesi",

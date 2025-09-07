@@ -252,73 +252,44 @@ export default function BookingsPage() {
                   </Typography>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Müşteri Bilgileri
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          İletişim
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Mesaj Önizleme
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Organizasyon
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          İşlemler
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {messages.map((message, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <UserIcon className="h-5 w-5 text-white" />
-                              </div>
-                              <div className="ml-4">
-                                <Typography variant="small" className="font-medium text-gray-900">
-                                  {message.fullName}
-                                </Typography>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <EnvelopeIcon className="h-4 w-4 text-gray-400" />
-                                <Typography variant="small" color="gray">
-                                  {message.email}
-                                </Typography>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <PhoneIcon className="h-4 w-4 text-gray-400" />
-                                <Typography variant="small" color="gray">
-                                  {message.phone}
-                                </Typography>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <Typography variant="small" color="gray" className="max-w-xs truncate">
-                              {message.message}
-                            </Typography>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-2">
-                              <BuildingOfficeIcon className="h-4 w-4 text-gray-400" />
-                              <Typography variant="small" color="gray">
-                                {message.organizationId.substring(0, 8)}...
+                <>
+                  {/* Mobile: card list */}
+                  <div className="block md:hidden divide-y divide-gray-200">
+                    {messages.map((message, index) => (
+                      <div key={index} className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <UserIcon className="h-5 w-5 text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between">
+                              <Typography className="font-medium text-gray-900 truncate">
+                                {message.fullName}
                               </Typography>
+                              {message.createdAt && (
+                                <Typography variant="small" color="gray" className="ml-2 flex-shrink-0">
+                                  {formatDate(message.createdAt)}
+                                </Typography>
+                              )}
                             </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-2">
+                            <div className="mt-2 space-y-1">
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <EnvelopeIcon className="h-4 w-4 text-gray-400" />
+                                <span className="truncate">{message.email}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <PhoneIcon className="h-4 w-4 text-gray-400" />
+                                <span className="truncate">{message.phone}</span>
+                              </div>
+                              <div className="text-sm text-gray-700 line-clamp-2">
+                                {message.message}
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <BuildingOfficeIcon className="h-4 w-4 text-gray-400" />
+                                <span className="truncate">{message.organizationId.substring(0, 8)}...</span>
+                              </div>
+                            </div>
+                            <div className="mt-3 flex items-center gap-2">
                               <Button
                                 size="sm"
                                 variant="outlined"
@@ -338,12 +309,74 @@ export default function BookingsPage() {
                                 Ara
                               </Button>
                             </div>
-                          </td>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop: table */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri Bilgileri</th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İletişim</th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mesaj Önizleme</th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizasyon</th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {messages.map((message, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+                                  <UserIcon className="h-5 w-5 text-white" />
+                                </div>
+                                <div className="ml-4">
+                                  <Typography variant="small" className="font-medium text-gray-900">{message.fullName}</Typography>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <EnvelopeIcon className="h-4 w-4 text-gray-400" />
+                                  <Typography variant="small" color="gray">{message.email}</Typography>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <PhoneIcon className="h-4 w-4 text-gray-400" />
+                                  <Typography variant="small" color="gray">{message.phone}</Typography>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <Typography variant="small" color="gray" className="max-w-xs truncate">{message.message}</Typography>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <BuildingOfficeIcon className="h-4 w-4 text-gray-400" />
+                                <Typography variant="small" color="gray">{message.organizationId.substring(0, 8)}...</Typography>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <Button size="sm" variant="outlined" className="flex items-center gap-1" onClick={() => handleEmailClick(message.email, message.fullName)}>
+                                  <EnvelopeIcon className="h-4 w-4" />E-posta
+                                </Button>
+                                <Button size="sm" variant="outlined" className="flex items-center gap-1" onClick={() => handlePhoneClick(message.phone)}>
+                                  <PhoneIcon className="h-4 w-4" />Ara
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </CardBody>
           </Card>
