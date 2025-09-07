@@ -32,24 +32,24 @@ export const getPhoneLink = (phone: string = CONTACT_INFO.phone) => {
 export const getEmailLink = (email: string = CONTACT_INFO.email, subject?: string, body?: string) => {
   let link = `mailto:${email}`;
   const params = [];
-  
+
   if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
   if (body) params.push(`body=${encodeURIComponent(body)}`);
-  
+
   if (params.length > 0) {
     link += `?${params.join('&')}`;
   }
-  
+
   return link;
 };
 
 export const getWhatsAppLink = (phone: string = CONTACT_INFO.phone, message?: string) => {
   const cleanPhone = formatPhone(phone).replace(/^\+?90/, '90'); // Türkiye kodu ekle
   let link = `https://wa.me/${cleanPhone}`;
-  
+
   if (message) {
     link += `?text=${encodeURIComponent(message)}`;
   }
-  
+
   return link;
 };
