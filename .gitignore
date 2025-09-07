@@ -35,8 +35,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# dependencies lock files
-package-lock.json
+# dependencies lock files (keep package-lock.json for Vercel)
+# package-lock.json
 pnpm-lock.yaml
 yarn.lock
 
