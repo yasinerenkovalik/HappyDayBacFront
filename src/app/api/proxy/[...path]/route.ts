@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://193.111.77.142/api';
 
+// Debug environment variables
+console.log('🔧 Environment Debug:');
+console.log('- API_BASE_URL:', API_BASE_URL);
+console.log('- NODE_ENV:', process.env.NODE_ENV);
+
 // Common response headers
 const getResponseHeaders = () => ({
     'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -14,11 +19,21 @@ const getResponseHeaders = () => ({
 
 export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
     try {
+        // Path validation
+        if (!params.path || params.path.length === 0) {
+            return NextResponse.json({ 
+                error: 'Invalid Path', 
+                message: 'API path is required' 
+            }, { status: 400 });
+        }
+
         const path = params.path.join('/');
         const searchParams = request.nextUrl.searchParams.toString();
         const url = `${API_BASE_URL}/${path}${searchParams ? `?${searchParams}` : ''}`;
 
         console.log('🔄 Proxy GET Request:', url);
+        console.log('🔄 API_BASE_URL:', API_BASE_URL);
+        console.log('🔄 Path:', path);
 
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
@@ -88,8 +103,20 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
 
 export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
     try {
+        // Path validation
+        if (!params.path || params.path.length === 0) {
+            return NextResponse.json({ 
+                error: 'Invalid Path', 
+                message: 'API path is required' 
+            }, { status: 400 });
+        }
+
         const path = params.path.join('/');
         const url = `${API_BASE_URL}/${path}`;
+
+        console.log('🚀 Making POST request to:', url);
+        console.log('🔄 API_BASE_URL:', API_BASE_URL);
+        console.log('🔄 Path:', path);
 
         const headers: HeadersInit = {};
 
