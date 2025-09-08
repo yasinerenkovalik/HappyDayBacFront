@@ -342,8 +342,8 @@ export default function OrganizationDetailPage() {
               </CardBody>
             </Card>
 
-            {/* Video */}
-            {org.videoUrl && (
+            {/* Video - Sadece videoUrl varsa göster */}
+            {org.videoUrl && org.videoUrl.trim() !== "" && (
               <Card>
                 <CardBody className="p-6">
                   <Typography variant="h4" color="blue-gray" className="mb-4">
