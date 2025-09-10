@@ -1,11 +1,11 @@
 // İletişim bilgileri - Tek yerden yönetim
 export const CONTACT_INFO = {
-  phone: "0850 123 45 66",
-  email: "info@mutlugunum.com",
+  phone: "0551 100 10 14",
+  email: "mutlugunumsosyal@gmail.com",
   address: {
-    street: "Atatürk Mahallesi, Cumhuriyet Caddesi",
-    detail: "No: 123, Çankaya/Ankara",
-    full: "Atatürk Mahallesi, Cumhuriyet Caddesi\nNo: 123, Çankaya/Ankara"
+    street: "Osmangazi Mahallesi İstiklal Caddesi ",
+    detail: "No:49/B Darıca, Kocaeli",
+    full: "Osmangazi Mahallesi İstiklal Caddesi No:49/B Darıca, Kocaeli, Turkey"
   },
   workingHours: {
     weekdays: "Pazartesi - Cuma: 09:00 - 18:00",

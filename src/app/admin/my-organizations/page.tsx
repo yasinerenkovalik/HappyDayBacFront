@@ -46,19 +46,26 @@ export default function MyOrganizations() {
 
         if (response.isSuccess) {
           // API'den gelen organizasyonlara varsayılan değerler ekle
-          const organizationsWithDefaults = response.data.map(org => ({
-            ...org,
-            bookings: org.bookings || 0,
-            rating: org.rating || 0,
-            price: org.price || 0,
-            maxGuestCount: org.maxGuestCount || 0,
-            duration: org.duration || "Belirtilmemiş",
-            reservationNote: org.reservationNote || "",
-            cancelPolicy: org.cancelPolicy || "",
-            videoUrl: org.videoUrl || "",
-            companyId: org.companyId || ""
-          }));
+          const organizationsWithDefaults = response.data.map(org => {
+            console.log('🔍 Organization from API:', org);
 
+            return {
+              ...org,
+              // ID field'ını normalize et
+              id: org.id || org.Id || org.ID,
+              bookings: org.bookings || 0,
+              rating: org.rating || 0,
+              price: org.price || 0,
+              maxGuestCount: org.maxGuestCount || 0,
+              duration: org.duration || "Belirtilmemiş",
+              reservationNote: org.reservationNote || "",
+              cancelPolicy: org.cancelPolicy || "",
+              videoUrl: org.videoUrl || "",
+              companyId: org.companyId || ""
+            };
+          });
+
+          console.log('✅ Processed organizations:', organizationsWithDefaults);
           setOrganizations(organizationsWithDefaults);
         } else {
           setError(response.message || "Organizasyonlar yüklenirken hata oluştu");
@@ -75,43 +82,95 @@ export default function MyOrganizations() {
   }, []);
 
   const handleDeleteClick = (organization: Organization) => {
+    console.log('🗑️ Delete clicked - Full organization object:', organization);
+    console.log('🗑️ Organization ID fields:', {
+      id: organization.id,
+      Id: organization.Id,
+      ID: organization.ID
+    });
+
+    const orgId = organization.id || organization.Id || organization.ID;
+    if (!orgId) {
+      setError('Organizasyon ID\'si bulunamadı. Silme işlemi yapılamaz.');
+      return;
+    }
+
+    console.log('🗑️ Using ID for delete:', orgId);
     setOrganizationToDelete(organization);
     setDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if (!organizationToDelete) return;
+    if (!organizationToDelete) {
+      setError('Organizasyon bilgisi bulunamadı');
+      return;
+    }
+
+    // ID'yi farklı field'lardan almaya çalış
+    const orgId = organizationToDelete.id || organizationToDelete.Id || organizationToDelete.ID;
+
+    if (!orgId) {
+      console.error('❌ Organization object:', organizationToDelete);
+      setError('Organizasyon ID\'si bulunamadı. Organizasyon objesi: ' + JSON.stringify(organizationToDelete));
+      return;
+    }
 
     setDeleting(true);
     try {
       const token = getAuthToken();
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json'
-      };
+      const headers: Record<string, string> = {};
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch('/api/proxy/Organization/DeleteOrganization', {
+      console.log('🗑️ Deleting organization with ID:', orgId);
+      console.log('🗑️ Full organization object:', organizationToDelete);
+
+      // Hem query parameter hem de body ile deneyelim
+      const queryUrl = `/api/proxy/Organization/DeleteOrganization?Id=${encodeURIComponent(orgId)}`;
+
+      const requestBody = {
+        Id: orgId // Backend'in beklediği format: "Id" (büyük I)
+      };
+
+      console.log('📤 Delete URL with query:', queryUrl);
+      console.log('📤 Delete request body:', requestBody);
+
+      console.log('🗑️ Deleting organization with original format...');
+      console.log('� Reqiuest body:', { Id: orgId });
+      console.log('📤 orgId type:', typeof orgId);
+      console.log('📤 orgId value:', orgId);
+
+      // x-www-form-urlencoded body ve query ile gönder (bazı .NET action'ları formdan okur)
+      const formEncoded = new URLSearchParams();
+      formEncoded.set('Id', String(orgId));
+
+      const response = await fetch(`/api/proxy/Organization/DeleteOrganization?Id=${encodeURIComponent(orgId)}`, {
         method: 'DELETE',
-        headers,
-        body: JSON.stringify({
-          id: organizationToDelete.id
-        })
+        headers: {
+          ...headers,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formEncoded.toString()
       });
 
+      console.log('📡 Delete response status:', response.status);
+
       const result = await response.json();
+      console.log('📡 Delete response:', result);
 
       if (response.ok && result.isSuccess) {
         // Başarılı silme işlemi
-        setOrganizations(prev => prev.filter(org => org.id !== organizationToDelete.id));
+        setOrganizations(prev => prev.filter(org => (org.id || org.Id || org.ID) !== orgId));
         setDeleteDialogOpen(false);
         setOrganizationToDelete(null);
+        console.log('✅ Organization deleted successfully');
       } else {
-        setError(result.message || 'Organizasyon silinirken hata oluştu');
+        console.error('❌ Delete failed:', result);
+        setError(result.message || result.errors?.join(', ') || 'Organizasyon silinirken hata oluştu');
       }
     } catch (error) {
-      console.error('Delete error:', error);
+      console.error('💥 Delete error:', error);
       setError('Bağlantı hatası. Lütfen tekrar deneyin.');
     } finally {
       setDeleting(false);

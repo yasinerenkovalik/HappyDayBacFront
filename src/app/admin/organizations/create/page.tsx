@@ -25,6 +25,7 @@ import AdminLayout from "../../components/AdminLayout";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useRouter } from "next/navigation";
 import { getAuthToken, parseJWT } from "@/lib/auth";
+import { compressImage, compressImages } from "@/lib/image-compression";
 
 interface Category {
   id: number;
@@ -70,6 +71,7 @@ export default function OrganizationCreate() {
   const [loading, setLoading] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [compressingImages, setCompressingImages] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -305,23 +307,63 @@ export default function OrganizationCreate() {
     }));
   };
 
-  const handleCoverPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('📸 Cover photo change event:', e.target.files);
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       console.log('📸 Selected cover photo:', file.name, file.size);
-      setCoverPhoto(file);
+      
+      try {
+        setCompressingImages(true);
+        setError('');
+        
+        // Compress the image
+        const compressedFile = await compressImage(file, {
+          maxWidth: 1600,
+          maxHeight: 1200,
+          quality: 0.8,
+          maxSizeMB: 4
+        });
+        
+        console.log('📸 Compressed cover photo:', compressedFile.name, compressedFile.size);
+        setCoverPhoto(compressedFile);
+      } catch (error) {
+        console.error('❌ Cover photo compression failed:', error);
+        setError('Kapak fotoğrafı işlenirken hata oluştu. Lütfen tekrar deneyin.');
+      } finally {
+        setCompressingImages(false);
+      }
     }
     // Input'u sıfırla ki aynı dosya tekrar seçilebilsin
     e.target.value = '';
   };
 
-  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('📸 Images change event:', e.target.files);
     if (e.target.files) {
       const fileArray = Array.from(e.target.files);
       console.log('📸 Selected images:', fileArray.map(f => f.name));
-      setImages(fileArray);
+      
+      try {
+        setCompressingImages(true);
+        setError('');
+        
+        // Compress all images
+        const compressedFiles = await compressImages(fileArray, {
+          maxWidth: 1600,
+          maxHeight: 1200,
+          quality: 0.75,
+          maxSizeMB: 3
+        });
+        
+        console.log('📸 Compressed images:', compressedFiles.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(1)}MB)`));
+        setImages(compressedFiles);
+      } catch (error) {
+        console.error('❌ Images compression failed:', error);
+        setError('Fotoğraflar işlenirken hata oluştu. Lütfen tekrar deneyin.');
+      } finally {
+        setCompressingImages(false);
+      }
     }
     // Input'u sıfırla ki aynı dosyalar tekrar seçilebilsin
     e.target.value = '';
@@ -865,13 +907,14 @@ export default function OrganizationCreate() {
                           color="pink"
                           size="sm"
                           type="button"
+                          disabled={compressingImages}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             document.getElementById('cover-photo')?.click();
                           }}
                         >
-                          Kapak Fotoğrafı Seç
+                          {compressingImages ? "İşleniyor..." : "Kapak Fotoğrafı Seç"}
                         </Button>
                         {coverPhoto && (
                           <Typography variant="small" color="green" className="mt-3 font-medium">
@@ -900,13 +943,14 @@ export default function OrganizationCreate() {
                           color="pink"
                           size="sm"
                           type="button"
+                          disabled={compressingImages}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             document.getElementById('images')?.click();
                           }}
                         >
-                          Fotoğrafları Seç
+                          {compressingImages ? "İşleniyor..." : "Fotoğrafları Seç"}
                         </Button>
                         {images.length > 0 && (
                           <Typography variant="small" color="green" className="mt-3 font-medium">

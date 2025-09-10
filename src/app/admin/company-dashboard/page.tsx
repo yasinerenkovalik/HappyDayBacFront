@@ -284,16 +284,7 @@ export default function CompanyDashboard() {
                   >
                     Organizasyon Yönetimi ({organizations.length})
                   </Typography>
-                  <Button
-                    className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600"
-                    onClick={() => setEditDialog({ open: true, type: "organization", data: null })}
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                  >
-                    <PlusIcon className="h-4 w-4" />
-                    Yeni Organizasyon
-                  </Button>
+               
                 </div>
 
                 {loading ? (
@@ -501,34 +492,10 @@ export default function CompanyDashboard() {
                 </CardBody>
               </Card>
 
-              <Card className="shadow-lg">
-                <CardBody className="p-6">
-                  <Typography variant="h5" color="blue-gray" className="mb-4">
-                    Performans Özeti
-                  </Typography>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <Typography variant="small">Bu Ay Rezervasyon</Typography>
-                      <Typography variant="small" className="font-medium">12</Typography>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Typography variant="small">Bu Ay Gelir</Typography>
-                      <Typography variant="small" className="font-medium">₺85,000</Typography>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Typography variant="small">Ortalama Puan</Typography>
-                      <Typography variant="small" className="font-medium">4.8/5</Typography>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Typography variant="small">Aktif Organizasyon</Typography>
-                      <Typography variant="small" className="font-medium">
-                        {organizations.filter(org => org.status === "active").length}
-                      </Typography>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
+         
+         
             </div>
+          
           )}
 
           {/* Organization Dialog */}

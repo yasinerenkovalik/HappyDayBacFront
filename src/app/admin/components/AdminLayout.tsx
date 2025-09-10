@@ -113,11 +113,7 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
       icon: ChartBarIcon,
       href: "/admin/my-reports",
     },
-    {
-      label: "Profil Ayarları",
-      icon: CogIcon,
-      href: "/admin/profile",
-    },
+  
   ];
 
   const menuItems = userType === "admin" ? adminMenuItems : companyMenuItems;
@@ -223,14 +219,7 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
             </div>
 
             <div className="flex items-center gap-4 flex-shrink-0">
-              <Button
-                variant="outlined"
-                size="sm"
-                className="hidden md:flex items-center gap-2"
-              >
-                <UserIcon className="h-4 w-4" />
-                Profil
-              </Button>
+      
               <Button
                 size="sm"
                 className="bg-gradient-to-r from-pink-500 to-purple-600"

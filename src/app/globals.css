@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "leaflet/dist/leaflet.css";
+
 
 /* Prevent horizontal scroll globally */
 html {
@@ -10,6 +12,89 @@ html {
   width: 100%;
   box-sizing: border-box;
 }
+/* Harita kökü diğer stacking context'lerden etkilenmesin */
+.map-wrapper {
+  position: relative;
+  isolation: isolate;         /* kritik */
+}
+
+/* Hibrit Harita Container - Hem Google Maps hem Leaflet için */
+.hybrid-map-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 260px;
+  background: #f5f5f5 !important;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Google Maps Container Stilleri */
+.google-map-container,
+.hybrid-map-container .google-maps {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 8px;
+}
+
+/* Google Maps API elementlerini görünür yap */
+.hybrid-map-container > div > div,
+.google-map-container > div {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 8px;
+}
+
+.hybrid-map-container .gm-style,
+.google-map-container .gm-style {
+  border-radius: 8px !important;
+}
+
+/* Google Maps tile'larının yüklenmesini garanti et */
+.hybrid-map-container img,
+.google-map-container img {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-width: none !important;
+}
+
+/* Google Maps kontrol elementleri */
+.hybrid-map-container .gmnoprint,
+.google-map-container .gmnoprint {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Container ölçüsü ve arka plan */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 280px;
+  background: transparent !important;
+  position: relative;
+}
+
+/* Tile img’lerini MUTLAKA görünür yap */
+.leaflet-container img.leaflet-tile {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  max-width: none !important;   /* en kritik satır */
+  height: auto !important;
+}
+
+/* Panes / z-index olası çakışmalara karşı */
+.leaflet-map-pane,
+.leaflet-tile-pane,
+.leaflet-layer,
+.leaflet-pane {
+  opacity: 1 !important;
+  z-index: 1 !important;
+  transform: translateZ(0);
+}
+.leaflet-control-container { z-index: 1000 !important; }
 
 body {
   overflow-x: hidden;

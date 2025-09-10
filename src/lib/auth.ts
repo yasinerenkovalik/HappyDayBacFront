@@ -266,6 +266,8 @@ export interface Organization {
   coverPhotoPath: string;
   companyId: string;
   id: string;
+  Id?: string; // Backend'den gelebilecek alternatif ID field'ı
+  ID?: string; // Başka bir alternatif
   bookings?: number;
   rating?: number;
 }

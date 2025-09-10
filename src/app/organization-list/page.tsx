@@ -11,6 +11,7 @@ import {
   getAllCategories,
   getAllCities,
   getFilteredOrganizations,
+  getDistrictsByCity,
 } from "@/lib/api";
 import { Organization } from "@/entities/organization.entity";
 import {
@@ -33,15 +34,40 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 
-function OrganizationCard({ org }: { org: Organization }) {
+function OrganizationCard({ org, cities, allDistricts }: { org: Organization; cities: City[]; allDistricts: District[] }) {
   return (
     <Link href={`/organization-detail/${org.id}`}>
       <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer">
         <div className="relative overflow-hidden">
           <img
-            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
+            src={(() => {
+              // Eğer coverPhotoPath yoksa veya null ise default image kullan
+              if (!org.coverPhotoPath || org.coverPhotoPath === null) {
+                console.log('⚠️ No coverPhotoPath for', org.title);
+                return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDQwMCAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjU2IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTI4SDE2MEwxODAgMTA4SDE0MEwxNjAgODhIMjAwTDIyMCAxMDhIMjYwTDI0MCAxMjhIMjAwWiIgZmlsbD0iI0Q1RDlERCIvPgo8L3N2Zz4K';
+              }
+              
+              // coverPhotoPath'in başında '/' var mı kontrol et
+              const cleanPath = org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath : `/${org.coverPhotoPath}`;
+              const imagePath = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${cleanPath}`;
+              
+              console.log('🖼️ Image path for', org.title, ':', imagePath);
+              console.log('🖼️ Original coverPhotoPath:', org.coverPhotoPath);
+              console.log('🖼️ Clean path:', cleanPath);
+              console.log('🖼️ IMAGE_BASE_URL:', process.env.NEXT_PUBLIC_IMAGE_BASE_URL);
+              
+              return imagePath;
+            })()
+            }
             alt={org.title}
             className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              console.log('❌ Image load error for', org.title);
+              console.log('❌ Failed image src:', e.currentTarget.src);
+              console.log('❌ coverPhotoPath was:', org.coverPhotoPath);
+              // SVG placeholder olarak değiştir
+              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDQwMCAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjU2IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTI4SDE2MEwxODAgMTA4SDE0MEwxNjAgODhIMjAwTDIyMCAxMDhIMjYwTDI0MCAxMjhIMjAwWiIgZmlsbD0iI0Q1RDlERCIvPgo8L3N2Zz4K';
+            }}
           />
           <div className="absolute top-4 right-4">
             <Button
@@ -82,7 +108,53 @@ function OrganizationCard({ org }: { org: Organization }) {
 
             <div className="flex items-center gap-2 text-gray-600">
               <MapPinIcon className="h-4 w-4" />
-              <Typography variant="small">{org.location || "Konum belirtilmemiş"}</Typography>
+              <Typography variant="small">
+                {(() => {
+                  // cityId ve districtId kullanarak sunucudan gerçek isimleri al
+                  if (org.cityId && cities && cities.length > 0) {
+                    const foundCity = cities.find(city => city.id === org.cityId);
+                    
+                    if (org.districtId && allDistricts && allDistricts.length > 0) {
+                      const foundDistrict = allDistricts.find(district => district.id === org.districtId);
+                      
+                      if (foundCity && foundDistrict) {
+                        console.log('✅ Using cityId + districtId:', `${foundDistrict.districtName}, ${foundCity.cityName}`);
+                        return `${foundDistrict.districtName}, ${foundCity.cityName}`;
+                      }
+                    }
+                    
+                    if (foundCity) {
+                      console.log('✅ Using cityId only:', foundCity.cityName);
+                      return foundCity.cityName;
+                    }
+                  }
+                  
+                  // Fallback: direkt API'den gelen isimler
+                  if (org.districtName && org.cityName) {
+                    console.log('✅ Using API districtName + cityName:', `${org.districtName}, ${org.cityName}`);
+                    return `${org.districtName}, ${org.cityName}`;
+                  }
+                  
+                  if (org.districtName) {
+                    console.log('✅ Using API districtName:', org.districtName);
+                    return org.districtName;
+                  }
+                  
+                  if (org.cityName) {
+                    console.log('✅ Using API cityName:', org.cityName);
+                    return org.cityName;
+                  }
+                  
+                  if (org.location) {
+                    console.log('✅ Using location field:', org.location);
+                    return org.location;
+                  }
+                  
+                  console.log('❌ No location data found - cityId:', org.cityId, 'districtId:', org.districtId);
+                  return "Konum belirtilmemiş";
+                })()
+                }
+              </Typography>
             </div>
           </div>
 
@@ -114,10 +186,17 @@ interface City {
   cityName: string;
 }
 
+interface District {
+  id: number;
+  districtName: string;
+}
+
 export default function OrganizationListPage() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [cities, setCities] = useState<City[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [allDistricts, setAllDistricts] = useState<District[]>([]); // Tüm ilçeler
   const [loading, setLoading] = useState(true);
 
   // Pagination states
@@ -128,11 +207,62 @@ export default function OrganizationListPage() {
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [isOutdoor, setIsOutdoor] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  // Cache keys for localStorage
+  const CACHE_KEYS = {
+    ORGANIZATIONS: 'organizations_cache',
+    CATEGORIES: 'categories_cache',
+    CITIES: 'cities_cache',
+    DISTRICTS: 'districts_cache',
+    FILTERED_ORGS: 'filtered_organizations_cache'
+  };
 
-  // Fetch organizations with pagination
+  // Cache duration (5 minutes)
+  const CACHE_DURATION = 5 * 60 * 1000;
+
+  // Helper function to check if cache is valid
+  const isCacheValid = (cacheKey: string) => {
+    const cached = localStorage.getItem(cacheKey);
+    if (!cached) return false;
+    
+    try {
+      const { timestamp } = JSON.parse(cached);
+      return Date.now() - timestamp < CACHE_DURATION;
+    } catch {
+      return false;
+    }
+  };
+
+  // Helper function to get from cache
+  const getFromCache = (cacheKey: string) => {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const { data } = JSON.parse(cached);
+        return data;
+      }
+    } catch {
+      localStorage.removeItem(cacheKey);
+    }
+    return null;
+  };
+
+  // Helper function to save to cache
+  const saveToCache = (cacheKey: string, data: any) => {
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify({
+        data,
+        timestamp: Date.now()
+      }));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  };
+
+  // Fetch organizations with pagination and caching
   const fetchOrganizations = async (page = 1, resetPage = false) => {
     try {
       setLoading(true);
@@ -142,30 +272,64 @@ export default function OrganizationListPage() {
         page = 1;
       }
 
+      // Cache key with page info
+      const cacheKey = `${CACHE_KEYS.ORGANIZATIONS}_page_${page}`;
+      
+      // Check cache first
+      if (isCacheValid(cacheKey)) {
+        const cachedData = getFromCache(cacheKey);
+        if (cachedData) {
+          console.log('📦 Organizations loaded from cache (page', page, ')');
+          setOrganizations(cachedData.organizations || []);
+          setTotalCount(cachedData.totalCount || 0);
+          setTotalPages(cachedData.totalPages || 1);
+          setCurrentPage(page);
+          setLoading(false);
+          
+          // Cache'den yüklenen organizations için de districts çek
+          await fetchAllDistrictsForOrganizations(cachedData.organizations || []);
+          return;
+        }
+      }
+
       // API call with pagination parameters
       const data = await getPaginatedOrganizations(page, pageSize);
 
       console.log("Organizations API response:", data);
+      console.log("First organization sample:", data?.data?.[0]);
 
       if (data.isSuccess && data.data) {
+        let orgsData, totalCount, totalPages;
+        
         // Assuming API returns paginated data structure
         if (Array.isArray(data.data)) {
-          setOrganizations(data.data);
-          // If API doesn't return pagination info, calculate from data length
-          setTotalCount(data.totalCount || data.data.length);
-          setTotalPages(Math.ceil((data.totalCount || data.data.length) / pageSize));
+          orgsData = data.data;
+          totalCount = data.totalCount || data.data.length;
+          totalPages = Math.ceil(totalCount / pageSize);
         } else if (data.data.items && Array.isArray(data.data.items)) {
-          // If API returns { items: [], totalCount: number, totalPages: number }
-          setOrganizations(data.data.items);
-          setTotalCount(data.data.totalCount || 0);
-          setTotalPages(data.data.totalPages || Math.ceil((data.data.totalCount || 0) / pageSize));
+          orgsData = data.data.items;
+          totalCount = data.data.totalCount || 0;
+          totalPages = data.data.totalPages || Math.ceil(totalCount / pageSize);
         } else {
-          setOrganizations([]);
-          setTotalCount(0);
-          setTotalPages(1);
+          orgsData = [];
+          totalCount = 0;
+          totalPages = 1;
         }
 
+        // Save to cache
+        saveToCache(cacheKey, {
+          organizations: orgsData,
+          totalCount,
+          totalPages
+        });
+
+        setOrganizations(orgsData);
+        setTotalCount(totalCount);
+        setTotalPages(totalPages);
         setCurrentPage(page);
+        
+        // Organizations yüklendikten sonra ilgili districts'i çek
+        await fetchAllDistrictsForOrganizations(orgsData);
       } else {
         setOrganizations([]);
         setTotalCount(0);
@@ -181,16 +345,111 @@ export default function OrganizationListPage() {
     }
   };
 
+  // Fetch all districts for organizations
+  const fetchAllDistrictsForOrganizations = async (orgs: Organization[]) => {
+    try {
+      // Organizasyonlardaki unique cityId'leri bul
+      const uniqueCityIds = [...new Set(orgs.map(org => org.cityId).filter(Boolean))];
+      console.log('🏙️ Unique city IDs in organizations:', uniqueCityIds);
+      
+      if (uniqueCityIds.length === 0) return;
+      
+      // Her cityId için districts'i çek
+      const allDistrictsPromises = uniqueCityIds.map(async (cityId) => {
+        try {
+          const cacheKey = `${CACHE_KEYS.DISTRICTS}_city_${cityId}`;
+          
+          // Cache kontrol
+          if (isCacheValid(cacheKey)) {
+            const cachedData = getFromCache(cacheKey);
+            if (cachedData) {
+              console.log(`📦 Districts loaded from cache for city ${cityId}`);
+              return cachedData;
+            }
+          }
+          
+          const districts = await getDistrictsByCity(cityId);
+          console.log(`🌐 Districts fetched for city ${cityId}:`, districts?.length || 0);
+          
+          // Cache'e kaydet
+          if (districts) {
+            saveToCache(cacheKey, districts);
+          }
+          
+          return districts || [];
+        } catch (error) {
+          console.error(`Error fetching districts for city ${cityId}:`, error);
+          return [];
+        }
+      });
+      
+      const allDistrictsArrays = await Promise.all(allDistrictsPromises);
+      const flatDistricts = allDistrictsArrays.flat();
+      
+      console.log('📍 All districts loaded:', flatDistricts.length);
+      setAllDistricts(flatDistricts);
+      
+    } catch (error) {
+      console.error('Error fetching all districts:', error);
+    }
+  };
+
+  // Fetch districts when city is selected (for filter dropdown)
+  const fetchDistricts = async (cityId: number) => {
+    try {
+      const cacheKey = `${CACHE_KEYS.DISTRICTS}_city_${cityId}`;
+      
+      // Check cache first
+      if (isCacheValid(cacheKey)) {
+        const cachedData = getFromCache(cacheKey);
+        if (cachedData) {
+          console.log('📦 Districts loaded from cache for filter', cityId);
+          setDistricts(Array.isArray(cachedData) ? cachedData : []);
+          return;
+        }
+      }
+
+      const data = await getDistrictsByCity(cityId);
+      console.log("Districts received for filter", cityId, ":", data);
+      const safeDistricts = Array.isArray(data) ? data : [];
+      
+      // Save to cache
+      saveToCache(cacheKey, safeDistricts);
+      
+      setDistricts(safeDistricts);
+    } catch (error) {
+      console.error("Error fetching districts for filter:", error);
+      setDistricts([]);
+    }
+  };
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
 
-        // Fetch categories and cities (these don't need pagination)
-        const [categoriesData, citiesData] = await Promise.all([
-          getAllCategories(),
-          getAllCities()
-        ]);
+        // Check cache for categories and cities
+        let categoriesData, citiesData;
+        
+        // Categories cache check
+        if (isCacheValid(CACHE_KEYS.CATEGORIES)) {
+          categoriesData = getFromCache(CACHE_KEYS.CATEGORIES);
+          console.log('📦 Categories loaded from cache');
+        } else {
+          categoriesData = await getAllCategories();
+          saveToCache(CACHE_KEYS.CATEGORIES, categoriesData);
+          console.log('🌐 Categories fetched from API');
+        }
+
+        // Cities cache check
+        if (isCacheValid(CACHE_KEYS.CITIES)) {
+          citiesData = getFromCache(CACHE_KEYS.CITIES);
+          console.log('📦 Cities loaded from cache');
+        } else {
+          citiesData = await getAllCities();
+          saveToCache(CACHE_KEYS.CITIES, citiesData);
+          console.log('🌐 Cities fetched from API');
+        }
 
         console.log("Categories received:", categoriesData);
         console.log("Cities received:", citiesData);
@@ -218,22 +477,61 @@ export default function OrganizationListPage() {
     fetchInitialData();
   }, []);
 
+  // Fetch districts when city is selected
+  useEffect(() => {
+    if (selectedCity) {
+      fetchDistricts(parseInt(selectedCity));
+    } else {
+      setDistricts([]);
+      setSelectedDistrict(""); // Clear district selection when city is cleared
+    }
+  }, [selectedCity]);
+
   const handleFilter = async () => {
     setLoading(true);
     const filters = {
       categoryId: selectedCategory || undefined,
       cityId: selectedCity || undefined,
+      districtId: selectedDistrict || undefined,
       maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
       isOutdoor: isOutdoor === "" ? undefined : isOutdoor === "true",
     };
 
     try {
+      // Create cache key based on filters
+      const filterKey = Object.entries(filters)
+        .filter(([key, value]) => value !== undefined)
+        .map(([key, value]) => `${key}_${value}`)
+        .join('_');
+      const cacheKey = `${CACHE_KEYS.FILTERED_ORGS}_${filterKey}`;
+      
+      // Check cache for filtered results
+      if (isCacheValid(cacheKey)) {
+        const cachedData = getFromCache(cacheKey);
+        if (cachedData) {
+          console.log('📦 Filtered organizations loaded from cache');
+          setOrganizations(Array.isArray(cachedData) ? cachedData : []);
+          setCurrentPage(1);
+          setTotalCount(Array.isArray(cachedData) ? cachedData.length : 0);
+          setTotalPages(Math.ceil((Array.isArray(cachedData) ? cachedData.length : 0) / pageSize));
+          setLoading(false);
+          return;
+        }
+      }
+
       const data = await getFilteredOrganizations(filters);
-      setOrganizations(Array.isArray(data) ? data : []);
+      console.log('🌐 Filtered organizations fetched from API');
+      
+      const safeData = Array.isArray(data) ? data : [];
+      
+      // Save to cache
+      saveToCache(cacheKey, safeData);
+      
+      setOrganizations(safeData);
       // Reset pagination when filtering
       setCurrentPage(1);
-      setTotalCount(Array.isArray(data) ? data.length : 0);
-      setTotalPages(Math.ceil((Array.isArray(data) ? data.length : 0) / pageSize));
+      setTotalCount(safeData.length);
+      setTotalPages(Math.ceil(safeData.length / pageSize));
     } catch (error) {
       console.error("Filter error:", error);
       setOrganizations([]);
@@ -246,13 +544,13 @@ export default function OrganizationListPage() {
 
   // Otomatik filtreleme için useEffect
   useEffect(() => {
-    if (selectedCategory || selectedCity || maxPrice || isOutdoor) {
+    if (selectedCategory || selectedCity || selectedDistrict || maxPrice || isOutdoor) {
       handleFilter();
     } else {
       // No filters applied, fetch paginated data
       fetchOrganizations(1, true);
     }
-  }, [selectedCategory, selectedCity, maxPrice, isOutdoor]);
+  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor]);
 
   // Arama için useEffect (debounce ile)
   useEffect(() => {
@@ -274,17 +572,32 @@ export default function OrganizationListPage() {
   const clearFilters = () => {
     setSelectedCategory("");
     setSelectedCity("");
+    setSelectedDistrict("");
     setMaxPrice("");
     setIsOutdoor("");
     setSearchTerm("");
     fetchOrganizations(1, true);
   };
 
+  // Clear cache function (useful for debugging or force refresh)
+  const clearCache = () => {
+    Object.values(CACHE_KEYS).forEach(key => {
+      // Clear all cached data for this key pattern
+      Object.keys(localStorage).forEach(storageKey => {
+        if (storageKey.startsWith(key)) {
+          localStorage.removeItem(storageKey);
+        }
+      });
+    });
+    console.log('🧽 Cache cleared, reloading data...');
+    window.location.reload();
+  };
+
   // Handle page change
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
       // If filters are applied, handle client-side pagination
-      if (selectedCategory || selectedCity || maxPrice || isOutdoor || searchTerm) {
+      if (selectedCategory || selectedCity || selectedDistrict || maxPrice || isOutdoor || searchTerm) {
         setCurrentPage(page);
         // Client-side pagination for filtered results would need to be implemented
         // For now, we'll just change the page number
@@ -340,7 +653,7 @@ export default function OrganizationListPage() {
               </Typography>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
               {/* Kategori */}
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -415,6 +728,45 @@ export default function OrganizationListPage() {
                 {selectedCity && (
                   <div className="text-xs text-pink-600 font-medium">
                     ✓ Şehir seçildi
+                  </div>
+                )}
+              </div>
+
+              {/* İlçe */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  🏘️ İlçe
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedDistrict}
+                    onChange={(e) => {
+                      setSelectedDistrict(e.target.value);
+                    }}
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 appearance-none cursor-pointer shadow-sm hover:shadow-md"
+                    disabled={!selectedCity || districts.length === 0}
+                  >
+                    <option value="">Tüm İlçeler</option>
+                    {districts && districts.length > 0 ? districts.map((district) => (
+                      <option key={district.id} value={district.id.toString()}>
+                        {district.districtName}
+                      </option>
+                    )) : (
+                      <option value="" disabled>
+                        {!selectedCity ? "Önce şehir seçin" : "İlçeler yükleniyor..."}
+                      </option>
+                    )}
+                  </select>
+                  {/* Custom dropdown arrow */}
+                  <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+                {selectedDistrict && (
+                  <div className="text-xs text-pink-600 font-medium">
+                    ✓ İlçe seçildi
                   </div>
                 )}
               </div>
@@ -500,6 +852,17 @@ export default function OrganizationListPage() {
                     </button>
                   </span>
                 )}
+                {selectedDistrict && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    🏘️ İlçe seçili
+                    <button
+                      onClick={() => setSelectedDistrict("")}
+                      className="ml-2 text-purple-600 hover:text-purple-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
                 {maxPrice && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     💰 Max {parseInt(maxPrice).toLocaleString()} ₺
@@ -525,7 +888,7 @@ export default function OrganizationListPage() {
               </div>
 
               {/* Clear All Button */}
-              {(selectedCategory || selectedCity || maxPrice || isOutdoor) && (
+              {(selectedCategory || selectedCity || selectedDistrict || maxPrice || isOutdoor) && (
                 <button
                   onClick={clearFilters}
                   className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-200 flex items-center gap-2"
@@ -569,7 +932,12 @@ export default function OrganizationListPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {organizations.map((org) => (
-                <OrganizationCard key={org.id} org={org} />
+                <OrganizationCard 
+                  key={org.id} 
+                  org={org} 
+                  cities={cities} 
+                  allDistricts={allDistricts} 
+                />
               ))}
             </div>
 

@@ -1,6 +1,6 @@
 import { Organization } from "@/entities/organization.entity";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy";
+const BASE_URL = "/api/proxy";
 
 // Tüm organizasyonları getir
 export async function getAllOrganizations(): Promise<Organization[]> {
@@ -11,21 +11,55 @@ export async function getAllOrganizations(): Promise<Organization[]> {
 
 // Sayfalı organizasyonları getir
 export async function getPaginatedOrganizations(pageNumber: number = 1, pageSize: number = 6) {
-  const res = await fetch(`${BASE_URL}/Organization/OrganizationGetAll?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-  const data = await res.json();
-  return data;
+  const url = `${BASE_URL}/Organization/OrganizationGetAll?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  console.log('🔍 API Call URL:', url);
+  
+  try {
+    const res = await fetch(url);
+    console.log('🔍 API Response Status:', res.status, res.statusText);
+    
+    if (!res.ok) {
+      throw new Error(`API request failed: ${res.status} ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    console.log('🔍 API Response Data:', data);
+    console.log('🔍 First organization raw data:', data?.data?.[0]);
+    return data;
+  } catch (error) {
+    console.error('❌ API Error:', error);
+    throw error;
+  }
 }
 
 // 🔧 Eksik olan fonksiyonları burada tanımlıyoruz:
 
 export async function getAllCities(): Promise<{ id: number; cityName: string }[]> {
+  console.log('🔍 API Call: getAllCities');
   const res = await fetch(`${BASE_URL}/City/CityGetAll`);
   const data = await res.json();
+  console.log('🔍 API Response: getAllCities', data);
+  console.log('🔍 Cities data sample:', data?.data?.slice(0, 3));
   return data.data;
 }
 
 export async function getAllCategories() {
   const res = await fetch(`${BASE_URL}/Category/OrganizationGetAll`);
+  const data = await res.json();
+  return data.data;
+}
+
+export async function getDistrictsByCity(cityId: number): Promise<{ id: number; districtName: string }[]> {
+  const res = await fetch(`${BASE_URL}/District/GetAllDisctrictByCity`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'text/plain'
+    },
+    body: JSON.stringify({
+      cityId: cityId
+    })
+  });
   const data = await res.json();
   return data.data;
 }
@@ -45,14 +79,34 @@ export async function getFilteredOrganizations(filters: {
     }
   });
   
-  const res = await fetch(`${BASE_URL}/Organization/Filter?${params}`);
-  const data = await res.json();
-  return data.data;
+  const url = `${BASE_URL}/Organization/Filter?${params}`;
+  console.log('🔍 Filter API URL:', url);
+  console.log('🔍 Filter params:', filters);
+  
+  try {
+    const res = await fetch(url);
+    console.log('🔍 Filter API Response Status:', res.status);
+    
+    if (!res.ok) {
+      throw new Error(`Filter API request failed: ${res.status} ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    console.log('🔍 Filter API Response Data:', data);
+    console.log('🔍 First filtered organization:', data?.data?.[0]);
+    
+    return data.data;
+  } catch (error) {
+    console.error('❌ Filter API Error:', error);
+    throw error;
+  }
 }
 
 export async function getOrganizationDetail(id: string) {
   const res = await fetch(`${BASE_URL}/Organization/GetOrganizationWithImages?Id=${id}`);
   const data = await res.json();
+  console.log('🔍 Organization detail API response:', data);
+  console.log('🔍 Organization detail data:', data.data);
   return data.data;
 }
 

@@ -21,9 +21,9 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     try {
         // Path validation
         if (!params.path || params.path.length === 0) {
-            return NextResponse.json({ 
-                error: 'Invalid Path', 
-                message: 'API path is required' 
+            return NextResponse.json({
+                error: 'Invalid Path',
+                message: 'API path is required'
             }, { status: 400 });
         }
 
@@ -105,9 +105,9 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
     try {
         // Path validation
         if (!params.path || params.path.length === 0) {
-            return NextResponse.json({ 
-                error: 'Invalid Path', 
-                message: 'API path is required' 
+            return NextResponse.json({
+                error: 'Invalid Path',
+                message: 'API path is required'
             }, { status: 400 });
         }
 
@@ -163,8 +163,26 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
             });
         }
 
-        const data = await response.json();
-        console.log('✅ Backend success response');
+        // Response'u önce text olarak oku, sonra JSON parse et
+        const responseText = await response.text();
+        console.log('📡 Backend response text:', responseText.substring(0, 200) + '...');
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+            console.log('✅ Backend success response (parsed)');
+        } catch (parseError) {
+            console.error('❌ JSON parse error:', parseError);
+            console.error('❌ Response text:', responseText);
+            return NextResponse.json({
+                error: 'Invalid JSON Response',
+                message: 'Backend returned invalid JSON',
+                responseText: responseText.substring(0, 500)
+            }, {
+                status: 502,
+                headers: getResponseHeaders()
+            });
+        }
 
         return NextResponse.json(data, {
             status: response.status,
@@ -255,9 +273,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
 
         console.log('🗑️ Proxy DELETE Request:', url);
 
-        const headers: HeadersInit = {
-            'Content-Type': 'application/json',
-        };
+        const headers: HeadersInit = {};
 
         // Authorization header'ını kopyala
         const authHeader = request.headers.get('authorization');
@@ -266,14 +282,37 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
             console.log('🔑 Auth header present for DELETE');
         }
 
-        // Request body'yi al
-        let body;
+        // Request body'yi al ve Content-Type'a göre ilet
+        const contentType = request.headers.get('content-type');
+        let body: any = undefined;
+
         try {
-            const requestBody = await request.json();
-            body = JSON.stringify(requestBody);
-            console.log('📤 DELETE request body:', requestBody);
+            if (contentType?.includes('application/json')) {
+                headers['Content-Type'] = 'application/json';
+                const json = await request.json();
+                body = JSON.stringify(json);
+                console.log('📤 DELETE JSON body:', json);
+            } else if (contentType?.includes('multipart/form-data')) {
+                // FormData gönderiminde Content-Type otomatik ayarlansın (boundary ile)
+                body = await request.formData();
+                console.log('📤 DELETE multipart/form-data body (keys):', Array.from(body.keys()));
+            } else if (contentType?.includes('application/x-www-form-urlencoded')) {
+                headers['Content-Type'] = contentType;
+                body = await request.text();
+                console.log('📤 DELETE x-www-form-urlencoded body length:', body?.length || 0);
+            } else {
+                // Bazı istemciler Content-Type göndermeden gövde iletebilir
+                const rawText = await request.text();
+                if (rawText) {
+                    if (contentType) headers['Content-Type'] = contentType;
+                    body = rawText;
+                    console.log('📤 DELETE raw body length:', rawText.length);
+                } else {
+                    console.log('ℹ️ No body in DELETE request');
+                }
+            }
         } catch (e) {
-            console.log('ℹ️ No body in DELETE request');
+            console.log('ℹ️ Failed to read DELETE body:', e);
         }
 
         console.log('📡 Calling backend DELETE:', url);
@@ -298,8 +337,26 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
             });
         }
 
-        const data = await response.json();
-        console.log('✅ Backend DELETE success');
+        // Response'u önce text olarak oku, sonra JSON parse et
+        const responseText = await response.text();
+        console.log('📡 Backend DELETE response text:', responseText.substring(0, 200) + '...');
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+            console.log('✅ Backend DELETE success (parsed)');
+        } catch (parseError) {
+            console.error('❌ DELETE JSON parse error:', parseError);
+            console.error('❌ DELETE Response text:', responseText);
+            return NextResponse.json({
+                error: 'Invalid JSON Response',
+                message: 'Backend returned invalid JSON for DELETE',
+                responseText: responseText.substring(0, 500)
+            }, {
+                status: 502,
+                headers: getResponseHeaders()
+            });
+        }
 
         return NextResponse.json(data, {
             status: response.status,

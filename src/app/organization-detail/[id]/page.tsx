@@ -205,12 +205,14 @@ export default function OrganizationDetailPage() {
               <div className="flex items-center gap-4 text-white/90">
                 <div className="flex items-center gap-1">
                   <MapPinIcon className="h-5 w-5" />
-                  <Typography>{org.location || "Konum belirtilmemiş"}</Typography>
+                  <Typography>
+                    {org.cityName && org.districtName 
+                      ? `${org.districtName}, ${org.cityName}`
+                      : org.location || "Konum belirtilmemiş"
+                    }
+                  </Typography>
                 </div>
-                <div className="flex items-center gap-1">
-                  <StarIcon className="h-5 w-5 text-yellow-400" />
-                  <Typography>4.8 (124 değerlendirme)</Typography>
-                </div>
+            
               </div>
             </div>
           </div>
@@ -371,14 +373,18 @@ export default function OrganizationDetailPage() {
                 <Typography variant="h4" color="blue-gray" className="mb-4">
                   Detay Bilgileri
                 </Typography>
-                <div className="space-y-3">
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <Typography className="font-medium">Rezervasyon Notu:</Typography>
-                    <Typography color="gray">{org.reservationNote}</Typography>
+                <div className="space-y-4">
+                  <div className="py-3 border-b border-gray-100">
+                    <Typography className="font-medium mb-2">Rezervasyon Notu:</Typography>
+                    <Typography color="gray" className="text-sm leading-relaxed break-words">
+                      {org.reservationNote}
+                    </Typography>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <Typography className="font-medium">İptal Politikası:</Typography>
-                    <Typography color="gray">{org.cancelPolicy}</Typography>
+                  <div className="py-3 border-b border-gray-100">
+                    <Typography className="font-medium mb-2">İptal Politikası:</Typography>
+                    <Typography color="gray" className="text-sm leading-relaxed break-words">
+                      {org.cancelPolicy}
+                    </Typography>
                   </div>
                 </div>
               </CardBody>

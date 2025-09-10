@@ -23,8 +23,8 @@ import {
 } from "@heroicons/react/24/outline";
 
 import AdminLayout from "../../../components/AdminLayout";
-// Map functionality simplified for stability
 import ProtectedRoute from "../../../components/ProtectedRoute";
+import Map from "@/components/Map";
 import { getCompanyDetails, updateCompany, CompanyUpdateData } from "@/lib/auth";
 
 interface Company {
@@ -206,7 +206,7 @@ export default function EditCompanyPage() {
                 
                 // Global test fonksiyonu ekle
                 (window as any).testCompanyAPI = async () => {
-                    const token = localStorage.getItem('authToken');
+                    const testToken = localStorage.getItem('authToken');
                     console.log('🧪 Testing Company API...');
                     
                     // Test 1: No auth
@@ -218,10 +218,10 @@ export default function EditCompanyPage() {
                     }
                     
                     // Test 2: With auth
-                    if (token) {
+                    if (testToken) {
                         try {
                             const response2 = await fetch(`http://193.111.77.142/api/Company/getbyid?Id=${companyId}`, {
-                                headers: { 'Authorization': `Bearer ${token}` }
+                                headers: { 'Authorization': `Bearer ${testToken}` }
                             });
                             console.log('✅ With Auth Test:', response2.status, await response2.text());
                         } catch (e) {
@@ -237,12 +237,32 @@ export default function EditCompanyPage() {
                 }
 
                 console.log("Fetching company with ID:", companyId);
-                const response = await getCompanyDetails(companyId);
-                console.log("Company response:", response);
+                
+                // Token ile direkt API çağrısı yap
+                const headers: Record<string, string> = {
+                    'Content-Type': 'application/json'
+                };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
 
-                if (response.isSuccess) {
+                const response = await fetch(`/api/proxy/Company/getbyid?Id=${companyId}`, {
+                    headers
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Company API Error:', response.status, errorText);
+                    setError(`Şirket bilgileri yüklenirken hata oluştu (${response.status})`);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Company response:", data);
+
+                if (data.isSuccess) {
                     // API response'u array mi yoksa tek obje mi kontrol et
-                    const companyData = Array.isArray(response.data) ? response.data[0] : response.data;
+                    const companyData = Array.isArray(data.data) ? data.data[0] : data.data;
 
                     if (companyData) {
                         setCompany(companyData);
@@ -266,7 +286,7 @@ export default function EditCompanyPage() {
                         setError("Şirket bilgileri bulunamadı.");
                     }
                 } else {
-                    setError(response.message || response.errors?.join(', ') || "Şirket bilgileri yüklenirken hata oluştu.");
+                    setError(data.message || data.errors?.join(', ') || "Şirket bilgileri yüklenirken hata oluştu.");
                 }
             } catch (error) {
                 console.error("Error fetching company:", error);
@@ -670,19 +690,23 @@ export default function EditCompanyPage() {
                                                 >
                                                     Konum: {mapPosition[0].toFixed(6)}, {mapPosition[1].toFixed(6)}
                                                 </Typography>
-                                                <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-300 bg-gray-100 flex items-center justify-center">
-                                                    <div className="text-center">
-                                                        <Typography variant="h6" color="gray" className="mb-2">
-                                                            Konum Bilgisi
-                                                        </Typography>
-                                                        <Typography variant="small" color="gray">
-                                                            Enlem: {mapPosition[0].toFixed(6)}
-                                                        </Typography>
-                                                        <Typography variant="small" color="gray">
-                                                            Boylam: {mapPosition[1].toFixed(6)}
-                                                        </Typography>
-                                                    </div>
-                                                </div>
+                                                <Map
+  latitude={mapPosition[0]}
+  longitude={mapPosition[1]}
+  title={company?.name || "Şirket Konumu"}
+  onLocationSelect={handleLocationSelect}
+  className="h-64"
+/>
+                                                <Typography
+                                                    variant="small"
+                                                    color="gray"
+                                                    className="mt-2"
+                                                    placeholder={undefined}
+                                                    onPointerEnterCapture={undefined}
+                                                    onPointerLeaveCapture={undefined}
+                                                >
+                                                    💡 Haritaya tıklayarak konum seçebilir veya işaretçiyi sürükleyerek konumu değiştirebilirsiniz
+                                                </Typography>
                                             </div>
                                         </div>
                                     </CardBody>
