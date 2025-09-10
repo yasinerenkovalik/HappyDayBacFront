@@ -19,6 +19,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
+import { registerCompanyByInvite } from "@/lib/api";
 
 interface CompanyRegistrationData {
   token: string;
@@ -107,19 +108,11 @@ export default function CreateCompanyPage() {
 
       console.log("Sending company registration request:", requestBody);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/company/register-by-invite`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      const result: RegistrationResponse = await response.json();
+      const result = await registerCompanyByInvite(requestBody);
 
       console.log("Registration API Response:", result);
 
-      if (response.ok) {
+      if (result.isSuccess || result.success) {
         setSuccess("Şirket kaydı başarıyla tamamlandı! Giriş sayfasına yönlendiriliyorsunuz...");
 
         // 3 saniye sonra login sayfasına yönlendir
@@ -127,7 +120,8 @@ export default function CreateCompanyPage() {
           router.push("/admin/login");
         }, 3000);
       } else {
-        setError(result.message || result.title || "Kayıt işlemi sırasında hata oluştu");
+        const errorMsg = result.message || result.error || result.title || "Kayıt işlemi sırasında hata oluştu";
+        setError(errorMsg);
       }
     } catch (error) {
       console.error("Company registration error:", error);

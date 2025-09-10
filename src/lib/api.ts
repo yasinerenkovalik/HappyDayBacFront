@@ -211,3 +211,195 @@ export async function getCompanyContactMessages(companyId: string) {
   const data = await res.json();
   return data;
 }
+
+// Davetiye gönder
+export async function sendInvitation(data: {
+  email: string;
+  companyNameHint: string;
+  expiresAt: string;
+}) {
+  // Try different possible token keys
+  const token = localStorage.getItem('token') || 
+                localStorage.getItem('authToken') || 
+                localStorage.getItem('jwt') ||
+                localStorage.getItem('accessToken');
+  
+  console.log('🔍 localStorage debug:', {
+    allKeys: Object.keys(localStorage),
+    tokenExists: !!token,
+    tokenValue: token,
+    tokenType: typeof token,
+    tokenLength: token?.length || 0,
+    checkedKeys: {
+      token: localStorage.getItem('token'),
+      authToken: localStorage.getItem('authToken'),
+      jwt: localStorage.getItem('jwt'),
+      accessToken: localStorage.getItem('accessToken')
+    }
+  });
+  
+  if (!token) {
+    console.error('❌ No token found in localStorage!');
+    console.error('Available localStorage keys:', Object.keys(localStorage));
+    return {
+      isSuccess: false,
+      error: 'Authentication token not found. Please login again.',
+      message: 'Token bulunamadı. Lütfen tekrar giriş yapın.'
+    };
+  }
+  
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Authorization': `Bearer ${token}`
+  };
+
+  console.log('📤 Request details:', {
+    url: '/api/proxy/admin/invitations/create',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+      'Authorization': `Bearer ${token.substring(0, 20)}...`
+    },
+    body: data
+  });
+
+  try {
+    const res = await fetch('/api/proxy/admin/invitations/create', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+    });
+    
+    console.log('📡 Response details:', {
+      status: res.status,
+      statusText: res.statusText,
+      ok: res.ok,
+      headers: Object.fromEntries(res.headers.entries())
+    });
+    
+    const responseData = await res.json();
+    
+    console.log('📥 Raw Response data:', responseData);
+    console.log('📥 Response type:', typeof responseData);
+    console.log('📥 Response keys:', Object.keys(responseData));
+    
+    // Backend başarılı olup olmadığını farklı şekillerde kontrol et
+    const isSuccessful = res.ok || 
+                         res.status === 200 || 
+                         res.status === 201 || 
+                         responseData.isSuccess === true ||
+                         responseData.success === true ||
+                         (responseData.data && !responseData.error);
+    
+    console.log('✅ Success check:', {
+      'res.ok': res.ok,
+      'status 200/201': res.status === 200 || res.status === 201,
+      'responseData.isSuccess': responseData.isSuccess,
+      'responseData.success': responseData.success,
+      'has data, no error': !!(responseData.data && !responseData.error),
+      'final isSuccessful': isSuccessful
+    });
+    
+    if (isSuccessful) {
+      console.log('🎉 Request was successful!');
+      // Başarılı response formatını normalize et
+      return {
+        isSuccess: true,
+        success: true,
+        data: responseData.data || responseData,
+        token: responseData.token || responseData.data?.token,
+        invitationLink: responseData.invitationLink || responseData.data?.invitationLink,
+        message: responseData.message || 'Davetiye başarıyla oluşturuldu'
+      };
+    } else {
+      console.error('❌ Request failed:', {
+        status: res.status,
+        statusText: res.statusText,
+        responseData
+      });
+      return {
+        isSuccess: false,
+        success: false,
+        error: responseData.error || responseData.message || `HTTP ${res.status}`,
+        message: responseData.message || responseData.error || 'Davetiye oluşturulamadı'
+      };
+    }
+  } catch (error) {
+    console.error('💥 Network error:', error);
+    return {
+      isSuccess: false,
+      error: 'Network error occurred',
+      message: 'Ağ hatası oluştu'
+    };
+  }
+}
+
+// Tüm davetleri getir
+export async function getAllInvitations() {
+  const token = localStorage.getItem('token');
+  const headers: HeadersInit = {};
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${BASE_URL}/admin/invitations`, {
+    headers
+  });
+  const data = await res.json();
+  return data;
+}
+
+// Şirket davetiye ile kayıt ol
+export async function registerCompanyByInvite(data: {
+  token: string;
+  email: string;
+  companyName: string;
+  password: string;
+  adress: string;
+  phoneNumber: string;
+  description: string;
+}) {
+  console.log('🏢 Company registration request:', data);
+  
+  try {
+    const res = await fetch('/api/proxy/company/register-by-invite', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': '*/*'
+      },
+      body: JSON.stringify(data),
+    });
+    
+    console.log('🏢 Registration response status:', res.status, res.statusText);
+    
+    const responseData = await res.json();
+    
+    console.log('🏢 Registration response data:', responseData);
+    
+    // Response normalization
+    const isSuccessful = res.ok || 
+                         res.status === 200 || 
+                         res.status === 201 || 
+                         responseData.isSuccess === true ||
+                         responseData.success === true ||
+                         !responseData.error;
+    
+    return {
+      ...responseData,
+      isSuccess: isSuccessful,
+      success: isSuccessful
+    };
+  } catch (error) {
+    console.error('🏢 Registration error:', error);
+    return {
+      isSuccess: false,
+      success: false,
+      error: 'Network error occurred',
+      message: 'Ağ hatası oluştu'
+    };
+  }
+}
