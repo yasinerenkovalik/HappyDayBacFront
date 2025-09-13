@@ -12,12 +12,46 @@ export async function GET(
 ) {
   try {
     const path = params.path.join('/');
+    
+    // Handle placeholder requests
+    if (path === 'placeholder.jpg') {
+      // Generate a simple SVG placeholder
+      const svg = `<svg width="400" height="256" viewBox="0 0 400 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="256" fill="#F3F4F6"/>
+        <path d="M200 128H160L180 108H140L160 88H200L220 108H260L240 128H200Z" fill="#D5D9DD"/>
+        <text x="200" y="140" text-anchor="middle" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="14">No Image</text>
+      </svg>`;
+      
+      return new NextResponse(svg, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    }
+
     const url = `${IMAGE_BASE_URL}/${path}`;
 
     const response = await fetch(url);
     
     if (!response.ok) {
-      return new NextResponse('Image not found', { status: 404 });
+      // Return placeholder on 404
+      const svg = `<svg width="400" height="256" viewBox="0 0 400 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="256" fill="#F3F4F6"/>
+        <path d="M200 128H160L180 108H140L160 88H200L220 108H260L240 128H200Z" fill="#D5D9DD"/>
+        <text x="200" y="140" text-anchor="middle" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="14">Image Not Found</text>
+      </svg>`;
+      
+      return new NextResponse(svg, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=3600',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
     }
 
     const imageBuffer = await response.arrayBuffer();
@@ -33,7 +67,21 @@ export async function GET(
     });
   } catch (error) {
     console.error('Image proxy error:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    // Return placeholder on error
+    const svg = `<svg width="400" height="256" viewBox="0 0 400 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="256" fill="#F3F4F6"/>
+      <path d="M200 128H160L180 108H140L160 88H200L220 108H260L240 128H200Z" fill="#D5D9DD"/>
+      <text x="200" y="140" text-anchor="middle" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="12">Error Loading Image</text>
+    </svg>`;
+    
+    return new NextResponse(svg, {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
   }
 }
 

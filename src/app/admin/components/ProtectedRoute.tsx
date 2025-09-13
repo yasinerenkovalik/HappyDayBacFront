@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "@material-tailwind/react";
 
@@ -28,13 +28,13 @@ export default function ProtectedRoute({ children, requiredUserType }: Protected
     }
   };
 
-  const isTokenValid = (token: string) => {
+  const isTokenValid = useCallback((token: string) => {
     const payload = parseJWT(token);
     if (!payload) return false;
     
     const currentTime = Date.now() / 1000;
     return payload.exp > currentTime;
-  };
+  }, []);
 
   useEffect(() => {
     const checkAuth = () => {

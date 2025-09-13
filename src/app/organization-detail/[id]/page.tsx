@@ -81,6 +81,23 @@ export default function OrganizationDetailPage() {
     message: "",
   });
 
+  // Image URL helper function with debugging
+  const getImageUrl = (imagePath: string | null | undefined) => {
+    if (!imagePath) {
+      console.log('⚠️ No image path provided');
+      return '/api/images/placeholder.jpg';
+    }
+    
+    console.log('🖼️ Original image path:', imagePath);
+    
+    // Ensure path starts with /
+    const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+    const finalUrl = `/api/images${cleanPath}`;
+    
+    console.log('🖼️ Final image URL:', finalUrl);
+    return finalUrl;
+  };
+
   useEffect(() => {
     if (id) {
       getOrganizationDetail(id as string).then((data) => {
@@ -169,9 +186,13 @@ export default function OrganizationDetailPage() {
       <section className="relative">
         <div className="relative h-96 overflow-hidden">
           <img
-            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${selectedImage ?? org.coverPhotoPath ?? ""}`}
+            src={getImageUrl(selectedImage ?? org.coverPhotoPath)}
             alt={org.title}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              console.log('❌ Main image load error:', e.currentTarget.src);
+              e.currentTarget.src = '/api/images/placeholder.jpg';
+            }}
           />
           <div className="absolute inset-0 bg-black/40" />
 
@@ -327,9 +348,13 @@ export default function OrganizationDetailPage() {
                       }}
                     >
                       <img
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${imgPath}`}
+                        src={getImageUrl(imgPath)}
                         alt="Galeri"
                         className="w-full h-32 object-cover rounded-lg transition-transform group-hover:scale-105"
+                        onError={(e) => {
+                          console.log('❌ Gallery image load error:', e.currentTarget.src);
+                          e.currentTarget.src = '/api/images/placeholder.jpg';
+                        }}
                       />
                       {i === 7 && gallery.length > 8 && (
                         <div className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center">
@@ -544,9 +569,13 @@ export default function OrganizationDetailPage() {
             {/* Resim */}
             <div className="w-full flex justify-center">
               <img
-                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${gallery[currentImageIndex]}`}
+                src={getImageUrl(gallery[currentImageIndex])}
                 alt="Gallery"
                 className="max-w-full max-h-96 object-contain"
+                onError={(e) => {
+                  console.log('❌ Modal image load error:', e.currentTarget.src);
+                  e.currentTarget.src = '/api/images/placeholder.jpg';
+                }}
               />
             </div>
 

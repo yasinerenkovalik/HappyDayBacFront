@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button, Input, Card, CardBody, Typography, Alert } from '@material-tailwind/react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [formData, setFormData] = useState({
     newPassword: '',
     confirmPassword: ''
@@ -266,5 +266,13 @@ export default function ResetPasswordPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

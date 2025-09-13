@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardBody,
@@ -38,26 +38,36 @@ export default function BookingsPage() {
   const [messages, setMessages] = useState<CompanyContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [companyId, setCompanyId] = useState("");
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
-  // JWT'den companyId'yi al
+  // JWT'den companyId'yi al - sadece bir kez
   useEffect(() => {
+    if (initialized) return;
+    
     const token = getAuthToken();
     if (token) {
       const tokenPayload = parseJWT(token);
       if (tokenPayload && tokenPayload.CompanyId) {
+        console.log('🏢 Company ID from token:', tokenPayload.CompanyId);
         setCompanyId(tokenPayload.CompanyId);
       } else {
         setError("Şirket bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
+        setLoading(false);
       }
     } else {
       setError("Oturum bilgisi bulunamadı. Lütfen giriş yapın.");
+      setLoading(false);
     }
-  }, []);
+    setInitialized(true);
+  }, [initialized]);
 
-  // Fetch company contact messages
-  const fetchCompanyMessages = async () => {
-    if (!companyId) return;
+  // Fetch company contact messages - sadece companyId değiştiğinde çalışır
+  const fetchCompanyMessages = useCallback(async () => {
+    if (!companyId || !initialized) {
+      console.log('⏸️ Skipping fetch - companyId:', companyId, 'initialized:', initialized);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -102,18 +112,28 @@ export default function BookingsPage() {
       }
     } catch (error) {
       console.error('❌ Error fetching company messages:', error);
-      setError('İletişim mesajları yüklenirken hata oluştu: ' + error.message);
+      setError('İletişim mesajları yüklenirken hata oluştu: ' + (error as Error).message);
       setMessages([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyId, initialized]);
 
+  // İlk yükleme - sadece companyId set edildiğinde çalışır
   useEffect(() => {
-    if (companyId) {
+    if (companyId && initialized) {
+      console.log('🚀 Initial fetch triggered for companyId:', companyId);
       fetchCompanyMessages();
     }
-  }, [companyId]);
+  }, [companyId, initialized]); // fetchCompanyMessages'i dependency'den çıkardık
+
+  // Manuel refresh fonksiyonu
+  const handleRefresh = () => {
+    if (companyId && initialized) {
+      console.log('🔄 Manual refresh triggered');
+      fetchCompanyMessages();
+    }
+  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Tarih belirtilmemiş';
@@ -155,9 +175,9 @@ export default function BookingsPage() {
               </Typography>
             </div>
             <Button
-              onClick={fetchCompanyMessages}
+              onClick={handleRefresh}
               className="bg-gradient-to-r from-pink-500 to-purple-600"
-              disabled={loading}
+              disabled={loading || !companyId}
             >
               {loading ? "Yükleniyor..." : "Yenile"}
             </Button>

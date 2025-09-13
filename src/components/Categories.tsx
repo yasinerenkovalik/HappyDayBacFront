@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
 import {
     HeartIcon,
@@ -109,9 +110,11 @@ export default function Categories() {
                             >
                                 {/* Background Image */}
                                 <div className="relative h-48 overflow-hidden">
-                                    <img
+                                    <Image
                                         src={category.image}
                                         alt={category.title}
+                                        width={400}
+                                        height={192}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
                                     <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-30 transition-all duration-300"></div>

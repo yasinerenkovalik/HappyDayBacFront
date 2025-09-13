@@ -85,6 +85,8 @@ export default function RequestPasswordResetPage() {
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
             >
               MutluGünüm
             </Typography>
@@ -96,6 +98,8 @@ export default function RequestPasswordResetPage() {
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
           >
             Şifremi Unuttum
           </Typography>
@@ -105,6 +109,8 @@ export default function RequestPasswordResetPage() {
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
           >
             Email adresinize şifre sıfırlama bağlantısı göndereceğiz
           </Typography>
@@ -115,12 +121,16 @@ export default function RequestPasswordResetPage() {
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
+          onResize={undefined}
+          onResizeCapture={undefined}
         >
           <CardBody 
             className="p-8"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
           >
             {message && (
               <Alert 
@@ -144,6 +154,8 @@ export default function RequestPasswordResetPage() {
                     crossOrigin={undefined}
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
+                    onResize={undefined}
+                    onResizeCapture={undefined}
                   />
                 </div>
 
@@ -155,6 +167,8 @@ export default function RequestPasswordResetPage() {
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
+                  onResize={undefined}
+                  onResizeCapture={undefined}
                 >
                   {loading ? "Gönderiliyor..." : "Şifre Sıfırlama Bağlantısı Gönder"}
                 </Button>
@@ -173,6 +187,8 @@ export default function RequestPasswordResetPage() {
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
+                  onResize={undefined}
+                  onResizeCapture={undefined}
                 >
                   Email Gönderildi!
                 </Typography>
@@ -182,6 +198,8 @@ export default function RequestPasswordResetPage() {
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
+                  onResize={undefined}
+                  onResizeCapture={undefined}
                 >
                   Şifre sıfırlama bağlantısı <strong>{email}</strong> adresine gönderildi. 
                   Lütfen email kutunuzu kontrol edin ve bağlantıya tıklayarak şifrenizi sıfırlayın.
@@ -198,6 +216,8 @@ export default function RequestPasswordResetPage() {
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
+                onResize={undefined}
+                onResizeCapture={undefined}
               >
                 <ArrowLeftIcon className="h-4 w-4" />
                 Giriş sayfasına dön

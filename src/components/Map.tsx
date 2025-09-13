@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { MapPinIcon, MagnifyingGlassIcon, GlobeAltIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { Typography } from "@material-tailwind/react";
 import { Loader } from "@googlemaps/js-api-loader";
@@ -34,68 +34,8 @@ export default function Map({
   const mapRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Google Maps API'yi yükle
-  useEffect(() => {
-    const loadGoogleMaps = async () => {
-      try {
-        console.log('🔍 Map component başlatılıyor...');
-        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-        console.log('🔑 API Key kontrolü:', apiKey ? '✅ Mevcut' : '❌ Bulunamadı');
-        
-        if (!apiKey) {
-          console.log('🗺️ Google Maps API key bulunamadı, iframe kullanılacak');
-          setUseGoogleMaps(false);
-          setIsLoading(false);
-          return;
-        }
-
-        // Client-side kontrolü
-        if (typeof window === 'undefined') {
-          console.log('💻 Server-side, iframe kullanılacak');
-          setUseGoogleMaps(false);
-          setIsLoading(false);
-          return;
-        }
-
-        console.log('🌐 Client-side, Google Maps API yükleniyor...');
-        
-        // Google Maps API zaten yüklü mü kontrol et
-        if (window.google && window.google.maps) {
-          console.log('✅ Google Maps API zaten yüklü');
-          initializeMap();
-          return;
-        }
-
-        console.log('🔄 Google Maps API Loader başlatılıyor...');
-        const loader = new Loader({
-          apiKey,
-          version: 'weekly',
-          libraries: ['places']
-        });
-
-        await loader.load();
-        console.log('✅ Google Maps API başarıyla yüklendi!');
-        initializeMap();
-      } catch (error) {
-        console.error('❌ Google Maps API yüklenemedi:', error);
-        setUseGoogleMaps(false);
-        setIsLoading(false);
-      }
-    };
-
-    // Client-side'da çalıştır
-    if (typeof window !== 'undefined') {
-      loadGoogleMaps();
-    } else {
-      // Server-side rendering sırasında iframe kullan
-      console.log('💻 SSR: iframe kullanılacak');
-      setUseGoogleMaps(false);
-      setIsLoading(false);
-    }
-  }, []);
-
   // Google Maps'i başlat
-  const initializeMap = () => {
+  const initializeMap = useCallback(() => {
     console.log('🗺️ initializeMap çağırıldı');
     
     if (!mapRef.current) {
@@ -175,10 +115,10 @@ export default function Map({
       setUseGoogleMaps(false);
       setIsLoading(false);
     }
-  };
+  }, [lat, lng, currentZoom, title, interactiveMode]);
 
   // Konum güncelleme fonksiyonu
-  const updateLocation = (newLat: number, newLng: number) => {
+  const updateLocation = useCallback((newLat: number, newLng: number) => {
     console.log('📍 updateLocation çağırıldı:', newLat, newLng);
     setLat(newLat);
     setLng(newLng);
@@ -191,9 +131,69 @@ export default function Map({
       marker.setPosition({ lat: newLat, lng: newLng });
       console.log('✅ Marker pozisyonu güncellendi');
     }
-  };
+  }, [marker, onLocationSelect]);
 
-  // Props değiştiğinde haritayı güncelle
+  // Google Maps API'yi yükle
+  useEffect(() => {
+    const loadGoogleMaps = async () => {
+      try {
+        console.log('🔍 Map component başlatılıyor...');
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        console.log('🔑 API Key kontrolü:', apiKey ? '✅ Mevcut' : '❌ Bulunamadı');
+        
+        if (!apiKey) {
+          console.log('🗺️ Google Maps API key bulunamadı, iframe kullanılacak');
+          setUseGoogleMaps(false);
+          setIsLoading(false);
+          return;
+        }
+
+        // Client-side kontrolü
+        if (typeof window === 'undefined') {
+          console.log('💻 Server-side, iframe kullanılacak');
+          setUseGoogleMaps(false);
+          setIsLoading(false);
+          return;
+        }
+
+        console.log('🌐 Client-side, Google Maps API yükleniyor...');
+        
+        // Google Maps API zaten yüklü mü kontrol et
+        if (window.google && window.google.maps) {
+          console.log('✅ Google Maps API zaten yüklü');
+          initializeMap();
+          return;
+        }
+
+        console.log('🔄 Google Maps API Loader başlatılıyor...');
+        const loader = new Loader({
+          apiKey,
+          version: 'weekly',
+          libraries: ['places']
+        });
+
+        await loader.load();
+        console.log('✅ Google Maps API başarıyla yüklendi!');
+        initializeMap();
+      } catch (error) {
+        console.error('❌ Google Maps API yüklenemedi:', error);
+        setUseGoogleMaps(false);
+        setIsLoading(false);
+      }
+    };
+
+    // Client-side'da çalıştır
+    if (typeof window !== 'undefined') {
+      loadGoogleMaps();
+    } else {
+      // Server-side rendering sırasında iframe kullan
+      console.log('💻 SSR: iframe kullanılacak');
+      setUseGoogleMaps(false);
+      setIsLoading(false);
+    }
+  }, []); // Empty dependency array to avoid circular dependency
+
+  // Props değiştiğinde haritarı güncelle
   useEffect(() => {
     if (latitude !== lat || longitude !== lng) {
       setLat(latitude);
@@ -208,7 +208,7 @@ export default function Map({
         marker.setPosition(newPosition);
       }
     }
-  }, [latitude, longitude, map, marker, useGoogleMaps]);
+  }, [latitude, longitude, lat, lng, map, marker, useGoogleMaps]);
 
   // Zoom fonksiyonları
   const handleZoomIn = () => {

@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardBody,
@@ -39,7 +39,7 @@ export default function ContactDetailPage({ params }: { params: { id: string } }
   const [error, setError] = useState("");
 
   // Fetch contact detail
-  const fetchContactDetail = async () => {
+  const fetchContactDetail = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -84,13 +84,13 @@ export default function ContactDetailPage({ params }: { params: { id: string } }
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
 
   useEffect(() => {
     if (params.id) {
       fetchContactDetail();
     }
-  }, [params.id]);
+  }, [params.id, fetchContactDetail]);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Tarih belirtilmemiş';

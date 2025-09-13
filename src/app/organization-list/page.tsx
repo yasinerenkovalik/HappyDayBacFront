@@ -2,8 +2,9 @@
 // src/app/organization-list/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar, Footer } from "@/components";
 import {
   getAllOrganizations,
@@ -35,38 +36,48 @@ import {
 import { HeartIcon } from "@heroicons/react/24/solid";
 
 function OrganizationCard({ org, cities, allDistricts }: { org: Organization; cities: City[]; allDistricts: District[] }) {
+  // Determine image source with proper validation
+  const getImageSrc = () => {
+    // Eğer coverPhotoPath yoksa veya null ise default image kullan
+    if (!org.coverPhotoPath || org.coverPhotoPath === null) {
+      console.log('⚠️ No coverPhotoPath for', org.title);
+      return '/api/images/placeholder.jpg'; // Use a valid placeholder URL
+    }
+    
+    // Clean and validate the path
+    const cleanPath = org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath : `/${org.coverPhotoPath}`;
+    
+    // Check if it's already a complete URL
+    if (org.coverPhotoPath.startsWith('http')) {
+      return org.coverPhotoPath;
+    }
+    
+    // Use the image proxy endpoint
+    const imagePath = `/api/images${cleanPath}`;
+    
+    console.log('🖼️ Image path for', org.title, ':', imagePath);
+    console.log('🖼️ Original coverPhotoPath:', org.coverPhotoPath);
+    
+    return imagePath;
+  };
+
   return (
     <Link href={`/organization-detail/${org.id}`}>
       <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer">
         <div className="relative overflow-hidden">
-          <img
-            src={(() => {
-              // Eğer coverPhotoPath yoksa veya null ise default image kullan
-              if (!org.coverPhotoPath || org.coverPhotoPath === null) {
-                console.log('⚠️ No coverPhotoPath for', org.title);
-                return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDQwMCAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjU2IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTI4SDE2MEwxODAgMTA4SDE0MEwxNjAgODhIMjAwTDIyMCAxMDhIMjYwTDI0MCAxMjhIMjAwWiIgZmlsbD0iI0Q1RDlERCIvPgo8L3N2Zz4K';
-              }
-              
-              // coverPhotoPath'in başında '/' var mı kontrol et
-              const cleanPath = org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath : `/${org.coverPhotoPath}`;
-              const imagePath = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${cleanPath}`;
-              
-              console.log('🖼️ Image path for', org.title, ':', imagePath);
-              console.log('🖼️ Original coverPhotoPath:', org.coverPhotoPath);
-              console.log('🖼️ Clean path:', cleanPath);
-              console.log('🖼️ IMAGE_BASE_URL:', process.env.NEXT_PUBLIC_IMAGE_BASE_URL);
-              
-              return imagePath;
-            })()
-            }
-            alt={org.title}
+          <Image
+            src={getImageSrc()}
+            alt={org.title || 'Organization image'}
+            width={400}
+            height={256}
             className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+            unoptimized={true} // Disable Next.js optimization to avoid parsing issues
             onError={(e) => {
               console.log('❌ Image load error for', org.title);
               console.log('❌ Failed image src:', e.currentTarget.src);
               console.log('❌ coverPhotoPath was:', org.coverPhotoPath);
-              // SVG placeholder olarak değiştir
-              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDQwMCAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjU2IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTI4SDE2MEwxODAgMTA4SDE0MEwxNjAgODhIMjAwTDIyMCAxMDhIMjYwTDI0MCAxMjhIMjAwWiIgZmlsbD0iI0Q1RDlERCIvPgo8L3N2Zz4K';
+              // Set to a simple placeholder
+              e.currentTarget.src = '/api/images/placeholder.jpg';
             }}
           />
           <div className="absolute top-4 right-4">
@@ -263,7 +274,7 @@ export default function OrganizationListPage() {
   };
 
   // Fetch organizations with pagination and caching
-  const fetchOrganizations = async (page = 1, resetPage = false) => {
+  const fetchOrganizations = useCallback(async (page = 1, resetPage = false) => {
     try {
       setLoading(true);
 
@@ -343,7 +354,7 @@ export default function OrganizationListPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageSize]); // Only depend on pageSize
 
   // Fetch all districts for organizations
   const fetchAllDistrictsForOrganizations = async (orgs: Organization[]) => {
@@ -395,7 +406,7 @@ export default function OrganizationListPage() {
   };
 
   // Fetch districts when city is selected (for filter dropdown)
-  const fetchDistricts = async (cityId: number) => {
+  const fetchDistricts = useCallback(async (cityId: number) => {
     try {
       const cacheKey = `${CACHE_KEYS.DISTRICTS}_city_${cityId}`;
       
@@ -421,7 +432,7 @@ export default function OrganizationListPage() {
       console.error("Error fetching districts for filter:", error);
       setDistricts([]);
     }
-  };
+  }, []); // No dependencies needed
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -475,7 +486,7 @@ export default function OrganizationListPage() {
     };
 
     fetchInitialData();
-  }, []);
+  }, []); // Empty dependency array - only run once
 
   // Fetch districts when city is selected
   useEffect(() => {
@@ -485,9 +496,9 @@ export default function OrganizationListPage() {
       setDistricts([]);
       setSelectedDistrict(""); // Clear district selection when city is cleared
     }
-  }, [selectedCity]);
+  }, [selectedCity, fetchDistricts]);
 
-  const handleFilter = async () => {
+  const handleFilter = useCallback(async () => {
     setLoading(true);
     const filters = {
       categoryId: selectedCategory || undefined,
@@ -540,7 +551,7 @@ export default function OrganizationListPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor, pageSize]);
 
   // Otomatik filtreleme için useEffect
   useEffect(() => {
@@ -550,24 +561,9 @@ export default function OrganizationListPage() {
       // No filters applied, fetch paginated data
       fetchOrganizations(1, true);
     }
-  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor]);
+  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor, handleFilter, fetchOrganizations]);
 
-  // Arama için useEffect (debounce ile)
-  useEffect(() => {
-    if (searchTerm) {
-      const timeoutId = setTimeout(() => {
-        const filteredOrgs = organizations.filter(org =>
-          org.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          org.location?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setOrganizations(filteredOrgs);
-        setTotalCount(filteredOrgs.length);
-        setTotalPages(Math.ceil(filteredOrgs.length / pageSize));
-        setCurrentPage(1);
-      }, 300);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [searchTerm]);
+  // Search functionality - removed automatic filtering to prevent loops
 
   const clearFilters = () => {
     setSelectedCategory("");
