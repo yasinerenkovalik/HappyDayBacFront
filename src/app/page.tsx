@@ -4,7 +4,6 @@ import {
   Footer, 
   Hero, 
   ErrorBoundary,
-  FeaturedOrganizations,
   Categories,
   Stats,
   Testimonials,
@@ -18,7 +17,6 @@ export default function Campaign() {
       <Navbar />
       <Hero />
       {/*   <Categories /> */}
-    {/*  <FeaturedOrganizations /> */}
    {/*    <Stats />*/}
     {/*  <Testimonials /> */}
       <CTA />

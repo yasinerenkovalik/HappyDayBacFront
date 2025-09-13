@@ -1,6 +1,62 @@
 import { Organization } from "@/entities/organization.entity";
+import { apiConfig, getEndpointUrl } from "@/config/api";
 
-const BASE_URL = "/api/proxy";
+// Use centralized configuration for base URL
+const BASE_URL = apiConfig.proxyUrl;
+
+// API client object for general use
+export const api = {
+  post: async (endpoint: string, data?: any) => {
+    const url = getEndpointUrl(endpoint);
+    console.log('🚀 API POST Request:', url);
+    console.log('📝 POST Body:', data);
+    
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: data ? JSON.stringify(data) : undefined,
+      });
+      
+      console.log('📡 Response status:', res.status, res.statusText);
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      const responseData = await res.json();
+      console.log('📦 Response data:', responseData);
+      
+      return responseData;
+    } catch (error) {
+      console.error('❌ API POST Error:', error);
+      throw error;
+    }
+  },
+  get: async (endpoint: string) => {
+    const url = getEndpointUrl(endpoint);
+    console.log('🚀 API GET Request:', url);
+    
+    try {
+      const res = await fetch(url);
+      console.log('📡 Response status:', res.status, res.statusText);
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      const responseData = await res.json();
+      console.log('📦 Response data:', responseData);
+      
+      return responseData;
+    } catch (error) {
+      console.error('❌ API GET Error:', error);
+      throw error;
+    }
+  }
+};
 
 // Tüm organizasyonları getir
 export async function getAllOrganizations(): Promise<Organization[]> {
@@ -36,16 +92,19 @@ export async function getPaginatedOrganizations(pageNumber: number = 1, pageSize
 
 export async function getAllCities(): Promise<{ id: number; cityName: string }[]> {
   console.log('🔍 API Call: getAllCities');
-  const res = await fetch(`${BASE_URL}/City/CityGetAll`);
+  const res = await fetch(getEndpointUrl(apiConfig.endpoints.cities.getAll));
   const data = await res.json();
   console.log('🔍 API Response: getAllCities', data);
   console.log('🔍 Cities data sample:', data?.data?.slice(0, 3));
   return data.data;
 }
 
-export async function getAllCategories() {
-  const res = await fetch(`${BASE_URL}/Category/OrganizationGetAll`);
+export async function getAllCategories(): Promise<{ id: number; name: string }[]> {
+  console.log('🔍 API Call: getAllCategories');
+  const res = await fetch(getEndpointUrl(apiConfig.endpoints.categories.getAll));
   const data = await res.json();
+  console.log('🔍 API Response: getAllCategories', data);
+  console.log('🔍 Categories data sample:', data?.data?.slice(0, 3));
   return data.data;
 }
 
@@ -108,18 +167,6 @@ export async function getOrganizationDetail(id: string) {
   console.log('🔍 Organization detail API response:', data);
   console.log('🔍 Organization detail data:', data.data);
   return data.data;
-}
-
-export async function getFeaturedOrganizations(categoryId: number) {
-  const res = await fetch(`${BASE_URL}/Organization/GetFeatured`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id: categoryId }),
-  });
-  const data = await res.json();
-  return data.data; // ✅ sadece data array'ini döndür
 }
 
 // İletişim mesajı gönder

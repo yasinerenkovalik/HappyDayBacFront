@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { apiConfig } from '@/config/api';
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://193.111.77.142/api';
+// SSL sertifika doğrulamasını bypass et (sadece development için)
+if (process.env.NODE_ENV === 'development') {
+    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+}
+
+// API route'u dynamic olarak çalıştırmaya zorla
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+// Use centralized API configuration
+const API_BASE_URL = apiConfig.baseUrl;
 
 // Debug environment variables
 console.log('🔧 Environment Debug:');
 console.log('- API_BASE_URL:', API_BASE_URL);
 console.log('- NODE_ENV:', process.env.NODE_ENV);
+console.log('- Configuration loaded from:', apiConfig.isDevelopment ? 'Development' : 'Production');
 
 // Common response headers
 const getResponseHeaders = () => ({
@@ -52,6 +64,12 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
         const response = await fetch(url, {
             method: 'GET',
             headers,
+            // SSL sertifika sorununu bypass et
+            ...(url.includes('https://') && {
+                agent: new (require('https').Agent)({
+                    rejectUnauthorized: false
+                })
+            })
         });
 
         console.log('📡 Backend response status:', response.status);
@@ -146,6 +164,12 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
             method: 'POST',
             headers,
             body,
+            // SSL sertifika sorununu bypass et
+            ...(url.includes('https://') && {
+                agent: new (require('https').Agent)({
+                    rejectUnauthorized: false
+                })
+            })
         });
 
         console.log('📡 Backend response status:', response.status);

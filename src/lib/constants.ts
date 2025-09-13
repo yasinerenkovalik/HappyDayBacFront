@@ -5,7 +5,7 @@ export const API_CONFIG = {
 } as const;
 
 export const APP_CONFIG = {
-  APP_URL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  APP_URL: process.env.NEXT_PUBLIC_APP_URL || "https://mutlugunum.com",
   APP_NAME: "MutluGünüm",
   APP_DESCRIPTION: "Organizasyon ve etkinlik yönetim platformu",
   VERSION: "1.0.0",

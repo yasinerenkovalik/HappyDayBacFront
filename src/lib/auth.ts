@@ -190,6 +190,11 @@ export const companyLogin = async (email: string, password: string): Promise<Log
       localStorage.setItem("userType", "company");
       localStorage.setItem("companyId", tokenPayload.CompanyId || "");
       localStorage.setItem("userId", tokenPayload.nameid || "");
+      
+      // Email doğrulama durumunu kaydet
+      if (data.data.isEmailConfirmed !== undefined) {
+        localStorage.setItem("isEmailConfirmed", data.data.isEmailConfirmed.toString());
+      }
 
       // Şirket adını da kaydet (token'dan veya API'den)
       if (tokenPayload.CompanyName) {
@@ -218,6 +223,9 @@ export const clearAuthData = () => {
   Object.values(STORAGE_KEYS).forEach(key => {
     localStorage.removeItem(key);
   });
+  
+  // Email doğrulama durumunu da temizle
+  localStorage.removeItem("isEmailConfirmed");
 };
 
 export const logout = () => {

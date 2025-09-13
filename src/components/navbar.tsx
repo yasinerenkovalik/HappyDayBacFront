@@ -24,17 +24,17 @@ export default function Navbar() {
   }, []);
 
   const navList = (
-    <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+    <ul className="mb-4 mt-2 flex flex-col gap-3 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
       <Typography
         as="li"
         variant="small"
         color="blue-gray"
-        className="p-1 font-normal"
+        className="p-2 lg:p-1 font-normal"
         placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
-        <Link href="/" className="flex items-center hover:text-pink-500 transition-colors">
+        <Link href="/" className="flex items-center hover:text-pink-500 transition-colors py-2 lg:py-0">
           Ana Sayfa
         </Link>
       </Typography>
@@ -42,12 +42,12 @@ export default function Navbar() {
         as="li"
         variant="small"
         color="blue-gray"
-        className="p-1 font-normal"
+        className="p-2 lg:p-1 font-normal"
         placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
-        <Link href="/organization-list" className="flex items-center hover:text-pink-500 transition-colors">
+        <Link href="/organization-list" className="flex items-center hover:text-pink-500 transition-colors py-2 lg:py-0">
           Organizasyonlar
         </Link>
       </Typography>
@@ -55,12 +55,12 @@ export default function Navbar() {
         as="li"
         variant="small"
         color="blue-gray"
-        className="p-1 font-normal"
+        className="p-2 lg:p-1 font-normal"
         placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
-        <Link href="/contact" className="flex items-center hover:text-pink-500 transition-colors">
+        <Link href="/contact" className="flex items-center hover:text-pink-500 transition-colors py-2 lg:py-0">
           İletişim
         </Link>
       </Typography>
@@ -95,7 +95,7 @@ export default function Navbar() {
           </Link>
           <IconButton
             variant="text"
-            className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
+            className="ml-auto h-12 w-12 text-inherit hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-200 lg:hidden flex items-center justify-center"
             ripple={false}
             onClick={() => setOpenNav(!openNav)}
             placeholder={undefined}
@@ -103,29 +103,33 @@ export default function Navbar() {
             onPointerLeaveCapture={undefined}
           >
             {openNav ? (
-              <XMarkIcon className="h-6 w-6" strokeWidth={2} />
+              <XMarkIcon className="h-8 w-8" strokeWidth={2} />
             ) : (
-              <Bars3Icon className="h-6 w-6" strokeWidth={2} />
+              <Bars3Icon className="h-8 w-8" strokeWidth={2} />
             )}
           </IconButton>
         </div>
       </div>
       <Collapse open={openNav}>
-        {navList}
-        <Link href="/admin/login">
-          <Button
-            as="span"
-            variant="gradient"
-            size="sm"
-            fullWidth
-            className="mb-2 bg-gradient-to-r from-pink-500 to-purple-600"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            Giriş Yap
-          </Button>
-        </Link>
+        <div className="pt-4 pb-2">
+          {navList}
+          <div className="mt-4">
+            <Link href="/admin/login">
+              <Button
+                as="span"
+                variant="gradient"
+                size="md"
+                fullWidth
+                className="mb-2 bg-gradient-to-r from-pink-500 to-purple-600 py-3"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                Giriş Yap
+              </Button>
+            </Link>
+          </div>
+        </div>
       </Collapse>
     </MTNavbar>
   );

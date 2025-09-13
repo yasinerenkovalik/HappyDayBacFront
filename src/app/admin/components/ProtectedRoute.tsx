@@ -41,6 +41,7 @@ export default function ProtectedRoute({ children, requiredUserType }: Protected
       const token = localStorage.getItem("authToken");
       const userType = localStorage.getItem("userType");
       const userRole = localStorage.getItem("userRole");
+      const isEmailConfirmed = localStorage.getItem("isEmailConfirmed");
       
       // Token kontrolü
       if (!token || !isTokenValid(token)) {
@@ -53,6 +54,12 @@ export default function ProtectedRoute({ children, requiredUserType }: Protected
       if (!userType) {
         localStorage.clear();
         router.push("/admin/login");
+        return;
+      }
+      
+      // Şirket kullanıcıları için email doğrulama kontrolü
+      if (userType === "company" && isEmailConfirmed === "false") {
+        router.push("/email-verification");
         return;
       }
 

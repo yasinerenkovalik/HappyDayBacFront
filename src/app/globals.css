@@ -418,3 +418,32 @@ img, video, svg, canvas {
 .admin-content-area::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+/* Fix Material Tailwind Select z-index issues */
+[data-material-tailwind-select],
+.material-tailwind-select {
+  position: relative;
+  z-index: 50;
+}
+
+[data-material-tailwind-select] .menu,
+[data-material-tailwind-select] [role="listbox"],
+.material-tailwind-select .menu,
+.material-tailwind-select [role="listbox"] {
+  z-index: 9999 !important;
+}
+
+/* Fix all dropdown and popover z-index issues */
+[role="menu"],
+[role="listbox"],
+[role="tooltip"],
+.dropdown-menu,
+.popover,
+.modal {
+  z-index: 9999 !important;
+}
+
+/* Ensure Material Tailwind components appear above other content */
+.z-\[9999\] {
+  z-index: 9999 !important;
+}

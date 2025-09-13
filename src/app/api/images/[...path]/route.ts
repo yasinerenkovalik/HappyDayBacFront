@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// API route'u dynamic olarak çalıştırmaya zorla
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 const IMAGE_BASE_URL = 'http://193.111.77.142';
 
 export async function GET(

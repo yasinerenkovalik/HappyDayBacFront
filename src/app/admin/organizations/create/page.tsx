@@ -153,7 +153,7 @@ export default function OrganizationCreate() {
           headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`/api/proxy/Category/OrganizationGetAll`, {
+        const response = await fetch(`/api/proxy/Category/CategoryGetAll`, {
           headers
         });
         const data = await response.json();

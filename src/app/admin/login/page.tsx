@@ -104,13 +104,30 @@ export default function AdminLogin() {
             }
 
             if (data.isSuccess && data.data.token) {
+                // Debug: Backend response'unu kontrol et
+                console.log("🔍 Login Response Debug:", {
+                    isSuccess: data.isSuccess,
+                    data: data.data,
+                    isEmailConfirmed: data.data.isEmailConfirmed,
+                    fullResponse: data
+                });
+                
                 // Token zaten login utility'sinde parse edildi ve localStorage'a kaydedildi
                 const userType = localStorage.getItem("userType");
+                
+                // Şirket girişi için email doğrulama kontrolü
+                if (activeTab === "company" && data.data.isEmailConfirmed === false) {
+                    console.log("📧 Email not confirmed, redirecting to verification page");
+                    // Email doğrulanmamışsa özel sayfaya yönlendir
+                    router.push("/email-verification");
+                    return;
+                }
 
                 // Role'e göre yönlendirme
                 if (userType === "admin") {
                     router.push("/admin/dashboard");
                 } else if (userType === "company") {
+                    console.log("✅ Email verified or not checked, redirecting to dashboard");
                     router.push("/admin/company-dashboard");
                 } else {
                     setError("Geçersiz kullanıcı rolü");
@@ -346,7 +363,19 @@ export default function AdminLogin() {
                             </TabsBody>
                         </Tabs>
 
-                        <div className="text-center mt-6">
+                        <div className="text-center mt-6 space-y-2">
+                            <Typography
+                                variant="small"
+                                color="gray"
+                                placeholder={undefined}
+                                onPointerEnterCapture={undefined}
+                                onPointerLeaveCapture={undefined}
+                            >
+                                Şirket girişi yapıyorsanız ve şifrenizi unuttuysanız{" "}
+                                <a href="/auth/request-password-reset" className="text-blue-500 hover:text-blue-700 font-medium">
+                                    Şifremi Unuttum
+                                </a>
+                            </Typography>
                             <Typography
                                 variant="small"
                                 color="gray"
