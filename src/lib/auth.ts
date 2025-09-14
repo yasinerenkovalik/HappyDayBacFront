@@ -455,16 +455,16 @@ export const getCompanyOrganizations = async (): Promise<OrganizationResponse> =
   const response = await apiCall(`/Organization/GetOrganizationWithICompany?Id=${companyId}`);
   return response.json();
 };
-// Get company details (public endpoint - no auth required)
+// Get company details (public endpoint - no auth required) - Updated to use proxy
 export const getCompanyDetailsPublic = async (companyId: string): Promise<CompanyResponse> => {
   try {
-    console.log('📡 Calling DIRECT SERVER API (no auth):', `/Company/getbyid?Id=${companyId}`);
+    console.log('📡 Calling PROXY API (no auth):', `/Company/getbyid?Id=${companyId}`);
     
-    // Use direct server URL instead of proxy
-    const directUrl = `${API_BASE_URL}/Company/getbyid?Id=${companyId}`;
-    console.log('📍 Direct server URL:', directUrl);
+    // Use proxy URL instead of direct server
+    const proxyUrl = `/api/proxy/Company/getbyid?Id=${companyId}`;
+    console.log('📍 Proxy URL:', proxyUrl);
     
-    const response = await fetch(directUrl, {
+    const response = await fetch(proxyUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
