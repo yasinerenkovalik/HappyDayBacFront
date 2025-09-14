@@ -185,7 +185,7 @@ export default function OrganizationsPage() {
                               <div className="flex items-center gap-3">
                                 {org.coverPhotoPath ? (
                                   <img
-                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
+                                    src={`/api/images/${org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath.substring(1) : org.coverPhotoPath}`}
                                     alt={org.title}
                                     className="w-16 h-16 object-cover rounded-lg"
                                     onError={(e) => {
@@ -326,7 +326,7 @@ export default function OrganizationsPage() {
                             <div className="flex-shrink-0">
                               {org.coverPhotoPath ? (
                                 <img
-                                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
+                                  src={`/api/images/${org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath.substring(1) : org.coverPhotoPath}`}
                                   alt={org.title}
                                   className="w-20 h-20 object-cover rounded-lg"
                                   onError={(e) => {

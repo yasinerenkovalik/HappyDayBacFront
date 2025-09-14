@@ -82,28 +82,26 @@ export default function OrganizationDetailPage() {
     message: "",
   });
 
-  // Image URL helper function with debugging
+  // Image URL helper function with debugging - Updated to use proxy
   const getImageUrl = (imagePath: string | null | undefined) => {
     console.log('🖼️ getImageUrl called with:', imagePath);
     
     if (!imagePath) {
       console.log('⚠️ No image path provided, using placeholder');
-      return '/image/organizations/organizations1.jpg'; // Use a local fallback
+      return '/api/images/placeholder.jpg'; // Use proxy placeholder
     }
     
     console.log('🖼️ Original image path:', imagePath);
     console.log('🖼️ Type of imagePath:', typeof imagePath);
     
-    // Use the image base URL from environment variables with fallback
-    const imageBaseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://0.0.0.0';
-    console.log('🌐 Image base URL from env:', imageBaseUrl);
+    // Clean the path - remove leading slash if present
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
     
-    // Ensure path starts with /
-    const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-    const finalUrl = `${imageBaseUrl}${cleanPath}`;
+    // Use the image proxy endpoint instead of direct URL
+    const proxyUrl = `/api/images/${cleanPath}`;
     
-    console.log('🖼️ Final image URL:', finalUrl);
-    return finalUrl;
+    console.log('🖼️ Using proxy URL:', proxyUrl);
+    return proxyUrl;
   };
 
   useEffect(() => {

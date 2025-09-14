@@ -57,26 +57,22 @@ export default function CompanyDetailPage() {
   const [error, setError] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Image URL helper function
+  // Image URL helper function - Updated to use proxy
   const getImageUrl = (imagePath: string | null | undefined) => {
     if (!imagePath) {
-      return '/api/images/placeholder-company.jpg';
+      return '/api/images/placeholder.jpg';
     }
     
     console.log('🖼️ Original image path:', imagePath);
     
-    // Use the image base URL from environment variables with fallback
-    const imageBaseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://0.0.0.0';
-    console.log('🌐 Image base URL:', imageBaseUrl);
+    // Clean the path - remove leading slash if present
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
     
-    // Ensure path starts with /
-    const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+    // Use the image proxy endpoint
+    const proxyUrl = `/api/images/${cleanPath}`;
+    console.log('🖼️ Using proxy URL:', proxyUrl);
     
-    // Construct the full URL
-    const finalUrl = `${imageBaseUrl}${cleanPath}`;
-    console.log('🖼️ Final image URL:', finalUrl);
-    
-    return finalUrl;
+    return proxyUrl;
   };
 
   useEffect(() => {

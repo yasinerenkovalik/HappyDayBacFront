@@ -604,7 +604,7 @@ export default function EditOrganizationPage() {
                     {organization?.coverPhotoPath && (
                       <div className="mb-4">
                         <img
-                          src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${organization.coverPhotoPath}`}
+                          src={`/api/images/${organization.coverPhotoPath.startsWith('/') ? organization.coverPhotoPath.substring(1) : organization.coverPhotoPath}`}
                           alt="Mevcut kapak fotoğrafı"
                           className="w-full h-32 object-cover rounded-lg"
                           onError={(e) => {
@@ -796,7 +796,7 @@ export default function EditOrganizationPage() {
                         {organization.images.map((image) => (
                           <div key={image.id} className="relative group">
                             <img
-                              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${image.imageUrl}`}
+                              src={`/api/images/${image.imageUrl.startsWith('/') ? image.imageUrl.substring(1) : image.imageUrl}`}
                               alt={`Galeri resmi ${image.id}`}
                               className="w-full h-24 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
                               onError={(e) => {
@@ -810,7 +810,7 @@ export default function EditOrganizationPage() {
                                   size="sm"
                                   color="blue"
                                   className="p-2"
-                                  onClick={() => window.open(`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${image.imageUrl}`, '_blank')}
+                                  onClick={() => window.open(`/api/images/${image.imageUrl.startsWith('/') ? image.imageUrl.substring(1) : image.imageUrl}`, '_blank')}
                                   placeholder={undefined}
                                   onPointerEnterCapture={undefined}
                                   onPointerLeaveCapture={undefined}

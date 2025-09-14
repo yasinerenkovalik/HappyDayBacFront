@@ -41,19 +41,14 @@ function OrganizationCard({ org, cities, allDistricts }: { org: Organization; ci
     // Eğer coverPhotoPath yoksa veya null ise default image kullan
     if (!org.coverPhotoPath || org.coverPhotoPath === null) {
       console.log('⚠️ No coverPhotoPath for', org.title);
-      return '/api/images/placeholder.jpg'; // Use a valid placeholder URL
+      return '/api/images/placeholder.jpg'; // Use proxy placeholder
     }
     
-    // Clean and validate the path
-    const cleanPath = org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath : `/${org.coverPhotoPath}`;
-    
-    // Check if it's already a complete URL
-    if (org.coverPhotoPath.startsWith('http')) {
-      return org.coverPhotoPath;
-    }
+    // Clean the path - remove leading slash if present
+    const cleanPath = org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath.substring(1) : org.coverPhotoPath;
     
     // Use the image proxy endpoint
-    const imagePath = `/api/images${cleanPath}`;
+    const imagePath = `/api/images/${cleanPath}`;
     
     console.log('🖼️ Image path for', org.title, ':', imagePath);
     console.log('🖼️ Original coverPhotoPath:', org.coverPhotoPath);
