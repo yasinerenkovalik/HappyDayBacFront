@@ -192,10 +192,28 @@ export default function OrganizationDetailPage() {
   const hasValidCoords =
     lat !== null && lng !== null && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
 
-  const gallery = [
-    org.coverPhotoPath,
-    ...(org.images?.map((img) => img.imageUrl) ?? []),
-  ].filter(Boolean) as string[];
+  // Create gallery with unique images only
+  const createGallery = () => {
+    const allImages: string[] = [];
+    
+    // Add cover photo if it exists
+    if (org.coverPhotoPath) {
+      allImages.push(org.coverPhotoPath);
+    }
+    
+    // Add images from images array, avoiding duplicates
+    if (org.images && Array.isArray(org.images)) {
+      org.images.forEach((img) => {
+        if (img.imageUrl && !allImages.includes(img.imageUrl)) {
+          allImages.push(img.imageUrl);
+        }
+      });
+    }
+    
+    return allImages;
+  };
+  
+  const gallery = createGallery();
   
   console.log('🖼️ Gallery construction debug:', {
     coverPhotoPath: org.coverPhotoPath,
@@ -203,7 +221,8 @@ export default function OrganizationDetailPage() {
     imagesLength: org.images?.length || 0,
     imageUrls: org.images?.map((img) => img.imageUrl) || [],
     fullGallery: gallery,
-    galleryLength: gallery.length
+    galleryLength: gallery.length,
+    uniqueImages: [...new Set(gallery)]
   });
 
   const nextImage = () => {

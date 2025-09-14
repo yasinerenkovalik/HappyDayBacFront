@@ -1,9 +1,9 @@
 import { Organization } from "@/entities/organization.entity";
 import { apiConfig, getEndpointUrl } from "@/config/api";
 
-// Use direct server URL instead of proxy since server API is updated
-const BASE_URL = apiConfig.baseUrl;
-console.log('🔧 API Configuration - Using direct server URL:', BASE_URL);
+// Use proxy URL for production (HTTPS) deployments to avoid Mixed Content Policy
+const BASE_URL = '/api/proxy'; // Always use proxy for consistency
+console.log('🔧 API Configuration - Using proxy URL for Mixed Content Policy compatibility:', BASE_URL);
 
 // API client object for general use - Updated to use direct server URLs
 export const api = {
@@ -59,25 +59,24 @@ export const api = {
   }
 };
 
-// Tüm organizasyonları getir - Updated for direct server
+// Tüm organizasyonları getir - Updated to use proxy
 export async function getAllOrganizations(): Promise<Organization[]> {
-  const directUrl = `${apiConfig.baseUrl}/Organization/OrganizationGetAll`;
-  console.log('🔧 DEBUG: apiConfig.baseUrl =', apiConfig.baseUrl);
-  console.log('🔧 DEBUG: Direct API URL =', directUrl);
-  console.log('🔧 DEBUG: process.env.API_BASE_URL =', process.env.API_BASE_URL);
+  const proxyUrl = `${BASE_URL}/Organization/OrganizationGetAll`;
+  console.log('🔧 DEBUG: Using proxy URL =', proxyUrl);
   
-  const res = await fetch(directUrl);
+  const res = await fetch(proxyUrl);
   const data = await res.json();
+  console.log('🔧 DEBUG: Response data =', data);
   return data.data;
 }
 
-// Sayfalı organizasyonları getir - Updated for direct server
+// Sayfalı organizasyonları getir - Updated to use proxy
 export async function getPaginatedOrganizations(pageNumber: number = 1, pageSize: number = 6) {
-  const directUrl = `${apiConfig.baseUrl}/Organization/OrganizationGetAll?pageNumber=${pageNumber}&pageSize=${pageSize}`;
-  console.log('🔍 Direct API Call URL:', directUrl);
+  const proxyUrl = `${BASE_URL}/Organization/OrganizationGetAll?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  console.log('🔍 Proxy API Call URL:', proxyUrl);
   
   try {
-    const res = await fetch(directUrl);
+    const res = await fetch(proxyUrl);
     console.log('🔍 API Response Status:', res.status, res.statusText);
     
     if (!res.ok) {
@@ -97,11 +96,11 @@ export async function getPaginatedOrganizations(pageNumber: number = 1, pageSize
 // 🔧 Eksik olan fonksiyonları burada tanımlıyoruz:
 
 export async function getAllCities(): Promise<{ id: number; cityName: string }[]> {
-  console.log('🔍 API Call: getAllCities (Direct Server)');
-  const url = getEndpointUrl(apiConfig.endpoints.cities.getAll, false);
-  console.log('📍 Direct API URL:', url);
+  console.log('🔍 API Call: getAllCities (Using Proxy)');
+  const proxyUrl = `${BASE_URL}/City/CityGetAll`;
+  console.log('📍 Proxy API URL:', proxyUrl);
   
-  const res = await fetch(url);
+  const res = await fetch(proxyUrl);
   const data = await res.json();
   console.log('🔍 API Response: getAllCities', data);
   console.log('🔍 Cities data sample:', data?.data?.slice(0, 3));
@@ -109,11 +108,11 @@ export async function getAllCities(): Promise<{ id: number; cityName: string }[]
 }
 
 export async function getAllCategories(): Promise<{ id: number; name: string }[]> {
-  console.log('🔍 API Call: getAllCategories (Direct Server)');
-  const url = getEndpointUrl(apiConfig.endpoints.categories.getAll, false);
-  console.log('📍 Direct API URL:', url);
+  console.log('🔍 API Call: getAllCategories (Using Proxy)');
+  const proxyUrl = `${BASE_URL}/Category/CategoryGetAll`;
+  console.log('📍 Proxy API URL:', proxyUrl);
   
-  const res = await fetch(url);
+  const res = await fetch(proxyUrl);
   const data = await res.json();
   console.log('🔍 API Response: getAllCategories', data);
   console.log('🔍 Categories data sample:', data?.data?.slice(0, 3));
@@ -121,10 +120,10 @@ export async function getAllCategories(): Promise<{ id: number; name: string }[]
 }
 
 export async function getDistrictsByCity(cityId: number): Promise<{ id: number; districtName: string }[]> {
-  const directUrl = `${apiConfig.baseUrl}/District/GetAllDisctrictByCity`;
-  console.log('🔍 Direct API URL for districts:', directUrl);
+  const proxyUrl = `${BASE_URL}/District/GetAllDisctrictByCity`;
+  console.log('🔍 Proxy API URL for districts:', proxyUrl);
   
-  const res = await fetch(directUrl, {
+  const res = await fetch(proxyUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -138,7 +137,7 @@ export async function getDistrictsByCity(cityId: number): Promise<{ id: number; 
   return data.data;
 }
 
-// Filtreli organizasyonları getir - Updated for direct server
+// Filtreli organizasyonları getir - Updated to use proxy
 export async function getFilteredOrganizations(filters: {
   cityId?: number;
   districtId?: number;
@@ -153,12 +152,12 @@ export async function getFilteredOrganizations(filters: {
     }
   });
   
-  const directUrl = `${apiConfig.baseUrl}/Organization/Filter?${params}`;
-  console.log('🔍 Direct Filter API URL:', directUrl);
+  const proxyUrl = `${BASE_URL}/Organization/Filter?${params}`;
+  console.log('🔍 Proxy Filter API URL:', proxyUrl);
   console.log('🔍 Filter params:', filters);
   
   try {
-    const res = await fetch(directUrl);
+    const res = await fetch(proxyUrl);
     console.log('🔍 Filter API Response Status:', res.status);
     
     if (!res.ok) {
@@ -177,13 +176,13 @@ export async function getFilteredOrganizations(filters: {
 }
 
 export async function getOrganizationDetail(id: string) {
-  console.log('🔍 Fetching organization detail for ID (Direct Server):', id);
+  console.log('🔍 Fetching organization detail for ID (Using Proxy):', id);
   
-  // Use direct server URL instead of proxy
-  const directUrl = `${apiConfig.baseUrl}/Organization/GetOrganizationWithImages?Id=${id}`;
-  console.log('📍 Direct API URL:', directUrl);
+  // Use proxy URL instead of direct server
+  const proxyUrl = `${BASE_URL}/Organization/GetOrganizationWithImages?Id=${id}`;
+  console.log('📍 Proxy API URL:', proxyUrl);
   
-  const res = await fetch(directUrl);
+  const res = await fetch(proxyUrl);
   console.log('📡 API Response status:', res.status, res.statusText);
   
   const data = await res.json();
@@ -207,7 +206,7 @@ export async function getOrganizationDetail(id: string) {
   }
 }
 
-// İletişim mesajı gönder - Updated for direct server
+// İletişim mesajı gönder - Updated to use proxy
 export async function sendContactMessage(data: {
   fullName: string;
   phone: string;
@@ -222,10 +221,10 @@ export async function sendContactMessage(data: {
   formData.append('Message', data.message);
   formData.append('OrganizationId', data.organizationId);
 
-  const directUrl = `${apiConfig.baseUrl}/ContactMessage/add`;
-  console.log('📬 Direct contact message URL:', directUrl);
+  const proxyUrl = `${BASE_URL}/ContactMessage/add`;
+  console.log('📬 Proxy contact message URL:', proxyUrl);
 
-  const res = await fetch(directUrl, {
+  const res = await fetch(proxyUrl, {
     method: 'POST',
     body: formData,
   });
@@ -254,10 +253,10 @@ export async function sendContactForm(data: {
     console.log(`${key}:`, value);
   }
 
-  const directUrl = `${apiConfig.baseUrl}/Concat/add`;
-  console.log('📬 Direct contact form URL:', directUrl);
+  const proxyUrl = `${BASE_URL}/Concat/add`;
+  console.log('📬 Proxy contact form URL:', proxyUrl);
 
-  const res = await fetch(directUrl, {
+  const res = await fetch(proxyUrl, {
     method: 'POST',
     body: formData, // FormData kullan, Content-Type header'ı otomatik ayarlanır
   });
@@ -268,22 +267,22 @@ export async function sendContactForm(data: {
   return responseData;
 }
 
-// Tüm contact mesajlarını getir - Updated for direct server
+// Tüm contact mesajlarını getir - Updated to use proxy
 export async function getAllContacts() {
-  const directUrl = `${apiConfig.baseUrl}/Concat/ContactGetAll`;
-  console.log('📬 Direct contacts URL:', directUrl);
+  const proxyUrl = `${BASE_URL}/Concat/ContactGetAll`;
+  console.log('📬 Proxy contacts URL:', proxyUrl);
   
-  const res = await fetch(directUrl);
+  const res = await fetch(proxyUrl);
   const data = await res.json();
   return data;
 }
 
-// Contact detayını getir - Updated for direct server
+// Contact detayını getir - Updated to use proxy
 export async function getContactById(id: string) {
-  const directUrl = `${apiConfig.baseUrl}/Concat/getbyid`;
-  console.log('📬 Direct contact detail URL:', directUrl);
+  const proxyUrl = `${BASE_URL}/Concat/getbyid`;
+  console.log('📬 Proxy contact detail URL:', proxyUrl);
   
-  const res = await fetch(directUrl, {
+  const res = await fetch(proxyUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -296,15 +295,15 @@ export async function getContactById(id: string) {
   return data;
 }
 
-// Şirket iletişim mesajlarını getir - Updated for direct server
+// Şirket iletişim mesajlarını getir - Updated to use proxy
 export async function getCompanyContactMessages(companyId: string) {
   const formData = new FormData();
   formData.append('CompanyId', companyId);
 
-  const directUrl = `${apiConfig.baseUrl}/ContactMessage/CompanyContactMessage`;
-  console.log('📬 Direct company messages URL:', directUrl);
+  const proxyUrl = `${BASE_URL}/ContactMessage/CompanyContactMessage`;
+  console.log('📬 Proxy company messages URL:', proxyUrl);
 
-  const res = await fetch(directUrl, {
+  const res = await fetch(proxyUrl, {
     method: 'POST',
     body: formData,
   });

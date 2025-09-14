@@ -9,7 +9,7 @@ const getApiConfig = () => {
   const isClient = typeof window !== 'undefined';
 
   // Base API URL from environment variables - use NEXT_PUBLIC_ for client-side access
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'http://localhost:8080/api';
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'http://193.111.77.142/api';
   
   console.log('🔧 API Config Debug:', {
     isClient,
