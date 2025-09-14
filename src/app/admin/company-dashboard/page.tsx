@@ -318,17 +318,21 @@ export default function CompanyDashboard() {
                             className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
                               }`}
                           >
-                            <td className="py-3 px-4">
+                            <td className="py-4 px-4">
                               <div className="flex items-center gap-3">
                                 {org.coverPhotoPath ? (
                                   <img
                                     src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
                                     alt={org.title}
-                                    className="w-12 h-12 object-cover rounded-lg"
+                                    className="w-16 h-16 object-cover rounded-lg"
+                                    onError={(e) => {
+                                      console.log('❌ Company dashboard image load error:', e.currentTarget.src);
+                                      e.currentTarget.src = '/api/images/placeholder.jpg';
+                                    }}
                                   />
                                 ) : (
-                                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    <PhotoIcon className="h-6 w-6 text-gray-400" />
+                                  <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <PhotoIcon className="h-8 w-8 text-gray-400" />
                                   </div>
                                 )}
                                 <div>

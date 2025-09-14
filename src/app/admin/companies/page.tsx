@@ -169,6 +169,7 @@ export default function CompaniesPage() {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-gray-200">
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Cover Photo</th>
                           <th className="text-left py-4 px-4 font-semibold text-gray-700">Şirket Adı</th>
                           <th className="text-left py-4 px-4 font-semibold text-gray-700">E-posta</th>
                           <th className="text-left py-4 px-4 font-semibold text-gray-700">Telefon</th>
@@ -184,6 +185,29 @@ export default function CompaniesPage() {
                             className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
                               }`}
                           >
+                            <td className="py-4 px-4">
+                              {company.coverPhotoPath ? (
+                                <div className="w-12 h-8 rounded overflow-hidden border border-gray-200">
+                                  <img
+                                    src={company.coverPhotoPath.startsWith('/') ? company.coverPhotoPath : `/${company.coverPhotoPath}`}
+                                    alt={company.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-12 h-8 rounded bg-gray-100 flex items-center justify-center border border-gray-200">
+                                  <Typography
+                                    variant="small"
+                                    className="text-gray-400 text-xs"
+                                    placeholder={undefined}
+                                    onPointerEnterCapture={undefined}
+                                    onPointerLeaveCapture={undefined}
+                                  >
+                                    -
+                                  </Typography>
+                                </div>
+                              )}
+                            </td>
                             <td className="py-4 px-4">
                               <div>
                                 <Typography
@@ -312,26 +336,51 @@ export default function CompaniesPage() {
                           onPointerLeaveCapture={undefined}
                         >
                           <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1 min-w-0">
-                              <Typography
-                                variant="h6"
-                                className="font-semibold text-gray-900 mb-1"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                {company.name}
-                              </Typography>
-                              <Typography
-                                variant="small"
-                                color="gray"
-                                className="text-xs mb-2"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                ID: {company.id.slice(0, 8)}...
-                              </Typography>
+                            {/* Cover Photo */}
+                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                              {company.coverPhotoPath ? (
+                                <div className="w-16 h-12 rounded overflow-hidden border border-gray-200 flex-shrink-0">
+                                  <img
+                                    src={company.coverPhotoPath.startsWith('/') ? company.coverPhotoPath : `/${company.coverPhotoPath}`}
+                                    alt={company.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-16 h-12 rounded bg-gray-100 flex items-center justify-center border border-gray-200 flex-shrink-0">
+                                  <Typography
+                                    variant="small"
+                                    className="text-gray-400 text-xs"
+                                    placeholder={undefined}
+                                    onPointerEnterCapture={undefined}
+                                    onPointerLeaveCapture={undefined}
+                                  >
+                                    No photo
+                                  </Typography>
+                                </div>
+                              )}
+                              
+                              <div className="flex-1 min-w-0">
+                                <Typography
+                                  variant="h6"
+                                  className="font-semibold text-gray-900 mb-1"
+                                  placeholder={undefined}
+                                  onPointerEnterCapture={undefined}
+                                  onPointerLeaveCapture={undefined}
+                                >
+                                  {company.name}
+                                </Typography>
+                                <Typography
+                                  variant="small"
+                                  color="gray"
+                                  className="text-xs mb-2"
+                                  placeholder={undefined}
+                                  onPointerEnterCapture={undefined}
+                                  onPointerLeaveCapture={undefined}
+                                >
+                                  ID: {company.id.slice(0, 8)}...
+                                </Typography>
+                              </div>
                             </div>
                             <div className="flex items-center gap-1 ml-2">
                               <IconButton

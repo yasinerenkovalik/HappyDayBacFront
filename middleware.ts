@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https: blob:;
     font-src 'self' data:;
-    connect-src 'self' ${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5268'};
+    connect-src 'self' ${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://0.0.0.0'};
     media-src 'self';
     object-src 'none';
     base-uri 'self';

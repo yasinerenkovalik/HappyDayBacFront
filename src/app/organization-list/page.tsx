@@ -63,14 +63,14 @@ function OrganizationCard({ org, cities, allDistricts }: { org: Organization; ci
 
   return (
     <Link href={`/organization-detail/${org.id}`}>
-      <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer">
+      <Card className="overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group cursor-pointer">
         <div className="relative overflow-hidden">
           <Image
             src={getImageSrc()}
             alt={org.title || 'Organization image'}
             width={400}
             height={256}
-            className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-64 object-cover transition-transform duration-500"
             unoptimized={true} // Disable Next.js optimization to avoid parsing issues
             onError={(e) => {
               console.log('❌ Image load error for', org.title);
@@ -81,7 +81,7 @@ function OrganizationCard({ org, cities, allDistricts }: { org: Organization; ci
             }}
           />
           <div className="absolute top-4 right-4">
-            <Button
+          {/*  <Button
               size="sm"
               className="bg-white/80 text-pink-500 hover:bg-white p-2 rounded-full"
               onClick={(e) => {
@@ -91,6 +91,7 @@ function OrganizationCard({ org, cities, allDistricts }: { org: Organization; ci
             >
               <HeartIcon className="h-4 w-4" />
             </Button>
+          */}
           </div>
           <div className="absolute bottom-4 left-4">
             <Chip

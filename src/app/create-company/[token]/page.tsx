@@ -18,6 +18,8 @@ import {
   ExclamationTriangleIcon,
   EyeIcon,
   EyeSlashIcon,
+  PhotoIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { registerCompanyByInvite } from "@/lib/api";
 
@@ -46,6 +48,8 @@ export default function CreateCompanyPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(null);
+  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CompanyRegistrationData>({
     token: token || "",
@@ -77,6 +81,42 @@ export default function CreateCompanyPage() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleCoverPhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Dosya boyutu kontrolü (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Cover photo boyutu 5MB'dan küçük olmalıdır.");
+        return;
+      }
+
+      // Dosya tipi kontrolü
+      if (!file.type.startsWith('image/')) {
+        setError("Lütfen geçerli bir resim dosyası seçin.");
+        return;
+      }
+
+      setSelectedCoverPhoto(file);
+      
+      // Preview oluştur
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCoverPhotoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+      
+      if (error) setError("");
+    }
+  };
+
+  const clearCoverPhoto = () => {
+    setSelectedCoverPhoto(null);
+    setCoverPhotoPreview(null);
+    // Input'u temizle
+    const input = document.getElementById('coverPhotoInput') as HTMLInputElement;
+    if (input) input.value = '';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -104,6 +144,7 @@ export default function CreateCompanyPage() {
         adress: formData.adress,
         phoneNumber: formData.phoneNumber,
         description: formData.description,
+        coverPhoto: selectedCoverPhoto || undefined,
       };
 
       console.log("Sending company registration request:", requestBody);
@@ -278,6 +319,92 @@ export default function CreateCompanyPage() {
                   onChange={(e) => handleInputChange("description", e.target.value)}
                   rows={4}
                 />
+              </div>
+
+              {/* Cover Photo Seçimi */}
+              <div>
+                <Typography
+                  variant="h6"
+                  color="blue-gray"
+                  className="mb-4 flex items-center gap-2"
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  <PhotoIcon className="h-5 w-5" />
+                  Cover Photo (Opsiyonel)
+                </Typography>
+
+                {/* Cover Photo Önizlemesi */}
+                {coverPhotoPreview && (
+                  <div className="mb-3">
+                    <Typography
+                      variant="small"
+                      color="green"
+                      className="mb-2"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Cover Photo Önizlemesi:
+                    </Typography>
+                    <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-green-300">
+                      <img
+                        src={coverPhotoPreview}
+                        alt="Cover photo önizleme"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={clearCoverPhoto}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                      >
+                        <XMarkIcon className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Dosya Seçimi */}
+                <div className="space-y-2">
+                  <input
+                    id="coverPhotoInput"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverPhotoChange}
+                    disabled={loading}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 disabled:opacity-50"
+                  />
+                  <Typography
+                    variant="small"
+                    color="gray"
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  >
+                    📝 Desteklenen format: JPG, PNG, GIF (Maksimum 5MB)
+                  </Typography>
+                  {selectedCoverPhoto && (
+                    <div className="flex items-center justify-between bg-green-50 p-2 rounded">
+                      <Typography
+                        variant="small"
+                        color="green"
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        ✓ {selectedCoverPhoto.name} seçildi
+                      </Typography>
+                      <button
+                        type="button"
+                        onClick={clearCoverPhoto}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Submit Button */}

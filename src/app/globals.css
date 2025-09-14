@@ -18,6 +18,17 @@ html {
   isolation: isolate;         /* kritik */
 }
 
+/* Custom Leaflet Marker Styling */
+.custom-leaflet-marker {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.custom-leaflet-marker svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
 /* Hibrit Harita Container - Hem Google Maps hem Leaflet için */
 .hybrid-map-container {
   width: 100% !important;

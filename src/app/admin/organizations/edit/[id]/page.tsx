@@ -69,6 +69,9 @@ export default function EditOrganizationPage() {
 
   // Fetch organization data
   useEffect(() => {
+    // Debug: Image base URL kontrolü
+    console.log('🖼️ IMAGE_BASE_URL:', process.env.NEXT_PUBLIC_IMAGE_BASE_URL);
+    
     // Set user type from localStorage
     const storedUserType = localStorage.getItem("userType") as "admin" | "company";
     if (storedUserType) {
@@ -82,6 +85,10 @@ export default function EditOrganizationPage() {
 
         if (response.isSuccess) {
           const org = response.data;
+          console.log('🏢 Organizasyon verileri yüklendi:', org);
+          console.log('🖼️ Cover photo path:', org.coverPhotoPath);
+          console.log('🖼️ Images array:', org.images);
+          
           setOrganization(org);
           setFormData({
             title: org.title || "",
@@ -600,6 +607,10 @@ export default function EditOrganizationPage() {
                           src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${organization.coverPhotoPath}`}
                           alt="Mevcut kapak fotoğrafı"
                           className="w-full h-32 object-cover rounded-lg"
+                          onError={(e) => {
+                            console.log('❌ Cover image load error:', e.currentTarget.src);
+                            e.currentTarget.src = '/api/images/placeholder.jpg';
+                          }}
                         />
                         <Typography
                           variant="small"
@@ -788,6 +799,10 @@ export default function EditOrganizationPage() {
                               src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${image.imageUrl}`}
                               alt={`Galeri resmi ${image.id}`}
                               className="w-full h-24 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
+                              onError={(e) => {
+                                console.log('❌ Gallery image load error:', e.currentTarget.src);
+                                e.currentTarget.src = '/api/images/placeholder.jpg';
+                              }}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
                               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2">

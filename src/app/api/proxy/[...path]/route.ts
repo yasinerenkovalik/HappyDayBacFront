@@ -243,42 +243,106 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
         const path = params.path.join('/');
         const url = `${API_BASE_URL}/${path}`;
 
+        console.log('🔄 Proxy PUT Request:', url);
+        console.log('🔄 API_BASE_URL:', API_BASE_URL);
+        console.log('🔄 Path:', path);
+
         const headers: HeadersInit = {};
 
         // Authorization header'ını kopyala
         const authHeader = request.headers.get('authorization');
         if (authHeader) {
             headers['Authorization'] = authHeader;
+            console.log('🔑 Auth header present for PUT:', authHeader.substring(0, 20) + '...');
+        } else {
+            console.log('❌ No auth header found for PUT');
         }
 
         const contentType = request.headers.get('content-type');
         let body;
 
+        console.log('📤 PUT Content-Type:', contentType);
+        
         if (contentType?.includes('application/json')) {
             headers['Content-Type'] = 'application/json';
-            body = JSON.stringify(await request.json());
+            const jsonData = await request.json();
+            body = JSON.stringify(jsonData);
+            console.log('📤 PUT JSON body:', jsonData);
         } else if (contentType?.includes('multipart/form-data')) {
+            // FormData için Content-Type header'ı otomatik ayarlansın (boundary ile)
             body = await request.formData();
+            console.log('📤 PUT FormData body (keys):', Array.from(body.keys()));
+            console.log('📤 PUT FormData entries:');
+            for (let [key, value] of body.entries()) {
+                if (value instanceof File) {
+                    console.log(`  ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+                } else {
+                    console.log(`  ${key}: ${value}`);
+                }
+            }
         } else {
             body = await request.text();
             if (contentType) {
                 headers['Content-Type'] = contentType;
             }
+            console.log('📤 PUT raw body length:', body?.length || 0);
         }
 
+        console.log('📡 Calling backend PUT:', url);
         const response = await fetch(url, {
             method: 'PUT',
             headers,
             body,
+            // SSL sertifika sorununu bypass et
+            ...(url.includes('https://') && {
+                agent: new (require('https').Agent)({
+                    rejectUnauthorized: false
+                })
+            })
         });
 
-        const data = await response.json();
+        console.log('📡 Backend PUT response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Backend PUT error:', errorText);
+            return NextResponse.json({
+                error: 'Backend Error',
+                message: errorText,
+                status: response.status
+            }, {
+                status: response.status,
+                headers: getResponseHeaders()
+            });
+        }
+
+        // Response'u önce text olarak oku, sonra JSON parse et
+        const responseText = await response.text();
+        console.log('📡 Backend PUT response text:', responseText.substring(0, 200) + '...');
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+            console.log('✅ Backend PUT success (parsed)');
+        } catch (parseError) {
+            console.error('❌ PUT JSON parse error:', parseError);
+            console.error('❌ PUT Response text:', responseText);
+            return NextResponse.json({
+                error: 'Invalid JSON Response',
+                message: 'Backend returned invalid JSON for PUT',
+                responseText: responseText.substring(0, 500)
+            }, {
+                status: 502,
+                headers: getResponseHeaders()
+            });
+        }
+
         return NextResponse.json(data, {
             status: response.status,
             headers: getResponseHeaders()
         });
     } catch (error) {
-        console.error('Proxy PUT error:', error);
+        console.error('💥 Proxy PUT error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         return NextResponse.json({
             error: 'Internal Server Error',

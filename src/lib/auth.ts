@@ -244,6 +244,7 @@ export interface Company {
   id: string;
   latitude?: number;
   longitude?: number;
+  coverPhotoPath?: string;
 }
 
 export interface CompanyResponse {
@@ -457,9 +458,13 @@ export const getCompanyOrganizations = async (): Promise<OrganizationResponse> =
 // Get company details (public endpoint - no auth required)
 export const getCompanyDetailsPublic = async (companyId: string): Promise<CompanyResponse> => {
   try {
-    console.log('📡 Calling PUBLIC API (no auth):', `/Company/getbyid?Id=${companyId}`);
+    console.log('📡 Calling DIRECT SERVER API (no auth):', `/Company/getbyid?Id=${companyId}`);
     
-    const response = await fetch(`http://193.111.77.142/api/Company/getbyid?Id=${companyId}`, {
+    // Use direct server URL instead of proxy
+    const directUrl = `${API_BASE_URL}/Company/getbyid?Id=${companyId}`;
+    console.log('📍 Direct server URL:', directUrl);
+    
+    const response = await fetch(directUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -545,20 +550,65 @@ export interface CompanyUpdateData {
   longitude?: number;
   cityId?: number;
   districtId?: number;
+  coverPhotoPath?: string;
+  coverPhoto?: File;
 }
 
 export const updateCompany = async (data: CompanyUpdateData): Promise<any> => {
   try {
-    const response = await apiCall("/Company/update", {
-      method: "PUT",
-      body: JSON.stringify(data)
-    });
+    // Eğer cover photo varsa FormData kullan
+    if (data.coverPhoto) {
+      const formData = new FormData();
+      
+      // Swagger'daki field adlarıyla birebir uyumlu
+      formData.append('Id', data.id);
+      formData.append('Name', data.name);
+      formData.append('Email', data.email);
+      formData.append('Adress', data.adress); // Backend'de Adress yazılış şekli
+      formData.append('PhoneNumber', data.phoneNumber);
+      formData.append('Description', data.description);
+      
+      if (data.latitude !== undefined) {
+        formData.append('Latitude', data.latitude.toString());
+      }
+      if (data.longitude !== undefined) {
+        formData.append('Longitude', data.longitude.toString());
+      }
+      if (data.cityId !== undefined) {
+        formData.append('CityId', data.cityId.toString());
+      }
+      if (data.districtId !== undefined) {
+        formData.append('DistrictId', data.districtId.toString());
+      }
+      
+      // Cover photo dosyasını ekle - Swagger'daki gibi
+      formData.append('CoverPhoto', data.coverPhoto);
+      
+      // Debug: FormData içeriğini konsola yazdır
+      console.log('📤 Company Update FormData contents:');
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+        } else {
+          console.log(`${key}: ${value}`);
+        }
+      }
+      
+      const response = await apiCallFormData("/Company/update", formData, "PUT");
+      return response.json();
+    } else {
+      // Cover photo yoksa normal JSON request
+      const response = await apiCall("/Company/update", {
+        method: "PUT",
+        body: JSON.stringify(data)
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
     }
-
-    return response.json();
   } catch (error) {
     console.error('Error in updateCompany:', error);
     throw error;

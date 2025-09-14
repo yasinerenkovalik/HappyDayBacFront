@@ -19,7 +19,9 @@ import {
     ExclamationTriangleIcon,
     CheckCircleIcon,
     BuildingOfficeIcon,
-    MapPinIcon
+    MapPinIcon,
+    PhotoIcon,
+    XMarkIcon
 } from "@heroicons/react/24/outline";
 
 import AdminLayout from "../../../components/AdminLayout";
@@ -38,6 +40,7 @@ interface Company {
     longitude?: number;
     cityId?: number;
     districtId?: number;
+    coverPhotoPath?: string;
 }
 
 interface City {
@@ -76,10 +79,13 @@ export default function EditCompanyPage() {
         latitude: 41.0082, // İstanbul default
         longitude: 28.9784,
         cityId: "",
-        districtId: ""
+        districtId: "",
+        coverPhotoPath: ""
     });
 
     const [mapPosition, setMapPosition] = useState<[number, number]>([41.0082, 28.9784]);
+    const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(null);
+    const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(null);
 
     // Fetch cities from API
     const fetchCities = async () => {
@@ -190,7 +196,7 @@ export default function EditCompanyPage() {
                 // JWT token'ı console'a yazdır (test için)
                 if (token) {
                     console.log("🔑 Full JWT Token for curl test:");
-                    console.log(`curl -X 'GET' 'http://193.111.77.142/api/Company/getbyid?Id=${companyId}' -H 'Authorization: Bearer ${token}'`);
+                    console.log(`curl -X 'GET' '/api/proxy/Company/getbyid?Id=${companyId}' -H 'Authorization: Bearer ${token}'`);
                     
                     // Token'ı parse et ve içeriğini göster
                     try {
@@ -211,7 +217,7 @@ export default function EditCompanyPage() {
                     
                     // Test 1: No auth
                     try {
-                        const response1 = await fetch(`http://193.111.77.142/api/Company/getbyid?Id=${companyId}`);
+                        const response1 = await fetch(`/api/proxy/Company/getbyid?Id=${companyId}`);
                         console.log('✅ No Auth Test:', response1.status, await response1.text());
                     } catch (e) {
                         console.log('❌ No Auth Test failed:', e);
@@ -220,7 +226,7 @@ export default function EditCompanyPage() {
                     // Test 2: With auth
                     if (testToken) {
                         try {
-                            const response2 = await fetch(`http://193.111.77.142/api/Company/getbyid?Id=${companyId}`, {
+                            const response2 = await fetch(`/api/proxy/Company/getbyid?Id=${companyId}`, {
                                 headers: { 'Authorization': `Bearer ${testToken}` }
                             });
                             console.log('✅ With Auth Test:', response2.status, await response2.text());
@@ -275,7 +281,8 @@ export default function EditCompanyPage() {
                             latitude: companyData.latitude || 41.0082,
                             longitude: companyData.longitude || 28.9784,
                             cityId: companyData.cityId ? companyData.cityId.toString() : "",
-                            districtId: companyData.districtId ? companyData.districtId.toString() : ""
+                            districtId: companyData.districtId ? companyData.districtId.toString() : "",
+                            coverPhotoPath: companyData.coverPhotoPath || ""
                         });
 
                         // Harita pozisyonunu güncelle
@@ -324,6 +331,42 @@ export default function EditCompanyPage() {
         setMapPosition([lat, lng]);
     };
 
+    const handleCoverPhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            // Dosya boyutu kontrolü (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                setError("Cover photo boyutu 5MB'dan küçük olmalıdır.");
+                return;
+            }
+
+            // Dosya tipi kontrolü
+            if (!file.type.startsWith('image/')) {
+                setError("Lütfen geçerli bir resim dosyası seçin.");
+                return;
+            }
+
+            setSelectedCoverPhoto(file);
+            
+            // Preview oluştur
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setCoverPhotoPreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+            
+            if (error) setError("");
+        }
+    };
+
+    const clearCoverPhoto = () => {
+        setSelectedCoverPhoto(null);
+        setCoverPhotoPreview(null);
+        // Input'u temizle
+        const input = document.getElementById('coverPhotoInput') as HTMLInputElement;
+        if (input) input.value = '';
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -347,7 +390,8 @@ export default function EditCompanyPage() {
                 latitude: formData.latitude,
                 longitude: formData.longitude,
                 cityId: formData.cityId ? parseInt(formData.cityId) : undefined,
-                districtId: formData.districtId ? parseInt(formData.districtId) : undefined
+                districtId: formData.districtId ? parseInt(formData.districtId) : undefined,
+                coverPhoto: selectedCoverPhoto || undefined
             };
 
             const response = await updateCompany(updateData);
@@ -633,6 +677,115 @@ export default function EditCompanyPage() {
                                                 onPointerEnterCapture={undefined}
                                                 onPointerLeaveCapture={undefined}
                                             />
+                                        </div>
+
+                                        {/* Cover Photo Seçimi */}
+                                        <div className="mb-6">
+                                            <Typography
+                                                variant="h6"
+                                                color="blue-gray"
+                                                className="mb-4 flex items-center gap-2"
+                                                placeholder={undefined}
+                                                onPointerEnterCapture={undefined}
+                                                onPointerLeaveCapture={undefined}
+                                            >
+                                                <PhotoIcon className="h-5 w-5" />
+                                                Cover Photo (Opsiyonel)
+                                            </Typography>
+
+                                            {/* Mevcut Cover Photo Gösterimi */}
+                                            {formData.coverPhotoPath && !coverPhotoPreview && (
+                                                <div className="mb-3">
+                                                    <Typography
+                                                        variant="small"
+                                                        color="gray"
+                                                        className="mb-2"
+                                                        placeholder={undefined}
+                                                        onPointerEnterCapture={undefined}
+                                                        onPointerLeaveCapture={undefined}
+                                                    >
+                                                        Mevcut Cover Photo:
+                                                    </Typography>
+                                                    <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-300">
+                                                        <img
+                                                            src={formData.coverPhotoPath.startsWith('/') ? formData.coverPhotoPath : `/${formData.coverPhotoPath}`}
+                                                            alt="Mevcut cover photo"
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Yeni Cover Photo Önizlemesi */}
+                                            {coverPhotoPreview && (
+                                                <div className="mb-3">
+                                                    <Typography
+                                                        variant="small"
+                                                        color="green"
+                                                        className="mb-2"
+                                                        placeholder={undefined}
+                                                        onPointerEnterCapture={undefined}
+                                                        onPointerLeaveCapture={undefined}
+                                                    >
+                                                        Yeni Cover Photo Önizlemesi:
+                                                    </Typography>
+                                                    <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-green-300">
+                                                        <img
+                                                            src={coverPhotoPreview}
+                                                            alt="Cover photo önizleme"
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={clearCoverPhoto}
+                                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                                        >
+                                                            <XMarkIcon className="h-3 w-3" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Dosya Seçimi */}
+                                            <div className="space-y-2">
+                                                <input
+                                                    id="coverPhotoInput"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleCoverPhotoChange}
+                                                    disabled={saving}
+                                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                                                />
+                                                <Typography
+                                                    variant="small"
+                                                    color="gray"
+                                                    placeholder={undefined}
+                                                    onPointerEnterCapture={undefined}
+                                                    onPointerLeaveCapture={undefined}
+                                                >
+                                                    📝 Desteklenen format: JPG, PNG, GIF (Maksimum 5MB)
+                                                </Typography>
+                                                {selectedCoverPhoto && (
+                                                    <div className="flex items-center justify-between bg-green-50 p-2 rounded">
+                                                        <Typography
+                                                            variant="small"
+                                                            color="green"
+                                                            placeholder={undefined}
+                                                            onPointerEnterCapture={undefined}
+                                                            onPointerLeaveCapture={undefined}
+                                                        >
+                                                            ✓ {selectedCoverPhoto.name} seçildi
+                                                        </Typography>
+                                                        <button
+                                                            type="button"
+                                                            onClick={clearCoverPhoto}
+                                                            className="text-red-500 hover:text-red-700"
+                                                        >
+                                                            <XMarkIcon className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
 
                                         {/* Konum Bilgileri */}

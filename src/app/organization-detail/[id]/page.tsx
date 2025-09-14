@@ -33,23 +33,24 @@ import {
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon, StarIcon } from "@heroicons/react/24/solid";
 
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 
-// Dynamically import Map component to avoid SSR issues
-const Map = dynamic(() => import('@/components/Map'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-96 rounded-lg bg-gray-100 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto mb-2"></div>
-        <Typography variant="small" color="gray">Harita yükleniyor...</Typography>
-      </div>
-    </div>
-  )
-});
+// Temporarily disable Map component to debug server component error
+// const Map = dynamic(() => import('@/components/Map'), {
+//   ssr: false,
+//   loading: () => (
+//     <div className="w-full h-96 rounded-lg bg-gray-100 flex items-center justify-center">
+//       <div className="text-center">
+//         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto mb-2"></div>
+//         <Typography variant="small" color="gray">Harita yükleniyor...</Typography>
+//       </div>
+//     </div>
+//   )
+// });
 
 // Büyük gelen koordinatı 90/180 aralığına indir (gerekirse 10'a bölerek)
 function normalizeNumber(val: unknown, maxAbs: number) {
@@ -83,26 +84,52 @@ export default function OrganizationDetailPage() {
 
   // Image URL helper function with debugging
   const getImageUrl = (imagePath: string | null | undefined) => {
+    console.log('🖼️ getImageUrl called with:', imagePath);
+    
     if (!imagePath) {
-      console.log('⚠️ No image path provided');
-      return '/api/images/placeholder.jpg';
+      console.log('⚠️ No image path provided, using placeholder');
+      return '/image/organizations/organizations1.jpg'; // Use a local fallback
     }
     
     console.log('🖼️ Original image path:', imagePath);
+    console.log('🖼️ Type of imagePath:', typeof imagePath);
+    
+    // Use the image base URL from environment variables with fallback
+    const imageBaseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://0.0.0.0';
+    console.log('🌐 Image base URL from env:', imageBaseUrl);
     
     // Ensure path starts with /
     const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-    const finalUrl = `/api/images${cleanPath}`;
+    const finalUrl = `${imageBaseUrl}${cleanPath}`;
     
     console.log('🖼️ Final image URL:', finalUrl);
     return finalUrl;
   };
 
   useEffect(() => {
+    // Debug environment variables on client side
+    console.log('🔧 Environment debug:', {
+      NODE_ENV: process.env.NODE_ENV,
+      NEXT_PUBLIC_IMAGE_BASE_URL: process.env.NEXT_PUBLIC_IMAGE_BASE_URL,
+      allNextPublicVars: Object.entries(process.env).filter(([key]) => key.startsWith('NEXT_PUBLIC_'))
+    });
+    
     if (id) {
-      getOrganizationDetail(id as string).then((data) => {
-        setOrg(data);
-        if (data?.coverPhotoPath) setSelectedImage(data.coverPhotoPath);
+      getOrganizationDetail(id as string).then((response) => {
+        console.log('🏢 Full API response:', response);
+        console.log('🏢 Organization data:', response);
+        console.log('🖼️ Cover photo path:', response?.coverPhotoPath);
+        console.log('🖼️ Images:', response?.images);
+        
+        setOrg(response);
+        if (response?.coverPhotoPath) {
+          setSelectedImage(response.coverPhotoPath);
+          console.log('🖼️ Selected image set to:', response.coverPhotoPath);
+        } else {
+          console.log('⚠️ No cover photo path found');
+        }
+      }).catch(error => {
+        console.error('❌ Error fetching organization:', error);
       });
     }
   }, [id]);
@@ -169,6 +196,15 @@ export default function OrganizationDetailPage() {
     org.coverPhotoPath,
     ...(org.images?.map((img) => img.imageUrl) ?? []),
   ].filter(Boolean) as string[];
+  
+  console.log('🖼️ Gallery construction debug:', {
+    coverPhotoPath: org.coverPhotoPath,
+    imagesArray: org.images,
+    imagesLength: org.images?.length || 0,
+    imageUrls: org.images?.map((img) => img.imageUrl) || [],
+    fullGallery: gallery,
+    galleryLength: gallery.length
+  });
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % gallery.length);
@@ -191,7 +227,7 @@ export default function OrganizationDetailPage() {
             className="w-full h-full object-cover"
             onError={(e) => {
               console.log('❌ Main image load error:', e.currentTarget.src);
-              e.currentTarget.src = '/api/images/placeholder.jpg';
+              e.currentTarget.src = '/image/organizations/organizations1.jpg';
             }}
           />
           <div className="absolute inset-0 bg-black/40" />
@@ -353,7 +389,7 @@ export default function OrganizationDetailPage() {
                         className="w-full h-32 object-cover rounded-lg transition-transform group-hover:scale-105"
                         onError={(e) => {
                           console.log('❌ Gallery image load error:', e.currentTarget.src);
-                          e.currentTarget.src = '/api/images/placeholder.jpg';
+                          e.currentTarget.src = '/image/organizations/organizations2.jpg';
                         }}
                       />
                       {i === 7 && gallery.length > 8 && (
@@ -505,6 +541,25 @@ export default function OrganizationDetailPage() {
                         E-posta
                       </Button>
                     </div>
+                    
+                    {/* Şirket Detayına Git Butonu */}
+                    {/* Geçici olarak her zaman göster - API'dan companyId gelince bu koşulu düzelt */}
+                    <div className="mt-4">
+                      <Button
+                        color="blue"
+                        size="sm"
+                        fullWidth
+                        className="flex items-center justify-center gap-2"
+                        onClick={() => {
+                          // Geçici companyId - API'dan gelince org.companyId kullan
+                          const tempCompanyId = "019929e2-d51c-7858-a8c7-e76e79ed1136";
+                          window.open(`/company-detail/${tempCompanyId}`, '_blank');
+                        }}
+                      >
+                        <BuildingOfficeIcon className="h-4 w-4" />
+                        Şirket Sayfasını Görüntüle
+                      </Button>
+                    </div>
                   </div>
                 </CardBody>
               </Card>
@@ -512,8 +567,8 @@ export default function OrganizationDetailPage() {
           </div>
         </div>
 
-        {/* Konum Bilgisi */}
-        {hasValidCoords && (
+        {/* Konum Bilgisi - Temporarily disabled to debug Server Component error */}
+        {/* hasValidCoords && (
           <Card className="mt-8">
             <CardBody className="p-6">
               <Typography variant="h4" color="blue-gray" className="mb-4">
@@ -531,7 +586,7 @@ export default function OrganizationDetailPage() {
               </div>
             </CardBody>
           </Card>
-        )}
+        ) */}
       </div>
 
       {/* Gallery Modal */}

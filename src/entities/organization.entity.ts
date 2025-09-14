@@ -34,6 +34,7 @@ export interface Organization {
     cancelPolicy: string;
     videoUrl: string;
     coverPhotoPath: string;
+    companyId: string;
     images: {
       id: number;
       imageUrl: string;

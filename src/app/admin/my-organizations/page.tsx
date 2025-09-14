@@ -329,20 +329,25 @@ export default function MyOrganizations() {
                         {organizations.map((org, index) => (
                           <tr
                             key={org.id}
-                            className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
-                              }`}
+                            className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                              index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                            }`}
                           >
-                            <td className="py-3 px-4">
+                            <td className="py-6 px-4">
                               <div className="flex items-center gap-3">
                                 {org.coverPhotoPath ? (
                                   <img
                                     src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
                                     alt={org.title}
-                                    className="w-12 h-12 object-cover rounded-lg"
+                                    className="w-32 h-24 object-cover rounded-lg"
+                                    onError={(e) => {
+                                      console.log('❌ My org image load error:', e.currentTarget.src);
+                                      e.currentTarget.src = '/api/images/placeholder.jpg';
+                                    }}
                                   />
                                 ) : (
-                                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    <PhotoIcon className="h-6 w-6 text-gray-400" />
+                                  <div className="w-32 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <PhotoIcon className="h-12 w-12 text-gray-400" />
                                   </div>
                                 )}
                                 <div>
@@ -463,11 +468,15 @@ export default function MyOrganizations() {
                                 <img
                                   src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${org.coverPhotoPath}`}
                                   alt={org.title}
-                                  className="w-14 h-14 object-cover rounded-lg"
+                                  className="w-32 h-24 object-cover rounded-lg"
+                                  onError={(e) => {
+                                    console.log('❌ My org mobile image load error:', e.currentTarget.src);
+                                    e.currentTarget.src = '/api/images/placeholder.jpg';
+                                  }}
                                 />
                               ) : (
-                                <div className="w-14 h-14 bg-gray-200 rounded-lg flex items-center justify-center">
-                                  <PhotoIcon className="h-6 w-6 text-gray-400" />
+                                <div className="w-32 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                                  <PhotoIcon className="h-12 w-12 text-gray-400" />
                                 </div>
                               )}
                             </div>
