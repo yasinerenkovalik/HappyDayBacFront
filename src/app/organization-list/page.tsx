@@ -269,6 +269,38 @@ export default function OrganizationListPage() {
     }
   };
 
+  // Normalize various pagination response shapes to a single structure
+  const normalizePaginated = (data: any, fallbackPageSize: number) => {
+    let items: any[] = [];
+    let count = 0;
+    let pages = 1;
+
+    if (Array.isArray(data?.data)) {
+      items = data.data;
+      count = data.totalCount || data.data.length || 0;
+      pages = data.totalPages || Math.ceil(count / fallbackPageSize) || 1;
+    } else if (data?.data?.items && Array.isArray(data.data.items)) {
+      items = data.data.items;
+      count = data.data.totalCount || 0;
+      pages = data.data.totalPages || Math.ceil(count / fallbackPageSize) || 1;
+    } else if (Array.isArray(data)) {
+      // Non-paginated array fallback
+      items = data;
+      count = data.length;
+      pages = Math.ceil(count / fallbackPageSize) || 1;
+    }
+
+    return { items, count, pages };
+  };
+
+  // Ensure exactly pageSize items render as a safety net when backend ignores paging
+  const clampItemsToPage = (items: any[], page: number, size: number) => {
+    if (!Array.isArray(items) || items.length <= size) return items;
+    const start = (page - 1) * size;
+    const end = start + size;
+    return items.slice(start, end);
+  };
+
   // Fetch organizations with pagination and caching
   const fetchOrganizations = useCallback(async (page = 1, resetPage = false) => {
     try {
@@ -305,23 +337,9 @@ export default function OrganizationListPage() {
       console.log("Organizations API response:", data);
       console.log("First organization sample:", data?.data?.[0]);
 
-      if (data.isSuccess && data.data) {
-        let orgsData, totalCount, totalPages;
-        
-        // Assuming API returns paginated data structure
-        if (Array.isArray(data.data)) {
-          orgsData = data.data;
-          totalCount = data.totalCount || data.data.length;
-          totalPages = Math.ceil(totalCount / pageSize);
-        } else if (data.data.items && Array.isArray(data.data.items)) {
-          orgsData = data.data.items;
-          totalCount = data.data.totalCount || 0;
-          totalPages = data.data.totalPages || Math.ceil(totalCount / pageSize);
-        } else {
-          orgsData = [];
-          totalCount = 0;
-          totalPages = 1;
-        }
+      if (data?.isSuccess) {
+        const { items: normalizedItems, count: totalCount, pages: totalPages } = normalizePaginated(data, pageSize);
+        const orgsData = clampItemsToPage(normalizedItems, page, pageSize);
 
         // Save to cache
         saveToCache(cacheKey, {
@@ -505,40 +523,16 @@ export default function OrganizationListPage() {
     };
 
     try {
-      // Create cache key based on filters
-      const filterKey = Object.entries(filters)
-        .filter(([key, value]) => value !== undefined)
-        .map(([key, value]) => `${key}_${value}`)
-        .join('_');
-      const cacheKey = `${CACHE_KEYS.FILTERED_ORGS}_${filterKey}`;
-      
-      // Check cache for filtered results
-      if (isCacheValid(cacheKey)) {
-        const cachedData = getFromCache(cacheKey);
-        if (cachedData) {
-          console.log('📦 Filtered organizations loaded from cache');
-          setOrganizations(Array.isArray(cachedData) ? cachedData : []);
-          setCurrentPage(1);
-          setTotalCount(Array.isArray(cachedData) ? cachedData.length : 0);
-          setTotalPages(Math.ceil((Array.isArray(cachedData) ? cachedData.length : 0) / pageSize));
-          setLoading(false);
-          return;
-        }
-      }
+      // Server-side pagination for filtered results
+      const data = await getFilteredOrganizations(filters, 1, pageSize);
+      console.log('🌐 Filtered organizations fetched from API (paginated)');
 
-      const data = await getFilteredOrganizations(filters);
-      console.log('🌐 Filtered organizations fetched from API');
-      
-      const safeData = Array.isArray(data) ? data : [];
-      
-      // Save to cache
-      saveToCache(cacheKey, safeData);
-      
-      setOrganizations(safeData);
-      // Reset pagination when filtering
+      const { items, count, pages } = normalizePaginated(data, pageSize);
+      const clamped = clampItemsToPage(items, 1, pageSize);
+      setOrganizations(clamped);
       setCurrentPage(1);
-      setTotalCount(safeData.length);
-      setTotalPages(Math.ceil(safeData.length / pageSize));
+      setTotalCount(count);
+      setTotalPages(pages);
     } catch (error) {
       console.error("Filter error:", error);
       setOrganizations([]);
@@ -588,11 +582,34 @@ export default function OrganizationListPage() {
   // Handle page change
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
-      // If filters are applied, handle client-side pagination
-      if (selectedCategory || selectedCity || selectedDistrict || maxPrice || isOutdoor || searchTerm) {
-        setCurrentPage(page);
-        // Client-side pagination for filtered results would need to be implemented
-        // For now, we'll just change the page number
+      const anyFilter = selectedCategory || selectedCity || selectedDistrict || maxPrice || isOutdoor;
+      if (anyFilter) {
+        // Server-side pagination with active filters
+        (async () => {
+          try {
+            setLoading(true);
+            const filters = {
+              categoryId: selectedCategory || undefined,
+              cityId: selectedCity || undefined,
+              districtId: selectedDistrict || undefined,
+              maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
+              isOutdoor: isOutdoor === "" ? undefined : isOutdoor === "true",
+            };
+
+            const data = await getFilteredOrganizations(filters, page, pageSize);
+
+            const { items, count, pages } = normalizePaginated(data, pageSize);
+            const clamped = clampItemsToPage(items, page, pageSize);
+            setOrganizations(clamped);
+            setCurrentPage(page);
+            setTotalCount(count);
+            setTotalPages(pages);
+          } catch (err) {
+            console.error('Pagination with filters error:', err);
+          } finally {
+            setLoading(false);
+          }
+        })();
       } else {
         // No filters, fetch from API with pagination
         fetchOrganizations(page);

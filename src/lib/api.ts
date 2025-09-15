@@ -8,7 +8,7 @@ console.log('🔧 API Configuration - Using proxy URL for Mixed Content Policy c
 // API client object for general use - Updated to use direct server URLs
 export const api = {
   post: async (endpoint: string, data?: any) => {
-    const url = getEndpointUrl(endpoint, false); // false = use direct server, not proxy
+    const url = getEndpointUrl(endpoint, true); // true = use proxy to avoid Mixed Content
     console.log('🚀 API POST Request (Direct Server):', url);
     console.log('📝 POST Body:', data);
     
@@ -37,7 +37,7 @@ export const api = {
     }
   },
   get: async (endpoint: string) => {
-    const url = getEndpointUrl(endpoint, false); // false = use direct server, not proxy
+    const url = getEndpointUrl(endpoint, true); // true = use proxy to avoid Mixed Content
     console.log('🚀 API GET Request (Direct Server):', url);
     
     try {
@@ -58,6 +58,8 @@ export const api = {
     }
   }
 };
+
+
 
 // Tüm organizasyonları getir - Updated to use proxy
 export async function getAllOrganizations(): Promise<Organization[]> {
@@ -138,19 +140,26 @@ export async function getDistrictsByCity(cityId: number): Promise<{ id: number; 
 }
 
 // Filtreli organizasyonları getir - Updated to use proxy
-export async function getFilteredOrganizations(filters: {
-  cityId?: number;
-  districtId?: number;
-  categoryId?: number;
-  isOutdoor?: boolean;
-  maxPrice?: number;
-}) {
+export async function getFilteredOrganizations(
+  filters: {
+    cityId?: number;
+    districtId?: number;
+    categoryId?: number;
+    isOutdoor?: boolean;
+    maxPrice?: number;
+  },
+  page: number = 1,
+  pageSize: number = 6
+) {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined) {
       params.append(key, value.toString());
     }
   });
+  // Backend swagger: Page, PageSize
+  params.append('Page', page.toString());
+  params.append('PageSize', pageSize.toString());
   
   const proxyUrl = `${BASE_URL}/Organization/Filter?${params}`;
   console.log('🔍 Proxy Filter API URL:', proxyUrl);
@@ -166,9 +175,10 @@ export async function getFilteredOrganizations(filters: {
     
     const data = await res.json();
     console.log('🔍 Filter API Response Data:', data);
-    console.log('🔍 First filtered organization:', data?.data?.[0]);
+    console.log('🔍 First filtered organization:', Array.isArray(data?.data) ? data?.data?.[0] : data?.data?.items?.[0]);
     
-    return data.data;
+    // Return full response so caller can use totalCount/totalPages
+    return data;
   } catch (error) {
     console.error('❌ Filter API Error:', error);
     throw error;

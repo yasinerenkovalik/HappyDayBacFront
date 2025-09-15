@@ -1,6 +1,19 @@
 // Application constants
+// Resolve BASE_URL safely to avoid Mixed Content in production (HTTPS)
+const resolveApiBaseUrl = () => {
+  const envBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  // On the client, always go through the Next.js proxy to keep HTTPS
+  if (typeof window !== 'undefined') {
+    return '/api/proxy';
+  }
+
+  // On the server, fall back to env or proxy
+  return envBaseUrl || '/api/proxy';
+};
+
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy",
+  BASE_URL: resolveApiBaseUrl(),
   IMAGE_BASE_URL: process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "/api/images",
 } as const;
 
