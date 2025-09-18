@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { apiConfig } from '@/config/api';
 
 // API route'u dynamic olarak çalıştırmaya zorla
 export const dynamic = 'force-dynamic';
@@ -24,8 +25,8 @@ export async function POST(request: NextRequest) {
 
     console.log('Email confirmation request:', { companyId, token });
 
-    // Backend API URL'i
-    const backendUrl = process.env.API_BASE_URL || 'http://0.0.0.0/api';
+    // Backend API URL'i (centralized, supports HTTPS)
+    const backendUrl = apiConfig.baseUrl;
     
     console.log('Using backend URL:', backendUrl);
     
@@ -39,6 +40,10 @@ export async function POST(request: NextRequest) {
         companyId: companyId,
         token: token
       }),
+      ...(backendUrl.startsWith('https://') && {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        agent: new (require('https').Agent)({ rejectUnauthorized: false })
+      })
     });
 
     const data = await response.json();

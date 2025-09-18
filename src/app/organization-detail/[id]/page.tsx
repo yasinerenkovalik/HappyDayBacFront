@@ -583,6 +583,20 @@ export default function OrganizationDetailPage() {
             </div>
           </div>
         </div>
+        <div className="w-full max-w-4xl mx-auto my-8 rounded-lg overflow-hidden shadow-lg">
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193490.18409242673!2d29.18977745023473!3d40.73377317351208!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cadf712c25e571%3A0x2df43c5267816cd4!2sLotus%20Organizasyon!5e0!3m2!1sen!2str!4v1758211271248!5m2!1sen!2str"
+    width="100%"
+    height="450"
+    style={{ border: 0 }}
+    allowFullScreen
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+    className="w-full h-full"
+  />
+</div>
+
+
 
         {/* Konum Bilgisi - Temporarily disabled to debug Server Component error */}
         {/* hasValidCoords && (

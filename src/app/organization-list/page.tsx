@@ -632,7 +632,7 @@ export default function OrganizationListPage() {
           </Typography>
 
           {/* Search Bar */}
-          <div className="max-w-md mx-auto">
+          {/*  <div className="max-w-md mx-auto">
             <div className="relative">
               <Input
                 type="text"
@@ -647,8 +647,9 @@ export default function OrganizationListPage() {
               />
               <MagnifyingGlassIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/70" />
             </div>
-          </div>
+          </div>  */}
         </div>
+      
       </section>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">

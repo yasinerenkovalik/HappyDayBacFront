@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { apiConfig } from '@/config/api';
 
 // API route'u dynamic olarak çalıştırmaya zorla
 export const dynamic = 'force-dynamic';
@@ -24,8 +25,8 @@ export async function POST(request: NextRequest) {
 
     console.log('Password reset confirmation request:', { companyId, token: token.substring(0, 10) + '...' });
 
-    // Backend API URL'i
-    const backendUrl = process.env.API_BASE_URL || 'https://0.0.0.0/api';
+    // Backend API URL'i (centralized, HTTPS destekli)
+    const backendUrl = apiConfig.baseUrl;
     
     console.log('Using backend URL:', backendUrl);
     
@@ -40,6 +41,10 @@ export async function POST(request: NextRequest) {
         token: token,
         newPassword: newPassword
       }),
+      ...(backendUrl.startsWith('https://') && {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        agent: new (require('https').Agent)({ rejectUnauthorized: false })
+      })
     });
 
     // Backend'den gelen response'u handle et

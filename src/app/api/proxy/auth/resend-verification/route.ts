@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { apiConfig } from '@/config/api';
 
 // API route'u dynamic olarak çalıştırmaya zorla
 export const dynamic = 'force-dynamic';
@@ -16,8 +17,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Localhost backend'e yönlendir
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5268';
+    // Centralized backend URL (supports HTTPS)
+    const backendUrl = apiConfig.baseUrl;
     
     const response = await fetch(`${backendUrl}/Auth/resend-verification`, {
       method: 'POST',
@@ -26,6 +27,10 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${authToken}`,
         'Accept': 'application/json',
       },
+      // Optional: tolerate self-signed certs when backend is https with issues
+      ...(backendUrl.startsWith('https://') && {
+        agent: new (require('https').Agent)({ rejectUnauthorized: false })
+      })
     });
 
     const data = await response.json();

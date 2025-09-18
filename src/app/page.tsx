@@ -16,7 +16,7 @@ export default function Campaign() {
     <ErrorBoundary>
       <Navbar />
       <Hero />
-      {/*   <Categories /> */}
+        <Categories /> 
    {/*    <Stats />*/}
     {/*  <Testimonials /> */}
       <CTA />

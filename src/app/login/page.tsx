@@ -34,12 +34,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-500 text-sm">
-          Hesabınız yok mu?{' '}
-          <Link href="/register" className="text-pink-600 hover:underline">
-            Kayıt Ol
-          </Link>
-        </p>
       </div>
     </div>
   );
