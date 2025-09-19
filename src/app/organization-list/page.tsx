@@ -2,7 +2,8 @@
 // src/app/organization-list/page.tsx
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar, Footer } from "@/components";
@@ -198,7 +199,8 @@ interface District {
   districtName: string;
 }
 
-export default function OrganizationListPage() {
+function OrganizationListInner() {
+  const searchParams = useSearchParams();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [cities, setCities] = useState<City[]>([]);
@@ -502,6 +504,14 @@ export default function OrganizationListPage() {
     fetchInitialData();
   }, []); // Empty dependency array - only run once
 
+  // Read categoryId from query string and set initial selectedCategory
+  useEffect(() => {
+    const categoryFromQuery = searchParams?.get('categoryId');
+    if (categoryFromQuery) {
+      setSelectedCategory(categoryFromQuery);
+    }
+  }, [searchParams]);
+
   // Fetch districts when city is selected
   useEffect(() => {
     if (selectedCity) {
@@ -618,7 +628,7 @@ export default function OrganizationListPage() {
   };
 
   return (
-    <>
+    <Suspense fallback={<div className="container mx-auto px-4 py-12"><span className="animate-pulse text-gray-500">Yükleniyor...</span></div>}>
       <Navbar />
 
       {/* Hero Section */}
@@ -1051,6 +1061,14 @@ export default function OrganizationListPage() {
       </div>
 
       <Footer />
-    </>
+    </Suspense>
+  );
+}
+
+export default function OrganizationListPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-12"><span className="animate-pulse text-gray-500">Yükleniyor...</span></div>}>
+      <OrganizationListInner />
+    </Suspense>
   );
 }
