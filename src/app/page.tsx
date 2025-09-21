@@ -8,7 +8,9 @@ import {
   Stats,
   Testimonials,
   CTA,
-  FAQ
+  FAQ,
+  WhyUs,
+  SearchEngine
 } from "@/components";
 
 export default function Campaign() {
@@ -16,7 +18,9 @@ export default function Campaign() {
     <ErrorBoundary>
       <Navbar />
       <Hero />
-        <Categories /> 
+      <SearchEngine />
+      <WhyUs />
+     {/*   <Categories /> */}
    {/*    <Stats />*/}
     {/*  <Testimonials /> */}
       <CTA />

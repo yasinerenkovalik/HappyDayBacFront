@@ -201,7 +201,7 @@ export default function AdminLayout({ children, userType }: AdminLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <div className="admin-main-content flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="admin-main-content flex-1 flex flex-col min-w-0 overflow-auto p-6">
         {/* Top Bar */}
         <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">

@@ -564,3 +564,14 @@ export async function registerCompanyByInvite(data: {
     };
   }
 }
+
+// Get organizations by company ID
+export const getOrganizationsByCompany = async (companyId: string): Promise<Organization[]> => {
+  try {
+    const response = await api.get(`/Organization/GetOrganizationWithICompany?Id=${companyId}`);
+    return response.data || [];
+  } catch (error) {
+    console.error("Error fetching organizations by company:", error);
+    return [];
+  }
+};

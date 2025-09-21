@@ -53,7 +53,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -68,7 +68,7 @@ export default function FAQ() {
           </Typography>
           <Typography
             variant="lead"
-            className="text-gray-600 max-w-2xl mx-auto"
+            className="text-gray-700 max-w-2xl mx-auto"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
@@ -80,7 +80,7 @@ export default function FAQ() {
         {/* FAQ Accordion */}
         <div className="max-w-4xl mx-auto">
           <Card
-            className="shadow-lg"
+            className="shadow-lg border border-gray-200"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
@@ -102,7 +102,7 @@ export default function FAQ() {
                 >
                   <AccordionHeader
                     onClick={() => handleAccordionToggle(faq.id)}
-                    className="px-6 py-4 text-left hover:text-pink-600 transition-colors"
+                    className="px-6 py-4 text-left hover:text-pink-700 transition-colors"
                     placeholder={undefined}
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
@@ -127,7 +127,7 @@ export default function FAQ() {
                   <AccordionBody className="px-6 pb-4 pt-0">
                     <Typography
                       variant="small"
-                      className="text-gray-600 leading-relaxed"
+                      className="text-gray-700 leading-relaxed"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}

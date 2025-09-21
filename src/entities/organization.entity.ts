@@ -13,6 +13,7 @@ export interface Organization {
     videoUrl: string;
     coverPhotoPath: string;
     companyId: string;
+    companyName?: string;
     cityName?: string;
     districtName?: string;
     city?: string;
@@ -35,6 +36,7 @@ export interface Organization {
     videoUrl: string;
     coverPhotoPath: string;
     companyId: string;
+    companyName?: string;
     images: {
       id: number;
       imageUrl: string;

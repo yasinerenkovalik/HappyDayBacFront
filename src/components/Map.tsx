@@ -236,7 +236,6 @@ export default function Map({
         // Leaflet yerine iframe kullan
         if (isMounted) {
           setUseGoogleMaps(false);
-          setUseLeaflet(false);
           setIsLoading(false);
         }
       }
@@ -330,10 +329,18 @@ export default function Map({
     <div className={`w-full h-96 rounded-lg overflow-hidden relative ${className}`}>
       {/* Loading overlay */}
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-20">
+        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center z-20">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto mb-2"></div>
-            <Typography variant="small" color="gray" placeholder="">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600 mx-auto mb-2"></div>
+            <Typography 
+              variant="small" 
+              color="gray"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+            >
               {useGoogleMaps ? "Google Maps yükleniyor..." : "Harita yükleniyor..."}
             </Typography>
           </div>
@@ -360,15 +367,15 @@ export default function Map({
       )}
 
       {/* Info badge (top-left) */}
-      <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm">
+      <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border border-gray-200">
         <div className="flex items-center gap-2">
-          <MapPinIcon className="w-4 h-4 text-red-500" />
+          <MapPinIcon className="w-4 h-4 text-red-600" />
           <div className="text-sm">
-            <div className="font-medium text-gray-800">{getLocationName()}</div>
-            <div className="text-xs text-gray-600 font-mono">
+            <div className="font-medium text-gray-900">{getLocationName()}</div>
+            <div className="text-xs text-gray-700 font-mono">
               {lat.toFixed(6)}, {lng.toFixed(6)}
             </div>
-            <div className="text-xs text-gray-500">{useGoogleMaps ? "🎯 Google Maps" : "📱 Iframe"}</div>
+            <div className="text-xs text-gray-600">{useGoogleMaps ? "🎯 Google Maps" : "📱 Iframe"}</div>
           </div>
         </div>
       </div>
@@ -378,7 +385,7 @@ export default function Map({
         <button
           onClick={() => setInteractiveMode((v) => !v)}
           className={`p-2 backdrop-blur-sm rounded-lg shadow-sm transition-colors ${
-            interactiveMode ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-white/90 text-gray-600 hover:bg-white"
+            interactiveMode ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-white/95 text-gray-700 hover:bg-white border border-gray-200"
           }`}
           title={interactiveMode ? "Hassas seçimi kapat" : "Hassas konum seçimi"}
         >
@@ -387,25 +394,25 @@ export default function Map({
 
         <button
           onClick={() => setShowCoordinates((v) => !v)}
-          className="p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm hover:bg-white transition-colors"
+          className="p-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:bg-white transition-colors border border-gray-200"
           title={showCoordinates ? "Koordinat girişini gizle" : "Koordinat girişini göster"}
         >
-          <GlobeAltIcon className="w-4 h-4 text-gray-600" />
+          <GlobeAltIcon className="w-4 h-4 text-gray-700" />
         </button>
 
         <a
           href={getGoogleMapsUrl()}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-sm hover:bg-white transition-colors"
+          className="p-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-sm hover:bg-white transition-colors border border-gray-200"
           title="Google Maps'te aç"
         >
-          <MagnifyingGlassIcon className="w-4 h-4 text-blue-600" />
+          <MagnifyingGlassIcon className="w-4 h-4 text-blue-700" />
         </a>
       </div>
 
       {/* Footer badge */}
-      <div className="absolute bottom-2 left-2 bg-white/90 px-2 py-1 rounded text-xs text-gray-600 shadow">
+      <div className="absolute bottom-2 left-2 bg-white/95 px-2 py-1 rounded text-xs text-gray-700 shadow border border-gray-200">
         {useGoogleMaps ? (interactiveMode ? "🎯 Hassas Seçim Aktif" : "🗺️ Google Maps") : "📱 Iframe"}
         {" • "}Zoom: {currentZoom} • Loading: {isLoading ? "Yes" : "No"}
       </div>

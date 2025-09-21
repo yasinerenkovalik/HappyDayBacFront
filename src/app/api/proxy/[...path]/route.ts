@@ -151,7 +151,11 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
             headers['Content-Type'] = 'application/json';
             body = JSON.stringify(await request.json());
         } else if (contentType?.includes('multipart/form-data')) {
-            body = await request.formData();
+            // For multipart/form-data, we need to forward the raw stream
+            // instead of parsing it, to preserve the boundary information
+            body = await request.blob();
+            console.log('📤 POST FormData body as blob, size:', body.size);
+            // Don't set Content-Type header to let fetch auto-set it with proper boundary
         } else {
             body = await request.text();
             if (contentType) {
@@ -269,17 +273,11 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
             body = JSON.stringify(jsonData);
             console.log('📤 PUT JSON body:', jsonData);
         } else if (contentType?.includes('multipart/form-data')) {
-            // FormData için Content-Type header'ı otomatik ayarlansın (boundary ile)
-            body = await request.formData();
-            console.log('📤 PUT FormData body (keys):', Array.from(body.keys()));
-            console.log('📤 PUT FormData entries:');
-            for (let [key, value] of body.entries()) {
-                if (value instanceof File) {
-                    console.log(`  ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
-                } else {
-                    console.log(`  ${key}: ${value}`);
-                }
-            }
+            // For multipart/form-data, we need to forward the raw stream
+            // instead of parsing it, to preserve the boundary information
+            body = await request.blob();
+            console.log('📤 PUT FormData body as blob, size:', body.size);
+            // Don't set Content-Type header to let fetch auto-set it with proper boundary
         } else {
             body = await request.text();
             if (contentType) {
@@ -381,9 +379,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
                 body = JSON.stringify(json);
                 console.log('📤 DELETE JSON body:', json);
             } else if (contentType?.includes('multipart/form-data')) {
-                // FormData gönderiminde Content-Type otomatik ayarlansın (boundary ile)
-                body = await request.formData();
-                console.log('📤 DELETE multipart/form-data body (keys):', Array.from(body.keys()));
+                // For multipart/form-data, we need to forward the raw stream
+                // instead of parsing it, to preserve the boundary information
+                body = await request.blob();
+                console.log('📤 DELETE FormData body as blob, size:', body.size);
+                // Don't set Content-Type header to let fetch auto-set it with proper boundary
             } else if (contentType?.includes('application/x-www-form-urlencoded')) {
                 headers['Content-Type'] = contentType;
                 body = await request.text();

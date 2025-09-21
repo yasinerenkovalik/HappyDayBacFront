@@ -31,9 +31,21 @@ import {
   getOrganizationDetail,
   updateOrganization,
   addOrganizationImages,
+  getAuthToken,
   OrganizationDetail,
   OrganizationUpdateData
 } from "@/lib/auth";
+
+interface City {
+  id: number;
+  cityName: string;
+}
+
+interface District {
+  id: number;
+  districtName: string;
+  cityId: number;
+}
 
 export default function EditOrganizationPage() {
   const params = useParams();
@@ -50,6 +62,10 @@ export default function EditOrganizationPage() {
   const [newService, setNewService] = useState("");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [cities, setCities] = useState<City[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -57,7 +73,8 @@ export default function EditOrganizationPage() {
     price: 0,
     maxGuestCount: 0,
     categoryId: 0,
-    cityId: 0,
+    cityId: "" as string | number,
+    districtId: "" as string | number,
     services: [] as string[],
     duration: "",
     isOutdoor: false,
@@ -66,6 +83,103 @@ export default function EditOrganizationPage() {
     videoUrl: "",
     coverPhoto: null as File | null
   });
+
+  // Şehirleri API'den yükle
+  const fetchCities = async () => {
+    try {
+      setLoadingCities(true);
+      const token = getAuthToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch('/api/proxy/City/CityGetAll', {
+        headers
+      });
+      const data = await response.json();
+
+      if (data.isSuccess && data.data) {
+        setCities(data.data);
+        console.log('✅ Cities loaded:', data.data);
+      } else {
+        console.error('❌ Failed to fetch cities:', data.message);
+        setError('Şehirler yüklenirken hata oluştu');
+      }
+    } catch (error) {
+      console.error('❌ Error fetching cities:', error);
+      setError('Şehirler yüklenirken bağlantı hatası');
+    } finally {
+      setLoadingCities(false);
+    }
+  };
+
+  // İlçeleri API'den yükle
+  const fetchDistricts = async (cityId: number) => {
+    try {
+      setLoadingDistricts(true);
+      setDistricts([]); // Önce mevcut ilçeleri temizle
+      console.log('🔍 Fetching districts for city ID:', cityId);
+
+      // API'nin beklediği request format: GetAllDisctrictByCityRequest
+      const requestBody = {
+        CityId: cityId
+      };
+      console.log('📤 Request body:', requestBody);
+
+      const token = getAuthToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`/api/proxy/District/GetAllDisctrictByCity`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('📡 Response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('📡 Response data:', data);
+
+      if (data.isSuccess && data.data && Array.isArray(data.data)) {
+        setDistricts(data.data);
+        console.log('✅ Districts loaded for city', cityId, ':', data.data.length, 'districts');
+      } else {
+        console.warn('⚠️ No districts found for city:', cityId, data.message);
+        setDistricts([]);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching districts:', error);
+      setDistricts([]);
+    } finally {
+      setLoadingDistricts(false);
+    }
+  };
+
+  // Şehir değiştiğinde ilçeleri yükle
+  useEffect(() => {
+    if (formData.cityId) {
+      console.log('🔄 City changed to:', formData.cityId);
+      const cityIdValue = typeof formData.cityId === 'string' ? parseInt(formData.cityId, 10) : formData.cityId;
+      if (!isNaN(cityIdValue) && cityIdValue > 0) {
+        fetchDistricts(cityIdValue);
+      }
+    } else {
+      console.log('🔄 No city selected, clearing districts');
+      setDistricts([]);
+    }
+  }, [formData.cityId]);
 
   // Fetch organization data
   useEffect(() => {
@@ -77,6 +191,9 @@ export default function EditOrganizationPage() {
     if (storedUserType) {
       setUserType(storedUserType);
     }
+
+    // Şehir verilerini yükle
+    fetchCities();
 
     const fetchOrganization = async () => {
       try {
@@ -96,7 +213,8 @@ export default function EditOrganizationPage() {
             price: org.price || 0,
             maxGuestCount: org.maxGuestCount || 0,
             categoryId: org.categoryId || 0,
-            cityId: org.cityId || 0,
+            cityId: org.cityId ? org.cityId.toString() : "",
+            districtId: org.districtId ? org.districtId.toString() : "",
             services: org.services || [],
             duration: org.duration || "",
             isOutdoor: org.isOutdoor || false,
@@ -105,6 +223,14 @@ export default function EditOrganizationPage() {
             videoUrl: org.videoUrl || "",
             coverPhoto: null
           });
+          
+          // İlçe verilerini yükle
+          if (org.cityId) {
+            const cityIdValue = typeof org.cityId === 'number' ? org.cityId : parseInt(org.cityId.toString(), 10);
+            if (!isNaN(cityIdValue) && cityIdValue > 0) {
+              fetchDistricts(cityIdValue);
+            }
+          }
         } else {
           setError(response.message || "Organizasyon yüklenirken hata oluştu");
         }
@@ -123,6 +249,21 @@ export default function EditOrganizationPage() {
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Şehir değiştiğinde ilçe alanını sıfırla
+    if (field === "cityId") {
+      setFormData(prev => ({ ...prev, districtId: "" }));
+      
+      // Yeni şehir seçildiğinde ilçeleri yükle
+      if (value) {
+        const cityIdValue = typeof value === 'string' ? parseInt(value, 10) : value;
+        if (!isNaN(cityIdValue) && cityIdValue > 0) {
+          fetchDistricts(cityIdValue);
+        }
+      } else {
+        setDistricts([]);
+      }
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,7 +337,7 @@ export default function EditOrganizationPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.description) {
+    if (!formData.title?.trim() || !formData.description?.trim()) {
       setError("Başlık ve açıklama alanları zorunludur");
       return;
     }
@@ -208,12 +349,15 @@ export default function EditOrganizationPage() {
     try {
       const updateData: OrganizationUpdateData = {
         id: organizationId,
-        title: formData.title,
-        description: formData.description,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
         price: formData.price,
         maxGuestCount: formData.maxGuestCount,
-        categoryId: formData.categoryId || undefined,
-        cityId: formData.cityId || undefined,
+        categoryId: formData.categoryId !== undefined && formData.categoryId !== null && formData.categoryId > 0 ? formData.categoryId : undefined,
+        cityId: formData.cityId !== undefined && formData.cityId !== null && formData.cityId > 0 ? 
+          (typeof formData.cityId === 'string' ? parseInt(formData.cityId, 10) : formData.cityId) : undefined,
+        districtId: formData.districtId !== undefined && formData.districtId !== null && formData.districtId > 0 ? 
+          (typeof formData.districtId === 'string' ? parseInt(formData.districtId, 10) : formData.districtId) : undefined,
         services: formData.services,
         duration: formData.duration || "1 saat",
         isOutdoor: formData.isOutdoor,
@@ -222,6 +366,8 @@ export default function EditOrganizationPage() {
         videoUrl: formData.videoUrl || "",
         coverPhoto: formData.coverPhoto || undefined
       };
+
+      console.log('📤 Sending organization update data:', updateData);
 
       const response = await updateOrganization(updateData);
 
@@ -235,6 +381,7 @@ export default function EditOrganizationPage() {
           }
         }, 2000);
       } else {
+        // Handle validation errors from backend
         if (response.errors) {
           const errorMessages = Object.entries(response.errors)
             .map(([field, messages]: [string, any]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
@@ -244,9 +391,9 @@ export default function EditOrganizationPage() {
           setError(response.message || response.title || "Güncelleme sırasında hata oluştu");
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating organization:", error);
-      setError("Bağlantı hatası. Lütfen tekrar deneyin.");
+      setError(error.message || "Bağlantı hatası. Lütfen tekrar deneyin.");
     } finally {
       setSaving(false);
     }
@@ -405,6 +552,94 @@ export default function EditOrganizationPage() {
                           onPointerEnterCapture={undefined}
                           onPointerLeaveCapture={undefined}
                         />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="mb-4">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="mb-2 font-medium"
+                            placeholder={undefined}
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                          >
+                            Şehir
+                          </Typography>
+                          <select
+                            value={formData.cityId}
+                            onChange={(e) => handleInputChange("cityId", e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          >
+                            <option value="">Şehir Seçin</option>
+                            {cities.map((city) => (
+                              <option key={city.id} value={city.id}>
+                                {city.cityName}
+                              </option>
+                            ))}
+                          </select>
+                          {loadingCities && (
+                            <Typography
+                              variant="small"
+                              color="gray"
+                              className="mt-1"
+                              placeholder={undefined}
+                              onPointerEnterCapture={undefined}
+                              onPointerLeaveCapture={undefined}
+                            >
+                              Şehirler yükleniyor...
+                            </Typography>
+                          )}
+                        </div>
+                        <div className="mb-4">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="mb-2 font-medium"
+                            placeholder={undefined}
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                          >
+                            İlçe
+                          </Typography>
+                          <select
+                            value={formData.districtId}
+                            onChange={(e) => handleInputChange("districtId", e.target.value)}
+                            disabled={!formData.cityId}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:bg-gray-100"
+                          >
+                            <option value="">İlçe Seçin</option>
+                            {districts.map((district) => (
+                              <option key={district.id} value={district.id}>
+                                {district.districtName}
+                              </option>
+                            ))}
+                          </select>
+                          {loadingDistricts && (
+                            <Typography
+                              variant="small"
+                              color="gray"
+                              className="mt-1"
+                              placeholder={undefined}
+                              onPointerEnterCapture={undefined}
+                              onPointerLeaveCapture={undefined}
+                            >
+                              İlçeler yükleniyor...
+                            </Typography>
+                          )}
+                          {!formData.cityId && (
+                            <Typography
+                              variant="small"
+                              color="gray"
+                              className="mt-1"
+                              placeholder={undefined}
+                              onPointerEnterCapture={undefined}
+                              onPointerLeaveCapture={undefined}
+                            >
+                              Önce şehir seçin
+                            </Typography>
+                          )}
+                        </div>
                       </div>
 
                       <Input
@@ -604,12 +839,12 @@ export default function EditOrganizationPage() {
                     {organization?.coverPhotoPath && (
                       <div className="mb-4">
                         <img
-                          src={`/api/images/${organization.coverPhotoPath.startsWith('/') ? organization.coverPhotoPath.substring(1) : organization.coverPhotoPath}`}
+                          src={organization.coverPhotoPath.startsWith('http') ? organization.coverPhotoPath : `/api/images/${organization.coverPhotoPath.startsWith('/') ? organization.coverPhotoPath.substring(1) : organization.coverPhotoPath}`}
                           alt="Mevcut kapak fotoğrafı"
                           className="w-full h-32 object-cover rounded-lg"
                           onError={(e) => {
                             console.log('❌ Cover image load error:', e.currentTarget.src);
-                            e.currentTarget.src = '/api/images/placeholder.jpg';
+                            e.currentTarget.src = '/image/placeholder.jpg';
                           }}
                         />
                         <Typography
@@ -796,12 +1031,12 @@ export default function EditOrganizationPage() {
                         {organization.images.map((image) => (
                           <div key={image.id} className="relative group">
                             <img
-                              src={`/api/images/${image.imageUrl.startsWith('/') ? image.imageUrl.substring(1) : image.imageUrl}`}
+                              src={image.imageUrl.startsWith('http') ? image.imageUrl : `/api/images/${image.imageUrl.startsWith('/') ? image.imageUrl.substring(1) : image.imageUrl}`}
                               alt={`Galeri resmi ${image.id}`}
                               className="w-full h-24 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
                               onError={(e) => {
                                 console.log('❌ Gallery image load error:', e.currentTarget.src);
-                                e.currentTarget.src = '/api/images/placeholder.jpg';
+                                e.currentTarget.src = '/image/placeholder.jpg';
                               }}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
@@ -810,7 +1045,7 @@ export default function EditOrganizationPage() {
                                   size="sm"
                                   color="blue"
                                   className="p-2"
-                                  onClick={() => window.open(`/api/images/${image.imageUrl.startsWith('/') ? image.imageUrl.substring(1) : image.imageUrl}`, '_blank')}
+                                  onClick={() => window.open(image.imageUrl.startsWith('http') ? image.imageUrl : `/api/images/${image.imageUrl.startsWith('/') ? image.imageUrl.substring(1) : image.imageUrl}`, '_blank')}
                                   placeholder={undefined}
                                   onPointerEnterCapture={undefined}
                                   onPointerLeaveCapture={undefined}

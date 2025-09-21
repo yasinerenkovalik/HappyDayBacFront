@@ -34,7 +34,7 @@ export default function Navbar() {
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
-        <Link href="/" className="flex items-center hover:text-pink-500 transition-colors py-2 lg:py-0">
+        <Link href="/" className="flex items-center hover:text-pink-700 transition-colors py-2 lg:py-0">
           Ana Sayfa
         </Link>
       </Typography>
@@ -47,7 +47,20 @@ export default function Navbar() {
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
-        <Link href="/organization-list" className="flex items-center hover:text-pink-500 transition-colors py-2 lg:py-0">
+        <Link href="/about" className="flex items-center hover:text-pink-700 transition-colors py-2 lg:py-0">
+          Hakkımızda
+        </Link>
+      </Typography>
+      <Typography
+        as="li"
+        variant="small"
+        color="blue-gray"
+        className="p-2 lg:p-1 font-normal"
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
+        <Link href="/organization-list" className="flex items-center hover:text-pink-700 transition-colors py-2 lg:py-0">
           Organizasyonlar
         </Link>
       </Typography>
@@ -60,7 +73,7 @@ export default function Navbar() {
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
-        <Link href="/contact" className="flex items-center hover:text-pink-500 transition-colors py-2 lg:py-0">
+        <Link href="/contact" className="flex items-center hover:text-pink-700 transition-colors py-2 lg:py-0">
           İletişim
         </Link>
       </Typography>
@@ -85,7 +98,7 @@ export default function Navbar() {
               as="span"
               variant="gradient"
               size="sm"
-              className="bg-gradient-to-r from-pink-500 to-purple-600 w-full"
+              className="bg-gradient-to-r from-pink-600 to-purple-700 w-full"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
@@ -95,7 +108,7 @@ export default function Navbar() {
           </Link>
           <IconButton
             variant="text"
-            className="ml-auto h-12 w-12 text-inherit hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-200 lg:hidden flex items-center justify-center"
+            className="ml-auto h-12 w-12 text-inherit hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-300 lg:hidden flex items-center justify-center"
             ripple={false}
             onClick={() => setOpenNav(!openNav)}
             placeholder={undefined}
@@ -120,7 +133,7 @@ export default function Navbar() {
                 variant="gradient"
                 size="md"
                 fullWidth
-                className="mb-2 bg-gradient-to-r from-pink-500 to-purple-600 py-3"
+                className="mb-2 bg-gradient-to-r from-pink-600 to-purple-700 py-3"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}

@@ -43,7 +43,7 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section className="py-16 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600">
+    <section className="py-16 bg-gradient-to-r from-pink-600 via-purple-700 to-indigo-700">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Typography
@@ -57,7 +57,7 @@ export default function Stats() {
           </Typography>
           <Typography
             variant="lead"
-            className="text-pink-100 max-w-2xl mx-auto"
+            className="text-pink-50 max-w-2xl mx-auto"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
@@ -71,7 +71,7 @@ export default function Stats() {
             const IconComponent = stat.icon;
             return (
               <div key={stat.id} className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-25 rounded-full flex items-center justify-center">
                   <IconComponent className={`h-8 w-8 text-${stat.color}-200`} />
                 </div>
                 <Typography
@@ -85,7 +85,7 @@ export default function Stats() {
                 </Typography>
                 <Typography
                   variant="small"
-                  className="text-pink-100 font-medium"
+                  className="text-pink-50 font-medium"
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}

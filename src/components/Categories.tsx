@@ -112,7 +112,7 @@ export default function Categories() {
     };
 
     return (
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-gray-50">
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="text-center mb-12">
@@ -127,7 +127,7 @@ export default function Categories() {
                     </Typography>
                     <Typography
                         variant="lead"
-                        className="text-gray-600 max-w-2xl mx-auto"
+                        className="text-gray-700 max-w-2xl mx-auto"
                         placeholder={undefined}
                         onPointerEnterCapture={undefined}
                         onPointerLeaveCapture={undefined}
@@ -139,12 +139,12 @@ export default function Categories() {
                 {/* Compact horizontal list */}
                 <div className="-mx-4 px-4 relative">
                     {/* edge fades for scroll hint */}
-                    <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-white to-transparent" />
-                    <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white to-transparent" />
+                    <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-gray-50 to-transparent" />
+                    <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-gray-50 to-transparent" />
                     <div className="flex items-stretch gap-4 overflow-x-auto no-scrollbar py-2">
                         {loading ? (
                             Array.from({ length: 8 }).map((_, i) => (
-                                <div key={i} className="flex-shrink-0 h-14 w-48 rounded-full bg-gray-100 animate-pulse" />
+                                <div key={i} className="flex-shrink-0 h-14 w-48 rounded-full bg-gray-200 animate-pulse" />
                             ))
                         ) : (
                             categories.map((category) => {
@@ -155,12 +155,12 @@ export default function Categories() {
                                     <button
                                         key={category.id}
                                         onClick={() => handleClick(category.id)}
-                                        className="flex-shrink-0 group inline-flex items-center gap-3 pl-3 pr-4 h-14 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-pink-300 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
+                                        className="flex-shrink-0 group inline-flex items-center gap-3 pl-3 pr-4 h-14 rounded-full bg-white border border-gray-300 shadow-sm hover:shadow-md hover:border-pink-400 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500"
                                         aria-label={`Kategori: ${category.name}`}
                                         role="link"
                                     >
                                         {/* gradient ring */}
-                                        <span className="p-[2px] rounded-full bg-gradient-to-br from-pink-400 via-fuchsia-400 to-purple-500 shadow-sm">
+                                        <span className="p-[2px] rounded-full bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-600 shadow-sm">
                                           {/* Avatar - perfectly circular */}
                                           <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white">
                                             <Image
@@ -178,15 +178,15 @@ export default function Categories() {
                                         </span>
                                         {/* Label */}
                                         <div className="flex items-center gap-2">
-                                            <span className="text-base font-medium text-gray-900 whitespace-nowrap group-hover:text-pink-600" title={subtitle || undefined}>
+                                            <span className="text-base font-medium text-gray-900 whitespace-nowrap group-hover:text-pink-700" title={subtitle || undefined}>
                                                 {category.name}
                                             </span>
                                             {countValue !== undefined && (
-                                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-50 text-pink-700 border border-pink-200">
+                                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-800 border border-pink-300">
                                                     {String(countValue)}
                                                 </span>
                                             )}
-                                            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-sm text-pink-600">Keşfet →</span>
+                                            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-sm text-pink-700">Keşfet →</span>
                                         </div>
                                     </button>
                                 );

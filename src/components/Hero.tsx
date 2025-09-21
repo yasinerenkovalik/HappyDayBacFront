@@ -8,12 +8,12 @@ import { SparklesIcon } from "@heroicons/react/24/solid";
 
 function Hero() {
   return (
-    <header className="relative min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 overflow-hidden">
+    <header className="relative min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5 overflow-hidden">
-        <div className="absolute top-20 left-4 sm:left-20 w-48 h-48 sm:w-72 sm:h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-4 sm:right-20 w-48 h-48 sm:w-72 sm:h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-48 sm:w-72 sm:h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+      <div className="absolute inset-0 opacity-10 overflow-hidden">
+        <div className="absolute top-20 left-4 sm:left-20 w-48 h-48 sm:w-72 sm:h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-4 sm:right-20 w-48 h-48 sm:w-72 sm:h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-48 sm:w-72 sm:h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 relative z-10">
@@ -21,7 +21,7 @@ function Hero() {
           {/* SOL ALAN */}
           <div className="text-center lg:text-left">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-purple-700 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg">
               <SparklesIcon className="h-4 w-4" />
               Türkiye&apos;nin #1 Organizasyon Platformu
             </div>
@@ -32,7 +32,7 @@ function Hero() {
             >
               Hayalinizdeki
               <br />
-              <span className="bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-pink-600 to-purple-700 bg-clip-text text-transparent">
                 Özel Günü
               </span>
               <br />
@@ -41,10 +41,10 @@ function Hero() {
 
             {/* <Typography
               variant="lead"
-              className="mb-8 text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed"
+              className="mb-8 text-xl text-gray-700 max-w-lg mx-auto lg:mx-0 leading-relaxed"
             >
               Düğün, nişan, kına gecesi, doğum günü ve tüm özel anlarınız için 
-              <span className="font-semibold text-pink-600"> binlerce organizasyon seçeneği</span> arasından 
+              <span className="font-semibold text-pink-700"> binlerce organizasyon seçeneği</span> arasından 
               size en uygun olanı bulun.
             </Typography> */}
 
@@ -55,14 +55,14 @@ function Hero() {
                   <Input
                     label="Ne arıyorsunuz?"
                     icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                    className="!border-gray-200"
+                    className="!border-gray-300"
                   />
                 </div>
                 <div className="relative">
                   <Input
                     label="Şehir"
                     icon={<MapPinIcon className="h-5 w-5" />}
-                    className="!border-gray-200"
+                    className="!border-gray-300"
                   />
                 </div>
                 <div className="relative">
@@ -70,13 +70,13 @@ function Hero() {
                     label="Tarih"
                     type="date"
                     icon={<CalendarDaysIcon className="h-5 w-5" />}
-                    className="!border-gray-200"
+                    className="!border-gray-300"
                   />
                 </div>
               </div>
               <Button
                 size="lg"
-                className="w-full mt-4 bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full mt-4 bg-gradient-to-r from-pink-600 to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Organizasyon Ara
               </Button>
@@ -88,7 +88,7 @@ function Hero() {
                 <Typography variant="h4" className="font-bold text-gray-900 mb-1">
                   2,500+
                 </Typography>
-                <Typography variant="small" className="text-gray-600">
+                <Typography variant="small" className="text-gray-700">
                   Mutlu Çift
                 </Typography>
               </div>
@@ -96,7 +96,7 @@ function Hero() {
                 <Typography variant="h4" className="font-bold text-gray-900 mb-1">
                   150+
                 </Typography>
-                <Typography variant="small" className="text-gray-600">
+                <Typography variant="small" className="text-gray-700">
                   Partner Firma
                 </Typography>
               </div>
@@ -104,7 +104,7 @@ function Hero() {
                 <Typography variant="h4" className="font-bold text-gray-900 mb-1">
                   5,000+
                 </Typography>
-                <Typography variant="small" className="text-gray-600">
+                <Typography variant="small" className="text-gray-700">
                   Etkinlik
                 </Typography>
               </div>
@@ -115,7 +115,7 @@ function Hero() {
           <div className="relative">
             {/* Ana Görsel */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-purple-600/20 rounded-3xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-600/30 to-purple-700/30 rounded-3xl"></div>
               <Image
                 width={600}
                 height={700}

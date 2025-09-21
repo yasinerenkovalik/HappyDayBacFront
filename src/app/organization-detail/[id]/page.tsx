@@ -276,7 +276,7 @@ export default function OrganizationDetailPage() {
               <Typography variant="h1" className="mb-2 font-bold">
                 {org.title}
               </Typography>
-              <div className="flex items-center gap-4 text-white/90">
+              <div className="flex items-center gap-4 text-white/90 mb-4">
                 <div className="flex items-center gap-1">
                   <MapPinIcon className="h-5 w-5" />
                   <Typography>
@@ -286,7 +286,30 @@ export default function OrganizationDetailPage() {
                     }
                   </Typography>
                 </div>
-            
+              </div>
+              
+              {/* Şirket Butonu */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
+                  <BuildingOfficeIcon className="h-4 w-4" />
+                  <Typography variant="small" className="font-medium">
+                    {org.companyName || "Şirket Bilgisi"}
+                  </Typography>
+                </div>
+                <Button
+                  size="sm"
+                  color="white"
+                  variant="filled"
+                  className="bg-white/90 text-gray-800 hover:bg-white shadow-lg"
+                  onClick={() => {
+                    // Geçici companyId - API'dan gelince org.companyId kullan
+                    const tempCompanyId = "019929e2-d51c-7858-a8c7-e76e79ed1136";
+                    window.open(`/company-detail/${tempCompanyId}`, '_blank');
+                  }}
+                >
+                  <BuildingOfficeIcon className="h-4 w-4 mr-1" />
+                  Şirket Detayı
+                </Button>
               </div>
             </div>
           </div>
@@ -556,25 +579,6 @@ export default function OrganizationDetailPage() {
                       >
                         <EnvelopeIcon className="h-4 w-4" />
                         E-posta
-                      </Button>
-                    </div>
-                    
-                    {/* Şirket Detayına Git Butonu */}
-                    {/* Geçici olarak her zaman göster - API'dan companyId gelince bu koşulu düzelt */}
-                    <div className="mt-4">
-                      <Button
-                        color="blue"
-                        size="sm"
-                        fullWidth
-                        className="flex items-center justify-center gap-2"
-                        onClick={() => {
-                          // Geçici companyId - API'dan gelince org.companyId kullan
-                          const tempCompanyId = "019929e2-d51c-7858-a8c7-e76e79ed1136";
-                          window.open(`/company-detail/${tempCompanyId}`, '_blank');
-                        }}
-                      >
-                        <BuildingOfficeIcon className="h-4 w-4" />
-                        Şirket Sayfasını Görüntüle
                       </Button>
                     </div>
                   </div>

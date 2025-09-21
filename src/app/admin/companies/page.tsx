@@ -189,9 +189,13 @@ export default function CompaniesPage() {
                               {company.coverPhotoPath ? (
                                 <div className="w-12 h-8 rounded overflow-hidden border border-gray-200">
                                   <img
-                                    src={company.coverPhotoPath.startsWith('/') ? company.coverPhotoPath : `/${company.coverPhotoPath}`}
+                                    src={company.coverPhotoPath.startsWith('http') ? company.coverPhotoPath : `/api/images/${company.coverPhotoPath.startsWith('/') ? company.coverPhotoPath.substring(1) : company.coverPhotoPath}`}
                                     alt={company.name}
                                     className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      console.log('❌ Company image load error:', e.currentTarget.src);
+                                      e.currentTarget.src = '/image/placeholder.jpg';
+                                    }}
                                   />
                                 </div>
                               ) : (
@@ -341,9 +345,12 @@ export default function CompaniesPage() {
                               {company.coverPhotoPath ? (
                                 <div className="w-16 h-12 rounded overflow-hidden border border-gray-200 flex-shrink-0">
                                   <img
-                                    src={company.coverPhotoPath.startsWith('/') ? company.coverPhotoPath : `/${company.coverPhotoPath}`}
+                                    src={company.coverPhotoPath.startsWith('http') ? company.coverPhotoPath : `/api/images/${company.coverPhotoPath.startsWith('/') ? company.coverPhotoPath.substring(1) : company.coverPhotoPath}`}
                                     alt={company.name}
                                     className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.currentTarget.src = '/image/placeholder.jpg';
+                                    }}
                                   />
                                 </div>
                               ) : (

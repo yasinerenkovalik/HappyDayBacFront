@@ -32,7 +32,8 @@ import {
   UserGroupIcon,
   CurrencyDollarIcon,
   MagnifyingGlassIcon,
-  AdjustmentsHorizontalIcon
+  AdjustmentsHorizontalIcon,
+  BuildingOfficeIcon
 } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 
@@ -166,17 +167,46 @@ function OrganizationCard({ org, cities, allDistricts }: { org: Organization; ci
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <CurrencyDollarIcon className="h-5 w-5 text-pink-500" />
-              <Typography variant="h6" className="text-pink-500 font-bold">
-                {org.price.toLocaleString()} TL
-              </Typography>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <CurrencyDollarIcon className="h-5 w-5 text-pink-500" />
+                <Typography variant="h6" className="text-pink-500 font-bold">
+                  {org.price.toLocaleString()} TL
+                </Typography>
+              </div>
+
+              <Button size="sm" color="pink" variant="outlined">
+                Detayları Gör
+              </Button>
             </div>
 
-            <Button size="sm" color="pink" variant="outlined">
-              Detayları Gör
-            </Button>
+            {/* Şirket Bilgisi ve Buton */}
+            {org.companyId && (
+              <div className="border-t border-gray-100 pt-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <BuildingOfficeIcon className="h-4 w-4 text-blue-500" />
+                    <Typography variant="small" color="gray" className="font-medium">
+                      {org.companyName || "Şirket Bilgisi"}
+                    </Typography>
+                  </div>
+                  <Button
+                    size="sm"
+                    color="blue"
+                    variant="outlined"
+                    className="text-xs px-3 py-1"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.open(`/company-detail/${org.companyId}`, '_blank');
+                    }}
+                  >
+                    Şirket Detayı
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </CardBody>
       </Card>
@@ -504,11 +534,28 @@ function OrganizationListInner() {
     fetchInitialData();
   }, []); // Empty dependency array - only run once
 
-  // Read categoryId from query string and set initial selectedCategory
+  // Read all filters from query string
   useEffect(() => {
     const categoryFromQuery = searchParams?.get('categoryId');
+    const cityFromQuery = searchParams?.get('cityId');
+    const districtFromQuery = searchParams?.get('districtId');
+    const searchFromQuery = searchParams?.get('search');
+    const isOutdoorFromQuery = searchParams?.get('isOutdoor');
+    
     if (categoryFromQuery) {
       setSelectedCategory(categoryFromQuery);
+    }
+    if (cityFromQuery) {
+      setSelectedCity(cityFromQuery);
+    }
+    if (districtFromQuery) {
+      setSelectedDistrict(districtFromQuery);
+    }
+    if (searchFromQuery) {
+      setSearchTerm(searchFromQuery);
+    }
+    if (isOutdoorFromQuery) {
+      setIsOutdoor(isOutdoorFromQuery);
     }
   }, [searchParams]);
 
@@ -530,6 +577,7 @@ function OrganizationListInner() {
       districtId: selectedDistrict || undefined,
       maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
       isOutdoor: isOutdoor === "" ? undefined : isOutdoor === "true",
+      search: searchTerm || undefined,
     };
 
     try {
@@ -551,17 +599,17 @@ function OrganizationListInner() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor, pageSize]);
+  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor, searchTerm, pageSize]);
 
   // Otomatik filtreleme için useEffect
   useEffect(() => {
-    if (selectedCategory || selectedCity || selectedDistrict || maxPrice || isOutdoor) {
+    if (selectedCategory || selectedCity || selectedDistrict || maxPrice || isOutdoor || searchTerm) {
       handleFilter();
     } else {
       // No filters applied, fetch paginated data
       fetchOrganizations(1, true);
     }
-  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor, handleFilter, fetchOrganizations]);
+  }, [selectedCategory, selectedCity, selectedDistrict, maxPrice, isOutdoor, searchTerm, handleFilter, fetchOrganizations]);
 
   // Search functionality - removed automatic filtering to prevent loops
 
@@ -575,19 +623,7 @@ function OrganizationListInner() {
     fetchOrganizations(1, true);
   };
 
-  // Clear cache function (useful for debugging or force refresh)
-  const clearCache = () => {
-    Object.values(CACHE_KEYS).forEach(key => {
-      // Clear all cached data for this key pattern
-      Object.keys(localStorage).forEach(storageKey => {
-        if (storageKey.startsWith(key)) {
-          localStorage.removeItem(storageKey);
-        }
-      });
-    });
-    console.log('🧽 Cache cleared, reloading data...');
-    window.location.reload();
-  };
+
 
   // Handle page change
   const handlePageChange = (page: number) => {
@@ -641,23 +677,7 @@ function OrganizationListInner() {
             Size en uygun organizasyonu bulun. Hayalinizdeki etkinliği gerçekleştirin.
           </Typography>
 
-          {/* Search Bar */}
-          {/*  <div className="max-w-md mx-auto">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Organizasyon ara..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="!border-white/20 bg-white/10 text-white placeholder:text-white/70"
-                labelProps={{
-                  className: "hidden",
-                }}
-                containerProps={{ className: "min-w-0" }}
-              />
-              <MagnifyingGlassIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/70" />
-            </div>
-          </div>  */}
+         
         </div>
       
       </section>

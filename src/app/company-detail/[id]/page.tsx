@@ -2,8 +2,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getCompanyDetailsPublic } from "@/lib/auth";
+import { getOrganizationsByCompany } from "@/lib/api";
 import { Navbar, Footer } from "@/components";
 import {
   Typography,
@@ -21,6 +22,8 @@ import {
   HeartIcon,
   BuildingOfficeIcon,
   GlobeAltIcon,
+  CurrencyDollarIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 
@@ -50,10 +53,26 @@ interface Company {
   coverPhotoPath?: string;
 }
 
+interface Organization {
+  id: string;
+  title: string;
+  categoryId: number;
+  description: string;
+  location: string | null;
+  services: string[];
+  isOutdoor: boolean;
+  coverPhotoPath: string;
+  price: number;
+  maxGuestCount: number;
+}
+
 export default function CompanyDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [company, setCompany] = useState<Company | null>(null);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
+  const [organizationsLoading, setOrganizationsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -102,6 +121,25 @@ export default function CompanyDetailPage() {
       fetchCompany();
     }
   }, [id]);
+
+  // Fetch organizations when company is loaded
+  useEffect(() => {
+    if (id && !loading) {
+      const fetchOrganizations = async () => {
+        try {
+          setOrganizationsLoading(true);
+          const orgs = await getOrganizationsByCompany(id as string);
+          setOrganizations(orgs);
+        } catch (error) {
+          console.error("Error fetching organizations:", error);
+        } finally {
+          setOrganizationsLoading(false);
+        }
+      };
+
+      fetchOrganizations();
+    }
+  }, [id, loading]);
 
   if (loading) {
     return (
@@ -259,6 +297,129 @@ export default function CompanyDetailPage() {
                     </div>
                   </div>
                 </div>
+              </CardBody>
+            </Card>
+
+            {/* Organizasyonlar */}
+            <Card>
+              <CardBody className="p-6">
+                <Typography variant="h4" color="blue-gray" className="mb-6">
+                  Organizasyonlar
+                </Typography>
+                
+                {organizationsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <Typography variant="small" color="gray">Organizasyonlar yükleniyor...</Typography>
+                  </div>
+                ) : organizations.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {organizations.map((org) => (
+                      <Card 
+                        key={org.id} 
+                        className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                        onClick={() => router.push(`/organization-detail/${org.id}`)}
+                      >
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={getImageUrl(org.coverPhotoPath)}
+                            alt={org.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          <div className="absolute top-2 right-2">
+                            <Chip
+                              color={org.isOutdoor ? "green" : "blue"}
+                              size="sm"
+                              value={org.isOutdoor ? "Dış Mekan" : "İç Mekan"}
+                            />
+                          </div>
+                        </div>
+                        <CardBody className="p-4">
+                          <Typography variant="h6" color="blue-gray" className="mb-2 line-clamp-2">
+                            {org.title}
+                          </Typography>
+                          <Typography variant="small" color="gray" className="mb-3 line-clamp-2">
+                            {org.description}
+                          </Typography>
+                          
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-1">
+                              <CurrencyDollarIcon className="h-4 w-4 text-green-500" />
+                              <Typography variant="small" className="font-semibold text-green-600">
+                                {org.price.toLocaleString('tr-TR')} ₺
+                              </Typography>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <UserGroupIcon className="h-4 w-4 text-blue-500" />
+                              <Typography variant="small" color="gray">
+                                {org.maxGuestCount} kişi
+                              </Typography>
+                            </div>
+                          </div>
+
+                          {org.services.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-4">
+                              {org.services.slice(0, 2).map((service, index) => (
+                                <Chip
+                                  key={index}
+                                  color="gray"
+                                  size="sm"
+                                  value={service}
+                                  className="text-xs"
+                                />
+                              ))}
+                              {org.services.length > 2 && (
+                                <Chip
+                                  color="gray"
+                                  size="sm"
+                                  value={`+${org.services.length - 2} daha`}
+                                  className="text-xs"
+                                />
+                              )}
+                            </div>
+                          )}
+
+                          {/* Şirket Bilgisi ve Buton */}
+                          <div className="border-t border-gray-100 pt-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <BuildingOfficeIcon className="h-4 w-4 text-blue-500" />
+                                <Typography variant="small" color="gray" className="font-medium">
+                                  {company.name}
+                                </Typography>
+                              </div>
+                              <Button
+                                size="sm"
+                                color="blue"
+                                variant="outlined"
+                                className="text-xs px-3 py-1"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  router.push(`/company-detail/${id}`);
+                                }}
+                              >
+                                Şirket Detayı
+                              </Button>
+                            </div>
+                          </div>
+                        </CardBody>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <BuildingOfficeIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <Typography variant="h6" color="gray" className="mb-2">
+                      Henüz organizasyon bulunmuyor
+                    </Typography>
+                    <Typography variant="small" color="gray">
+                      Bu şirket henüz herhangi bir organizasyon eklememiş.
+                    </Typography>
+                  </div>
+                )}
               </CardBody>
             </Card>
           </div>

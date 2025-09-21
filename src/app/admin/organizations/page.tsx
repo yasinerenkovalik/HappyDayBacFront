@@ -185,12 +185,12 @@ export default function OrganizationsPage() {
                               <div className="flex items-center gap-3">
                                 {org.coverPhotoPath ? (
                                   <img
-                                    src={`/api/images/${org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath.substring(1) : org.coverPhotoPath}`}
+                                    src={org.coverPhotoPath.startsWith('http') ? org.coverPhotoPath : `/api/images/${org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath.substring(1) : org.coverPhotoPath}`}
                                     alt={org.title}
                                     className="w-16 h-16 object-cover rounded-lg"
                                     onError={(e) => {
                                       console.log('❌ Image load error:', e.currentTarget.src);
-                                      e.currentTarget.src = '/api/images/placeholder.jpg';
+                                      e.currentTarget.src = '/image/placeholder.jpg';
                                     }}
                                   />
                                 ) : (
@@ -326,12 +326,12 @@ export default function OrganizationsPage() {
                             <div className="flex-shrink-0">
                               {org.coverPhotoPath ? (
                                 <img
-                                  src={`/api/images/${org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath.substring(1) : org.coverPhotoPath}`}
+                                  src={org.coverPhotoPath.startsWith('http') ? org.coverPhotoPath : `/api/images/${org.coverPhotoPath.startsWith('/') ? org.coverPhotoPath.substring(1) : org.coverPhotoPath}`}
                                   alt={org.title}
                                   className="w-20 h-20 object-cover rounded-lg"
                                   onError={(e) => {
                                     console.log('❌ Mobile image load error:', e.currentTarget.src);
-                                    e.currentTarget.src = '/api/images/placeholder.jpg';
+                                    e.currentTarget.src = '/image/placeholder.jpg';
                                   }}
                                 />
                               ) : (

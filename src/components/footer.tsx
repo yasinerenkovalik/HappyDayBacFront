@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <Typography 
               variant="h5" 
-              className="mb-4 font-bold text-pink-400"
+              className="mb-4 font-bold text-pink-500"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
@@ -47,22 +47,22 @@ export default function Footer() {
             </Typography>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-pink-400 transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-pink-500 transition-colors">
                   Ana Sayfa
                 </Link>
               </li>
               <li>
-                <Link href="/organization-list" className="text-gray-300 hover:text-pink-400 transition-colors">
+                <Link href="/organization-list" className="text-gray-300 hover:text-pink-500 transition-colors">
                   Organizasyonlar
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-300 hover:text-pink-400 transition-colors">
+                <Link href="/contact" className="text-gray-300 hover:text-pink-500 transition-colors">
                   İletişim
                 </Link>
               </li>
               <li>
-                <Link href="/admin/login" className="text-gray-300 hover:text-pink-400 transition-colors">
+                <Link href="/admin/login" className="text-gray-300 hover:text-pink-500 transition-colors">
                   Giriş Yap
                 </Link>
               </li>
@@ -102,10 +102,10 @@ export default function Footer() {
             © 2024 MutluGünüm. Tüm hakları saklıdır.
           </Typography>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <Link href="#" className="text-gray-400 hover:text-pink-400 transition-colors text-sm">
+            <Link href="#" className="text-gray-400 hover:text-pink-500 transition-colors text-sm">
               Gizlilik Politikası
             </Link>
-            <Link href="#" className="text-gray-400 hover:text-pink-400 transition-colors text-sm">
+            <Link href="#" className="text-gray-400 hover:text-pink-500 transition-colors text-sm">
               Kullanım Şartları
             </Link>
           </div>

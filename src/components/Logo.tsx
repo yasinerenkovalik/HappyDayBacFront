@@ -25,7 +25,7 @@ export default function Logo({ size = 'md', showText = true, className = '' }: L
         width={120}
         height={36}
         className="object-contain"
-        style={{ height: 'auto', maxWidth: '120px' }}
+        style={{ height: 'auto', maxWidth: '120px', filter: 'brightness(0.9)' }}
         priority
       />
     </Link>

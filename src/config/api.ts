@@ -99,11 +99,11 @@ export const apiConfig = getApiConfig();
  * @param useProxy - Whether to use internal proxy (default: true for client-side)
  * @returns Full URL for the endpoint
  */
-export const getEndpointUrl = (endpoint: string, useProxy: boolean = apiConfig.isClient): string => {
+export const getEndpointUrl = (endpoint: string, useProxy: boolean = apiConfig.isClient, locale: string = 'tr'): string => {
   if (useProxy && apiConfig.isClient) {
-    return `${apiConfig.proxyUrl}${endpoint}`;
+    return `${apiConfig.proxyUrl}${endpoint}?locale=${locale}`;
   }
-  return `${apiConfig.baseUrl}${endpoint}`;
+  return `${apiConfig.baseUrl}${endpoint}?locale=${locale}`;
 };
 
 /**

@@ -22,12 +22,12 @@ export default function CTA() {
       }}
     >
       {/* Soft gradient overlay for readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/35 to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/25" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
           {/* Icon */}
-          <div className="w-20 h-20 mx-auto mb-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-6 bg-white bg-opacity-25 rounded-full flex items-center justify-center">
             <SparklesIcon className="h-10 w-10 text-white" />
           </div>
 
@@ -47,7 +47,7 @@ export default function CTA() {
           {/* Description */}
           <Typography
             variant="lead"
-            className="mb-8 text-pink-100 max-w-2xl mx-auto text-lg"
+            className="mb-8 text-pink-50 max-w-2xl mx-auto text-lg"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
@@ -62,7 +62,7 @@ export default function CTA() {
               <Button
                 as="span"
                 size="lg"
-                className="bg-white text-pink-600 hover:bg-pink-50 font-semibold w-full sm:w-auto !h-12 !px-6 !text-base rounded-xl flex items-center justify-center gap-2 min-w-[220px]"
+                className="bg-white text-pink-700 hover:bg-pink-100 font-semibold w-full sm:w-auto !h-12 !px-6 !text-base rounded-xl flex items-center justify-center gap-2 min-w-[220px]"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
@@ -76,7 +76,7 @@ export default function CTA() {
                 as="span"
                 size="lg"
                 variant="outlined"
-                className="border-white text-white hover:bg-white hover:text-pink-600 font-semibold w-full sm:w-auto !h-12 !px-6 !text-base rounded-xl flex items-center justify-center gap-2 min-w-[220px]"
+                className="border-white text-white hover:bg-white hover:text-pink-700 font-semibold w-full sm:w-auto !h-12 !px-6 !text-base rounded-xl flex items-center justify-center gap-2 min-w-[220px]"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
@@ -87,7 +87,7 @@ export default function CTA() {
           </div>
 
           {/* Contact Info */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center text-pink-100">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center text-pink-50">
             <div className="flex items-center gap-2">
               <PhoneIcon className="h-5 w-5" />
               <Typography variant="small" className="font-medium">

@@ -89,6 +89,7 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   console.log('📡 API Call:', `${API_BASE_URL}${endpoint}`);
   console.log('📡 Headers:', headers);
   console.log('📡 Method:', options.method || 'GET');
+  console.log('📡 Request body:', options.body);
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
@@ -124,12 +125,34 @@ export const apiCallFormData = async (
   const headers: Record<string, string> = {};
   if (token) headers["Authorization"] = `Bearer ${token}`;
   // ÖNEMLİ: FormData gönderirken Content-Type manuel eklenmez.
+  // Tarayıcı otomatik olarak "multipart/form-data; boundary=..." ayarlar
+
+  // Debug bilgileri
+  console.log('📡 API Call FormData:', `${API_BASE_URL}${endpoint}`);
+  console.log('📡 Method:', method);
+  console.log('📡 Headers:', headers);
+  console.log('📡 FormData size:', formData.entries ? Array.from(formData.entries()).length : 'Unknown');
+  
+  // FormData içeriğini detaylı göster
+  if (formData.entries) {
+    console.log('📡 FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`  ${key}: File { name: "${value.name}", size: ${value.size}, type: "${value.type}" }`);
+      } else {
+        console.log(`  ${key}: "${value}"`);
+      }
+    }
+  }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     method,
     body: formData,
     headers
   });
+
+  console.log('📡 Response Status:', response.status);
+  console.log('📡 Response Headers:', Object.fromEntries(response.headers.entries()));
 
   if (response.status === 401) {
     localStorage.clear();
@@ -188,7 +211,9 @@ export const companyLogin = async (email: string, password: string): Promise<Log
       localStorage.setItem("authToken", data.data.token);
       localStorage.setItem("userRole", "Company");
       localStorage.setItem("userType", "company");
-      localStorage.setItem("companyId", tokenPayload.CompanyId || "");
+      // Store company ID, ensuring it's not undefined
+      const companyId = tokenPayload.CompanyId || tokenPayload.companyId || "";
+      localStorage.setItem("companyId", companyId);
       localStorage.setItem("userId", tokenPayload.nameid || "");
       
       // Email doğrulama durumunu kaydet
@@ -326,61 +351,90 @@ export interface OrganizationUpdateData {
   maxGuestCount: number;
   categoryId?: number;
   cityId?: number;
+  districtId?: number;
   services: string[];
-  duration: string;
+  duration?: string;
   isOutdoor: boolean;
-  reservationNote: string;
-  cancelPolicy: string;
-  videoUrl: string;
+  reservationNote?: string;
+  cancelPolicy?: string;
+  videoUrl?: string;
   coverPhoto?: File;
 }
 
 export const updateOrganization = async (data: OrganizationUpdateData): Promise<any> => {
-  const formData = new FormData();
+  try {
+    const formData = new FormData();
 
-  formData.append('Id', data.id);
-  formData.append('Title', data.title || '');
-  formData.append('Description', data.description || '');
-  formData.append('Price', data.price.toString());
-  formData.append('MaxGuestCount', data.maxGuestCount.toString());
+    formData.append('Id', data.id);
+    formData.append('Title', data.title || '');
+    formData.append('Description', data.description || '');
+    formData.append('Price', data.price.toString());
+    formData.append('MaxGuestCount', data.maxGuestCount.toString());
 
-  if (data.categoryId && data.categoryId > 0) {
-    formData.append('CategoryId', data.categoryId.toString());
+    // CityId alanını doğru şekilde işle
+    if (data.cityId !== undefined && data.cityId !== null) {
+      const cityIdValue = typeof data.cityId === 'string' ? parseInt(data.cityId, 10) : data.cityId;
+      if (!isNaN(cityIdValue) && cityIdValue > 0) {
+        formData.append('CityId', cityIdValue.toString());
+      }
+    }
+
+    // DistrictId alanını doğru şekilde işle
+    if (data.districtId !== undefined && data.districtId !== null) {
+      const districtIdValue = typeof data.districtId === 'string' ? parseInt(data.districtId, 10) : data.districtId;
+      if (!isNaN(districtIdValue) && districtIdValue > 0) {
+        formData.append('DistrictId', districtIdValue.toString());
+      }
+    }
+
+    // CategoryId alanını doğru şekilde işle
+    if (data.categoryId !== undefined && data.categoryId !== null) {
+      const categoryIdValue = typeof data.categoryId === 'string' ? parseInt(data.categoryId, 10) : data.categoryId;
+      if (!isNaN(categoryIdValue) && categoryIdValue > 0) {
+        formData.append('CategoryId', categoryIdValue.toString());
+      }
+    }
+
+    // Services -> .NET List<string> için aynı isimle tekrarlı ekleme
+    if (data.services && data.services.length > 0) {
+      data.services.forEach((service) => {
+        formData.append('Services', service);
+      });
+    }
+
+    // Zorunlu alanlar için varsayılanlar
+    formData.append('Duration', data.duration || '1 saat');
+    formData.append('IsOutdoor', data.isOutdoor.toString());
+    formData.append('ReservationNote', data.reservationNote || 'Rezervasyon notu bulunmamaktadır.');
+    formData.append('CancelPolicy', data.cancelPolicy || 'İptal politikası bulunmamaktadır.');
+    formData.append('VideoUrl', data.videoUrl || '');
+
+    if (data.coverPhoto) {
+      // Backend DTO: IFormFile CoverPhoto => alan adı birebir "CoverPhoto" olmalı
+      formData.append('CoverPhoto', data.coverPhoto);
+    }
+
+    // Debug
+    console.log('FormData contents (updateOrganization):');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    // Not: Endpoint sende "OrganizationUpdate" olarak görünüyor.
+    // Eğer backend tarafında "/Organization/Update" ise, buradaki path'i değiştir.
+    const response = await apiCallFormData("/Organization/OrganizationUpdate", formData, "PUT");
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Organization update error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error('Error in updateOrganization:', error);
+    throw error;
   }
-
-  if (data.cityId && data.cityId > 0) {
-    formData.append('CityId', data.cityId.toString());
-  }
-
-  // Services -> .NET List<string> için aynı isimle tekrarlı ekleme
-  if (data.services && data.services.length > 0) {
-    data.services.forEach((service) => {
-      formData.append('Services', service);
-    });
-  }
-
-  // Zorunlu alanlar için varsayılanlar
-  formData.append('Duration', data.duration || '1 saat');
-  formData.append('IsOutdoor', data.isOutdoor.toString());
-  formData.append('ReservationNote', data.reservationNote || 'Rezervasyon notu bulunmamaktadır.');
-  formData.append('CancelPolicy', data.cancelPolicy || 'İptal politikası bulunmamaktadır.');
-  formData.append('VideoUrl', data.videoUrl || '');
-
-  if (data.coverPhoto) {
-    // Backend DTO: IFormFile CoverPhoto => alan adı birebir "CoverPhoto" olmalı
-    formData.append('CoverPhoto', data.coverPhoto);
-  }
-
-  // Debug
-  console.log('FormData contents (updateOrganization):');
-  for (let [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
-
-  // Not: Endpoint sende "OrganizationUpdate" olarak görünüyor.
-  // Eğer backend tarafında "/Organization/Update" ise, buradaki path'i değiştir.
-  const response = await apiCallFormData("/Organization/OrganizationUpdate", formData, "PUT");
-  return response.json();
 };
 
 // Add single organization image
@@ -542,7 +596,7 @@ export const getCompanyDetails = async (companyId: string): Promise<CompanyRespo
 export interface CompanyUpdateData {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   adress: string;
   phoneNumber: string;
   description: string;
@@ -556,33 +610,96 @@ export interface CompanyUpdateData {
 
 export const updateCompany = async (data: CompanyUpdateData): Promise<any> => {
   try {
-    // Eğer cover photo varsa FormData kullan
+    console.log('🚀 updateCompany called with data:', data);
+    console.log('🚀 Data type:', typeof data);
+    console.log('🚀 Data keys:', Object.keys(data || {}));
+    
+    // Validate required fields
+    if (!data) {
+      console.error('❌ Data is null or undefined');
+      throw new Error("Veri bulunamadı");
+    }
+    
+    if (!data.id || data.id.trim() === '') {
+      console.error('❌ ID is missing or empty:', data.id);
+      throw new Error("Şirket ID'si gereklidir");
+    }
+    if (!data.name || data.name.trim() === '') {
+      console.error('❌ Name is missing or empty:', data.name);
+      throw new Error("Şirket adı gereklidir");
+    }
+    if (!data.adress || data.adress.trim() === '') {
+      console.error('❌ Address is missing or empty:', data.adress);
+      throw new Error("Adres bilgisi gereklidir");
+    }
+    if (!data.description || data.description.trim() === '') {
+      console.error('❌ Description is missing or empty:', data.description);
+      throw new Error("Açıklama bilgisi gereklidir");
+    }
+    if (!data.phoneNumber || data.phoneNumber.trim() === '') {
+      console.error('❌ Phone number is missing or empty:', data.phoneNumber);
+      throw new Error("Telefon numarası gereklidir");
+    }
+    // Trim all string fields to avoid sending whitespace-only values
+    const trimmedData = {
+      ...data,
+      id: data.id?.trim() || '',
+      name: data.name?.trim() || '',
+      adress: data.adress?.trim() || '',
+      description: data.description?.trim() || '',
+      phoneNumber: data.phoneNumber?.trim() || '',
+      email: data.email?.trim() || ''
+    };
+    
+    console.log('🔍 Original data:', data);
+    console.log('🔍 Trimmed data:', trimmedData);
+    console.log('🔍 Validation check:');
+    console.log('  - id:', trimmedData.id, 'empty?', trimmedData.id === '');
+    console.log('  - name:', trimmedData.name, 'empty?', trimmedData.name === '');
+    console.log('  - adress:', trimmedData.adress, 'empty?', trimmedData.adress === '');
+    console.log('  - description:', trimmedData.description, 'empty?', trimmedData.description === '');
+    console.log('  - phoneNumber:', trimmedData.phoneNumber, 'empty?', trimmedData.phoneNumber === '');
+    
+    // Check if any required field is empty
+    if (trimmedData.id === '') {
+      console.error('❌ ID is empty!');
+      throw new Error("Şirket ID'si boş olamaz");
+    }
+    if (trimmedData.name === '') {
+      console.error('❌ Name is empty!');
+      throw new Error("Şirket adı boş olamaz");
+    }
+    if (trimmedData.adress === '') {
+      console.error('❌ Address is empty!');
+      throw new Error("Adres boş olamaz");
+    }
+    if (trimmedData.description === '') {
+      console.error('❌ Description is empty!');
+      throw new Error("Açıklama boş olamaz");
+    }
+    if (trimmedData.phoneNumber === '') {
+      console.error('❌ Phone number is empty!');
+      throw new Error("Telefon numarası boş olamaz");
+    }
+
+    // Postman'daki başarılı request'e göre sadece gerekli alanları gönder
+    const formData = new FormData();
+    
+    // Backend'in beklediği alan adları (Swagger'daki başarılı istekten alınmıştır)
+    formData.append('Id', trimmedData.id);
+    formData.append('Name', trimmedData.name);
+    formData.append('Adress', trimmedData.adress);
+    formData.append('PhoneNumber', trimmedData.phoneNumber);
+    formData.append('Description', trimmedData.description);
+    
+    // Latitude ve Longitude için varsayılan değerler
+    formData.append('Latitude', trimmedData.latitude?.toString() || '0');
+    formData.append('Longitude', trimmedData.longitude?.toString() || '0');
+    
+    // Cover photo varsa ekle
     if (data.coverPhoto) {
-      const formData = new FormData();
-      
-      // Swagger'daki field adlarıyla birebir uyumlu
-      formData.append('Id', data.id);
-      formData.append('Name', data.name);
-      formData.append('Email', data.email);
-      formData.append('Adress', data.adress); // Backend'de Adress yazılış şekli
-      formData.append('PhoneNumber', data.phoneNumber);
-      formData.append('Description', data.description);
-      
-      if (data.latitude !== undefined) {
-        formData.append('Latitude', data.latitude.toString());
-      }
-      if (data.longitude !== undefined) {
-        formData.append('Longitude', data.longitude.toString());
-      }
-      if (data.cityId !== undefined) {
-        formData.append('CityId', data.cityId.toString());
-      }
-      if (data.districtId !== undefined) {
-        formData.append('DistrictId', data.districtId.toString());
-      }
-      
-      // Cover photo dosyasını ekle - Swagger'daki gibi
       formData.append('CoverPhoto', data.coverPhoto);
+    }
       
       // Debug: FormData içeriğini konsola yazdır
       console.log('📤 Company Update FormData contents:');
@@ -594,21 +711,19 @@ export const updateCompany = async (data: CompanyUpdateData): Promise<any> => {
         }
       }
       
+      // FormData'nın doğru oluşturulduğunu kontrol et
+      console.log('🔍 FormData keys:', Array.from(formData.keys()));
+      
+      // Use the correct endpoint path - this should match what works in Swagger
       const response = await apiCallFormData("/Company/update", formData, "PUT");
-      return response.json();
-    } else {
-      // Cover photo yoksa normal JSON request
-      const response = await apiCall("/Company/update", {
-        method: "PUT",
-        body: JSON.stringify(data)
-      });
-
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Company update error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
-
+      
       return response.json();
-    }
   } catch (error) {
     console.error('Error in updateCompany:', error);
     throw error;

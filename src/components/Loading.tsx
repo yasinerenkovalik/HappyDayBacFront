@@ -22,13 +22,13 @@ export const Loading: React.FC<LoadingProps> = ({
   };
 
   const containerClasses = fullScreen
-    ? 'fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50'
+    ? 'fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50'
     : 'flex items-center justify-center py-8';
 
   return (
     <div className={containerClasses}>
       <div className="text-center">
-        <div className={`animate-spin rounded-full border-b-2 border-blue-500 mx-auto mb-4 ${sizeClasses[size]}`}></div>
+        <div className={`animate-spin rounded-full border-b-2 border-blue-600 mx-auto mb-4 ${sizeClasses[size]}`}></div>
         {text && (
           <Typography
             color="gray"

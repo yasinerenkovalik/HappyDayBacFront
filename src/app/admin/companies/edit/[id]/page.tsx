@@ -209,33 +209,6 @@ export default function EditCompanyPage() {
                         console.error("❌ Failed to parse JWT:", e);
                     }
                 }
-                
-                // Global test fonksiyonu ekle
-                (window as any).testCompanyAPI = async () => {
-                    const testToken = localStorage.getItem('authToken');
-                    console.log('🧪 Testing Company API...');
-                    
-                    // Test 1: No auth
-                    try {
-                        const response1 = await fetch(`/api/proxy/Company/getbyid?Id=${companyId}`);
-                        console.log('✅ No Auth Test:', response1.status, await response1.text());
-                    } catch (e) {
-                        console.log('❌ No Auth Test failed:', e);
-                    }
-                    
-                    // Test 2: With auth
-                    if (testToken) {
-                        try {
-                            const response2 = await fetch(`/api/proxy/Company/getbyid?Id=${companyId}`, {
-                                headers: { 'Authorization': `Bearer ${testToken}` }
-                            });
-                            console.log('✅ With Auth Test:', response2.status, await response2.text());
-                        } catch (e) {
-                            console.log('❌ With Auth Test failed:', e);
-                        }
-                    }
-                };
-
                 // Yetki kontrolü
                 if (userRole !== "Admin" && currentCompanyId !== companyId) {
                     setError("Bu şirketin bilgilerine erişim yetkiniz bulunmamaktadır. Sadece kendi şirketinizin bilgilerini düzenleyebilirsiniz.");
@@ -370,8 +343,21 @@ export default function EditCompanyPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.email) {
-            setError("Şirket adı ve e-posta alanları zorunludur.");
+        // Validate required fields
+        if (!formData.name?.trim()) {
+            setError("Şirket adı alanı zorunludur.");
+            return;
+        }
+        if (!formData.adress?.trim()) {
+            setError("Adres alanı zorunludur.");
+            return;
+        }
+        if (!formData.description?.trim()) {
+            setError("Açıklama alanı zorunludur.");
+            return;
+        }
+        if (!formData.phoneNumber?.trim()) {
+            setError("Telefon numarası alanı zorunludur.");
             return;
         }
 
@@ -380,19 +366,36 @@ export default function EditCompanyPage() {
         setSuccess("");
 
         try {
+            // Prepare update data with proper validation
             const updateData: CompanyUpdateData = {
                 id: companyId,
-                name: formData.name,
-                email: formData.email,
-                adress: formData.adress,
-                phoneNumber: formData.phoneNumber,
-                description: formData.description,
-                latitude: formData.latitude,
-                longitude: formData.longitude,
+                name: formData.name.trim(),
+                email: formData.email?.trim() || '',
+                adress: formData.adress.trim(),
+                phoneNumber: formData.phoneNumber.trim(),
+                description: formData.description.trim(),
+                latitude: formData.latitude !== undefined ? formData.latitude : 0, // 0 olarak ayarla
+                longitude: formData.longitude !== undefined ? formData.longitude : 0, // 0 olarak ayarla
                 cityId: formData.cityId ? parseInt(formData.cityId) : undefined,
                 districtId: formData.districtId ? parseInt(formData.districtId) : undefined,
                 coverPhoto: selectedCoverPhoto || undefined
             };
+
+            console.log('📤 Sending company update data:', updateData);
+            
+            // Additional debug logging
+            console.log('🔍 Debug - Form Data Values:');
+            console.log('  ID:', companyId);
+            console.log('  Name:', formData.name.trim());
+            console.log('  Email:', formData.email?.trim() || '');
+            console.log('  Address:', formData.adress.trim());
+            console.log('  Phone:', formData.phoneNumber.trim());
+            console.log('  Description:', formData.description.trim());
+            console.log('  Latitude:', formData.latitude);
+            console.log('  Longitude:', formData.longitude);
+            console.log('  City ID:', formData.cityId ? parseInt(formData.cityId) : undefined);
+            console.log('  District ID:', formData.districtId ? parseInt(formData.districtId) : undefined);
+            console.log('  Has Cover Photo:', !!selectedCoverPhoto);
 
             const response = await updateCompany(updateData);
 
@@ -407,11 +410,24 @@ export default function EditCompanyPage() {
                     });
                 }
             } else {
-                setError(response.message || "Güncelleme sırasında hata oluştu.");
+                // Handle validation errors from backend
+                if (response.errors) {
+                    const errorMessages = Object.entries(response.errors)
+                        .map(([field, messages]: [string, any]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+                        .join('\n');
+                    setError(`Validation Hataları:\n${errorMessages}`);
+                } else {
+                    setError(response.message || "Güncelleme sırasında hata oluştu.");
+                }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error updating company:", error);
-            setError("Bağlantı hatası. Lütfen tekrar deneyin.");
+            // Detaylı hata mesajı göster
+            if (error.message) {
+                setError(`Hata: ${error.message}`);
+            } else {
+                setError("Bağlantı hatası. Lütfen tekrar deneyin.");
+            }
         } finally {
             setSaving(false);
         }
@@ -708,9 +724,13 @@ export default function EditCompanyPage() {
                                                     </Typography>
                                                     <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-300">
                                                         <img
-                                                            src={formData.coverPhotoPath.startsWith('/') ? formData.coverPhotoPath : `/${formData.coverPhotoPath}`}
+                                                            src={formData.coverPhotoPath.startsWith('http') ? formData.coverPhotoPath : `/api/images/${formData.coverPhotoPath.startsWith('/') ? formData.coverPhotoPath.substring(1) : formData.coverPhotoPath}`}
                                                             alt="Mevcut cover photo"
                                                             className="w-full h-full object-cover"
+                                                            onError={(e) => {
+                                                                console.log('❌ Company cover image load error:', e.currentTarget.src);
+                                                                e.currentTarget.src = '/image/placeholder.jpg';
+                                                            }}
                                                         />
                                                     </div>
                                                 </div>

@@ -148,10 +148,10 @@ export default function LeafletMap({
   return (
     <div className="w-full h-full relative">
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-[1000]">
+        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center z-[1000]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-2"></div>
-            <div className="text-sm text-gray-600">🍃 Leaflet Maps yükleniyor...</div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-2"></div>
+            <div className="text-sm text-gray-700">🍃 Leaflet Maps yükleniyor...</div>
           </div>
         </div>
       )}
@@ -167,7 +167,7 @@ export default function LeafletMap({
       />
       
       {/* Debug overlay */}
-      <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded z-[1001]">
+      <div className="absolute bottom-2 right-2 bg-black/90 text-white text-xs px-2 py-1 rounded z-[1001]">
         🍃 Leaflet Debug: {isLoading ? 'Loading...' : 'Ready'}
       </div>
       

@@ -305,8 +305,8 @@ function DashboardContent() {
                     </Typography>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
+                    <table className="w-full min-w-max table-auto text-left">
                       <thead>
                         <tr className="border-b border-gray-200">
                           <th className="text-left py-3 px-4">Şirket Adı</th>

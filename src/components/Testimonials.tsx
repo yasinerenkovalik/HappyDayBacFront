@@ -37,7 +37,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gray-100">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
@@ -52,7 +52,7 @@ export default function Testimonials() {
           </Typography>
           <Typography
             variant="lead"
-            className="text-gray-600 max-w-2xl mx-auto"
+            className="text-gray-700 max-w-2xl mx-auto"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
@@ -66,7 +66,7 @@ export default function Testimonials() {
           {testimonials.map((testimonial) => (
             <Card
               key={testimonial.id}
-              className="shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
@@ -87,7 +87,7 @@ export default function Testimonials() {
                 {/* Content */}
                 <Typography
                   variant="small"
-                  className="mb-6 text-gray-700 italic leading-relaxed"
+                  className="mb-6 text-gray-800 italic leading-relaxed"
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
@@ -101,7 +101,7 @@ export default function Testimonials() {
                     src={testimonial.avatar}
                     alt={testimonial.name}
                     size="sm"
-                    className="ring-2 ring-pink-100"
+                    className="ring-2 ring-pink-200"
                     placeholder={undefined}
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
@@ -119,6 +119,7 @@ export default function Testimonials() {
                     <Typography
                       variant="small"
                       color="gray"
+                      className="text-gray-700"
                       placeholder={undefined}
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}

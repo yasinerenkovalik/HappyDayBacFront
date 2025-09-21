@@ -238,8 +238,10 @@ export default function CompanyDashboard() {
                 variant="outlined"
                 color="blue"
                 onClick={() => {
-                  if (companyId) {
+                  if (companyId && companyId.trim() !== '') {
                     router.push(`/admin/companies/edit/${companyId}`);
+                  } else {
+                    setError('Şirket ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.');
                   }
                 }}
               >
